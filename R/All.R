@@ -116,7 +116,7 @@ function(obj)
 ##
 ## $Id: SQLite.R,v 1.3 2003/06/17 15:00:52 dj Exp dj $
 ##
-## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
+## Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -234,6 +234,10 @@ setMethod("summary", "SQLiteConnection",
    def = function(object, ...) sqliteDescribeConnection(object, ...)
 )
 
+setMethod("dbCallProc", "SQLiteConnection",
+   def = function(conn, ...) .NotYetImplemented()
+)
+
 ##
 ## Convenience methods
 ##
@@ -261,7 +265,7 @@ setMethod("dbWriteTable",
 setMethod("dbRemoveTable", 
    sig = signature(conn = "SQLiteConnection", name = "character"),
    def = function(conn, name, ...){
-      rc <- try(dbGetQuery(con, paste("drop table", name)))
+      rc <- try(dbGetQuery(conn, paste("drop table", name)))
       !inherits(rc, ErrorClass)
    },
    valueClass = "logical"
@@ -358,6 +362,28 @@ setMethod("dbDataType", "SQLiteObject",
    def = function(dbObj, obj, ...) sqliteDataType(obj, ...),
    valueClass = "character"
 )
+
+
+setMethod("make.db.names", 
+   signature(dbObj="SQLiteObject", snames = "character"),
+   def = function(dbObj, snames, ...){
+      make.db.names.default(snames, ...)
+   },
+   valueClass = "character"
+)
+      
+setMethod("SQLKeywords", "SQLiteObject",
+   def = function(dbObj, ...) .SQL92Keywords,
+   valueClass = "character"
+)
+
+setMethod("isSQLKeyword",
+   signature(dbObj="SQLiteObject", name="character"),
+   def = function(dbObj, name, ...){
+        isSQLKeyword.default(name, keywords = .SQL92Keywords)
+   },
+   valueClass = "character"
+)
 ##
 ## $Id: SQLiteSupport.R,v 1.2 2002/09/05 02:39:38 dj Exp dj $
 ##
@@ -379,7 +405,7 @@ setMethod("dbDataType", "SQLiteObject",
 ##
 
 "sqliteInitDriver" <- 
-function(max.con = 16, fetch.default.rec = 500, force.reload=F)
+function(max.con = 16, fetch.default.rec = 500, force.reload=FALSE)
 ## return a manager id
 {
   config.params <- as.integer(c(max.con, fetch.default.rec))
@@ -810,11 +836,11 @@ function(value, file, batch, ..., quote.string = FALSE)
    to <- min(batch, N)
    while(from<=N){
       if(usingR())
-         write.table(value[from:to, drop=FALSE], file = file, append = TRUE, 
+         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE, 
                quote = quote.string, sep=",", na = .SQLite.NA.string, 
                row.names=FALSE, col.names=FALSE, eol = '\n', ...)
       else
-         write.table(value[from:to, drop=FALSE], file = file, append = TRUE, 
+         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE, 
                quote.string = quote.string, sep=",", na = .SQLite.NA.string, 
                dimnames.write=FALSE, end.of.row = '\n', ...)
       from <- to+1

@@ -1,3 +1,4 @@
+% $Id: SQLiteResult-class.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
 \name{SQLiteResult-class}
 \docType{class}
 \alias{SQLiteResult-class}
@@ -35,7 +36,7 @@ Class \code{"dbObjectId"}, by class "SQLiteObject".
 \references{
   See the Database Interface definition document
   \code{DBI.pdf} in the base directory of this package
-  or \url{http://developer.r-project.org/db}.
+  or \url{http://stat.bell-labs.com/RS-DBI}.
 }
 \author{R-SIG-DB}
 

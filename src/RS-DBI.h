@@ -1,7 +1,7 @@
 #ifndef _RS_DBI_H
 #define _RS_DBI_H 1
 /*  
- *  $Id: RS-DBI.h,v 1.5 2002/05/20 20:55:45 dj Exp dj $
+ *  $Id: RS-DBI.h,v 1.6 2003/11/04 15:57:14 dj Exp dj $
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
@@ -30,7 +30,15 @@ extern "C" {
 #endif
 
 #include "S4R.h"
+
+/* Microsoft Visual C++ uses int _getpid()  */
+#ifdef MSVC
+#include <process.h>
+#define getpid _getpid
+#define pid_t int
+#else           
 #include <unistd.h>
+#endif
 
 pid_t getpid(); 
 
@@ -249,6 +257,7 @@ s_object *RS_DBI_createNamedList(char  **names,
 s_object *RS_DBI_copyFields(RS_DBI_fields *flds);
 
 void RS_na_set(void *ptr, Stype type);
+int  RS_is_na(void *ptr, Stype type);
 extern const struct data_types RS_dataTypeTable[];
 
 #ifdef __cplusplus 

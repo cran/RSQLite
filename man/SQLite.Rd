@@ -1,3 +1,4 @@
+% $Id: SQLite.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
 \name{SQLite}
 \alias{SQLite}
 \alias{SQLiteDriver}
@@ -10,7 +11,7 @@ It returns an object that allows you to connect to the SQLite
 embedded engine.
 }
 \usage{
-SQLite(max.con = 16, fetch.default.rec = 500, force.reload = F)
+SQLite(max.con = 16, fetch.default.rec = 500, force.reload = FALSE)
 }
 \arguments{
 \item{max.con }{
@@ -33,8 +34,7 @@ SQLite(max.con = 16, fetch.default.rec = 500, force.reload = F)
 }
 \value{
 An object of class \code{SQLiteDriver} which extends 
-\code{dbDriver} and 
-\code{dbObjectId}.
+\code{dbDriver} and \code{dbObjectId}.
 This object is required to create connections
 to the embedded SQLite database.
 There can be many SQLite database instances running
@@ -58,13 +58,13 @@ of the database \emph{is} the file name, thus database names
 should be legal file names in the running platform.
 }
 \section{User authentication}{
-SQLite is a single-user database engine, so it has no concept of
-a user.
+SQLite is a single-user database engine, so no authentication
+is required.
 }
 \author{David A. James}
 \section{References}{
 See the Omega Project for Statistical Computing
-at \url{http://www.omegahat.org} and \url{http://stat.bell-labs.com/RS-DBI}
+\url{http://stat.bell-labs.com/RS-DBI}
 for more details on the R/S-Plus database interface.
 
 See the Adobe PDF file \code{DBI.pdf} under the \code{doc}
@@ -77,37 +77,36 @@ See the documentation at the SQLite Web site
 \seealso{
 On database drivers:
 
-\code{\link[DBI]{dbDriver}}
-\code{\link{SQLite}}
-\code{\link[DBI]{dbUnloadDriver}}
-\code{\link[DBI]{dbListConnections}}
+\code{\link[DBI]{dbDriver}},
+\code{\link[DBI]{dbUnloadDriver}},
+\code{\link[DBI]{dbListConnections}}.
 
 On connections, SQL statements and resultSets:
 
-\code{\link[DBI]{dbConnect}}
-\code{\link[DBI]{dbDisconnect}}
-\code{\link[DBI]{dbSendQuery}}
-\code{\link[DBI]{dbGetQuery}}
-\code{\link[DBI]{fetch}}
-\code{\link[DBI]{dbListResults}}
+\code{\link[DBI]{dbConnect}},
+\code{\link[DBI]{dbDisconnect}},
+\code{\link[DBI]{dbSendQuery}},
+\code{\link[DBI]{dbGetQuery}},
+\code{\link[DBI]{fetch}},
+\code{\link[DBI]{dbListResults}}.
 
 On transaction management:
 
-\code{\link[DBI]{dbCommit}}
-\code{\link[DBI]{dbRollback}}
+\code{\link[DBI]{dbCommit}}, 
+\code{\link[DBI]{dbRollback}}.
 
 On meta-data:
 
-\code{\link{summary}}
-\code{\link[DBI]{dbGetInfo}}
-\code{\link[DBI]{dbListTables}}
-\code{\link[DBI]{dbListFields}}
-\code{\link[DBI]{dbColumnsInfo}}
-\code{\link[DBI]{dbGetException}}
-\code{\link[DBI]{dbGetStatement}}
-\code{\link[DBI]{dbHasCompleted}}
-\code{\link[DBI]{dbGetRowCount}}
-\code{\link[DBI]{dbGetAffectedRows}}
+\code{\link{summary}},
+\code{\link[DBI]{dbGetInfo}},
+\code{\link[DBI]{dbListTables}},
+\code{\link[DBI]{dbListFields}},
+\code{\link[DBI]{dbColumnsInfo}},
+\code{\link[DBI]{dbGetException}},
+\code{\link[DBI]{dbGetStatement}},
+\code{\link[DBI]{dbHasCompleted}},
+\code{\link[DBI]{dbGetRowCount}},
+\code{\link[DBI]{dbGetAffectedRows}}.
 }
 \examples{\dontrun{
    # create a SQLite instance and create one connection.

@@ -1,3 +1,14 @@
+Version 0.3-3
+
+* Minor fixes to accommadate R 1.8.0 changes to data.frame subsetting.
+
+* Updated the documentation to use 1.8.0 new S4-style method documentation.
+
+* Updated to SQLite to the latest 2.8.6 (included with RSQLite).
+
+* Added file NAMESPACE.future to prepare for namespace implementation
+  at some future release.  
+
 Version 0.3-2
 
 * Ported to Windows.  It now installs fine under Windows with 

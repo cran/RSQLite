@@ -1,12 +1,18 @@
 dnl 
-dnl $Id: configure.in,v 1.3 2003/06/04 22:29:52 dj Exp dj $
+dnl $Id: configure.in,v 1.4 2003/10/17 15:37:19 dj Exp dj $
 dnl
 dnl R embedding of the SQLite engine.
 dnl
 dnl Generate a "configure" script that will install the RSQLite packge,
 dnl possibly also installing the SQLite engine itself.
 dnl
-dnl NOTE: The resulting configure script implements the following logic:
+dnl    USAGE:  autoconf
+dnl
+dnl Global variables:  
+dnl    In addition to PKG_CPPFLAGS and PKG_LIBS, user may set SQLITE_TAR 
+dnl    to specify the SQLite tar file.
+dnl
+dnl The resulting configure script implements the following logic:
 dnl
 dnl 1. If both PKG_CPPFLAGS and PKG_LIBS are defined, use them and exit.
 dnl
@@ -35,10 +41,6 @@ dnl         --enable-sqlite=DIR   (DIR defaults to $R_PACKAGE_DIR/sqlite)
 dnl         --enable-sqlite=no
 dnl    or   --disable-sqlite
 dnl    (note that in this case we compile sqlite as a *static* library).
-dnl
-dnl Global variables:  
-dnl    In addition to PKG_CPPFLAGS and PKG_LIBS, user may set SQLITE_TAR 
-dnl    to specify the SQLite tar file.
 dnl
 
 AC_INIT(src/RS-SQLite.c)
@@ -178,14 +180,14 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    : ${TAR=tar}
    : ${GZIP=gzip}
    : ${MAKE=make}
-   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.8.3.tar.gz"}
+   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.8.6.tar.gz"}
 
    tmp_dir=/tmp/bld_sqlite$$
    mkdir "${tmp_dir}" && cd "${tmp_dir}"
 
    ${GZIP} -c -d ${SQLITE_TAR} | ${TAR} xf - 
 
-   # compute name of source directory (as of 2.8.3, SQLite doesn't follow 
+   # compute name of source directory (as of 2.8.6, SQLite doesn't follow 
    # the GNU naming standard, and it untars into "sqlite")
    SQLITE_SRC=`basename ${SQLITE_TAR} | \
                sed 's/\.tar\.gz//' | sed 's/\.tgz//' | sed 's/\.tar//' `
@@ -209,14 +211,15 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
       echo "INSTRUCTIONS:"
       echo ""
       echo "  1. You need to install SQLite manually.   For details,"
-      echo "     consult the web site www.hwaci.com/sw/sqlite."
+      echo "     consult the web site www.sqlite.org"
       echo ""
       echo "  2. After installing SQLite, re-run R CMD INSTALL, specifying"
       echo "     the location of the SQLite directories, e.g.,"
       echo ""
       echo "     R CMD INSTALL --configure-args=--with-sqlite-dir=<DIR> ..."
       echo "" 
-      echo "     or set LIBS and CPPFLAGS, as described in help(INSTALL)."
+      echo "     or set PKG_LIBS and PKG_CPPFLAGS, as described in"
+      echo "     R help(INSTALL)."
       echo ""
       exit 1
    fi

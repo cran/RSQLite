@@ -1,0 +1,6 @@
+The sqlite.h file was extracted from the source Windows distribution
+(not the same as full unix source tar file) by running
+
+  unzip ../../inst/sqlite-win32-<version>.zip sqlite.h
+
+from this directory

@@ -4,15 +4,16 @@ Installing from sources:
 These are the steps I followed to create a Windows binary
 distribution.
 
-1. Untar RSQLite_0.3-2.tar.gz 
+1. Untared latest RSQLite_<version>.tar.gz 
 
 2. Got the SQLite Windows library zip from 
    http://www.hwcia.com/sw/sqlite/sqlitedll.zip 
+   (renamed it to ./libs/sqlitedll-<version>.zip)
 
    This zip includes "sqlite.def" and "sqlite.dll" which provide
    the Windows SQLite engine.
 
-   cd RSQLite\inst\libs unzip sqlitedll.zip
+   cd RSQLite\inst\libs unzip sqlitedll-<version>.zip
 
 3. Created "libs/libsqlite.a" from the above two files as follows:
 
@@ -20,9 +21,9 @@ distribution.
 
    (the -k is critical!)
 
-4. Copied the header file  "sqlite.h" from the sqlite_src.zip
-   Windows source distribution (which I renamed to
-   libs/sqlite-win32-3.8.3.zip) into the "src" directory.
+4. Copied the header file  "sqlite.h" (obviously needed when building RSQLite)
+   from the sqlite_src.zip Windows source distribution (which I renamed to
+   libs/sqlite-win32-<version>.zip) into the "src" directory.
 
 5. Created a Makevars.win in the "src" directory 
 

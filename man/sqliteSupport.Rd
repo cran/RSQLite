@@ -1,3 +1,4 @@
+% $Id: sqliteSupport.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
 \name{sqliteSupport}                % adapted from ROracle
 \alias{sqliteInitDriver}            % driver-related function
 \alias{sqliteDriverInfo}
@@ -32,7 +33,7 @@
 }
 \usage{
    ## SQLiteDriver-related
-   sqliteInitDriver(max.con=10, fetch.default.rec = 500, force.reload=FALSE)
+   sqliteInitDriver(max.con=16, fetch.default.rec = 500, force.reload=FALSE)
    sqliteDriverInfo(obj, what, ...)
    sqliteDescribeDriver(obj, verbose = FALSE, ...)
    sqliteCloseDriver(drv, ...)
@@ -105,11 +106,11 @@
    (SQLite's underlying API currently does not yet use it, but
    it is reserved for future functionality).  The default is 0.
 }
-\item{max.results}{
-   positive integer indicating the maximum number of results that
-   SQLite connections will hold open.  The current default of 1 
-   is hardcoded in the C code.
-}
+%\item{max.results}{
+%   positive integer indicating the maximum number of results that
+%   SQLite connections will hold open.  The current default of 1 
+%   is hardcoded in the C code.
+%}
 \item{force}{
    logical indicating whether to close a connection that has open
    result sets.  The default is \code{FALSE}.

@@ -2,7 +2,7 @@
 RSQLite -- Embedding the SQLite engine in R
 
 (The RSQLite package includes a recent copy of the SQLite 
-distribution from www.hwaci.com/sw/sqlite.)
+distribution from www.sqlite.org.)
 
 Installation
 ------------

@@ -10,8 +10,8 @@
 
 * Need to add the dbApply(), as in RMySQL.  This is very easy to do
   here (see RS_SQLite_stdCallback), but shouldn't this be better
-  implemented in the RS_DBI.c to provide this service for all drivers
-  that sit on top of RS_DBI.c?
+  implemented in the RS-DBI.c to provide this service for all drivers
+  that sit on top of RS-DBI.c?
 
 * It would be nice to hook R as regular SQL functions and aggregations
   (e.g., select group1, group2, median(x) from FOO group by group1, group2;)
