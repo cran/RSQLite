@@ -1,13 +1,11 @@
-S4R                     R compatibility with S version 4/S-Plus 5+
-                        support functions
-SQLite                  Instantiate the SQLite engine from the current
-                        R/S-Plus session. 
+dbObjectId-class        Class dbObjectId
+isIdCurrent             Check whether an dbObjectId handle object is
+                        valid or not
 SQLiteConnection-class
                         Class SQLiteConnection
 SQLiteDriver-class      Class SQLiteDriver
 SQLiteObject-class      Class SQLiteObject
+SQLite                  Instantiate the SQLite engine from the current
+                        R/S-Plus session.
 SQLiteResult-class      Class SQLiteResult
-dbObjectId-class        Class dbObjectId
-isIdCurrent             Check whether an dbObjectId handle object is
-                        valid or not 
 sqliteSupport           Support Functions

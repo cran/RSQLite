@@ -7,9 +7,6 @@ SQLiteConnection	SQLite.R	/setClass("SQLiteConnection"/
 SQLiteDriver	SQLite.R	/setClass("SQLiteDriver"/
 SQLiteObject	SQLite.R	/setClass("SQLiteObject"/
 SQLiteResult	SQLite.R	/setClass("SQLiteResult"/
-dbApply	SQLiteSupport.R	/setGeneric("dbApply"/
-dbApply	SQLiteSupport.R	/setMethod("dbApply"/
-dbApply.SQLiteResult	SQLiteSupport.R	/"dbApply.SQLiteResult" <- /
 dbClearResult	SQLite.R	/setMethod("dbClearResult"/
 dbColumnInfo	SQLite.R	/setMethod("dbColumnInfo"/
 dbConnect	SQLite.R	/setMethod("dbConnect"/
@@ -18,8 +15,6 @@ dbConnect	SQLite.R	/setMethod("dbConnect"/
 dbDataType	SQLite.R	/setMethod("dbDataType"/
 dbDisconnect	SQLite.R	/setMethod("dbDisconnect"/
 dbExistsTable	SQLite.R	/setMethod("dbExistsTable"/
-dbGetCurrentDatabase	SQLite.R	/setGeneric("dbGetCurrentDatabase"/
-dbGetCurrentDatabase	SQLite.R	/setMethod("dbGetCurrentDatabase"/
 dbGetException	SQLite.R	/setMethod("dbGetException"/
 dbGetException	SQLite.R	/setMethod("dbGetException"/
 dbGetInfo	SQLite.R	/setMethod("dbGetInfo"/

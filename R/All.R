@@ -324,19 +324,6 @@ setMethod("dbGetException", "SQLiteConnection",
    valueClass = "list"
 )
 
-## Begin extensions to the DBI
-if(!isGeneric("dbGetCurrentDatabase")){
-   setGeneric("dbGetCurrentDatabase", 
-      def = function(conn, ...) standardGeneric("dbGetCurrentDatabase"),
-      valueClass = "character"
-   )
-}
-setMethod("dbGetCurrentDatabase", "SQLiteConnection",
-   def = function(conn, ...) dbGetInfo(conn, "dbname")[[1]],
-   valueClass = "character"
-)
-## End of extensions to the DBI
-
 setMethod("dbListTables", "SQLiteConnection", 
    def = function(conn, ...){
       out <- dbGetQuery(conn, 
@@ -417,7 +404,7 @@ function(obj, verbose = FALSE, ...)
   cat("  Default records per fetch:", info$"fetch_default_rec", "\n")
   if(verbose){
     cat("  SQLite client version: ", info$clientVersion, "\n")
-    cat("  RS-DBI version: ", "0.2", "\n")
+    cat("  DBI version: ", dbGetDBIVersion(), "\n")
   }
   cat("  Open connections:", info$"num_con", "\n")
   if(verbose && !is.null(info$connectionIds)){
@@ -568,25 +555,6 @@ function(con, statement)
    res
 }
 
-## Experimental dbApply (should it be seqApply?)
-if(!isGeneric("dbApply"))
-   setGeneric("dbApply", def = function(res, ...) standardGeneric("dbApply"))
-
-setMethod("dbApply", "SQLiteResult",
-   def = function(res, ...) dbApply.SQLiteResult(res, ...)
-)
-"dbApply.SQLiteResult" <- 
-function(rs, INDEX, FUN = stop("must specify FUN"), 
-         begin = NULL, 
-         group.begin =  NULL, 
-         new.record = NULL, 
-         end = NULL, 
-         batchSize = 100, maxBatch = 1e6, 
-         ..., simplify = TRUE)
-{
-   stop("not yet implemented")
-}
-
 "sqliteFetch" <- 
 function(res, n=0, ...)   
 ## Fetch at most n records from the opened resultSet (n = -1 meanSQLite
@@ -669,25 +637,25 @@ function(obj, verbose = FALSE, ...)
 }
 
 "sqliteCloseResult" <- 
-function(con, ...)
+function(res, ...)
 {
-  if(!isIdCurrent(con)){
+  if(!isIdCurrent(res)){
      warning(paste("expired SQLiteResult"))
      return(TRUE)
   }
-  rsId <- as(con, "integer")
+  rsId <- as(res, "integer")
   .Call("RS_SQLite_closeResultSet", rsId, PACKAGE = "RSQLite")
 }
 
 "sqliteTableFields" <- 
-function(conn, name, ...)
+function(con, name, ...)
 {
-   if(length(dbListResults(conn))>0){
-      con2 <- dbConnect(conn)
+   if(length(dbListResults(con))>0){
+      con2 <- dbConnect(con)
       on.exit(dbDisconnect(con2))
    }
    else 
-      con2 <- conn
+      con2 <- con
    rs <- dbSendQuery(con2, paste("select * from ", name))
    dummy <- fetch(rs, n = 1)
    dbClearResult(rs)

@@ -4,7 +4,6 @@
 \alias{sqliteDescribeDriver}
 \alias{sqliteCloseDriver}           % connection-related 
 \alias{sqliteNewConnection}
-\alias{sqliteCloneConnection}
 \alias{sqliteConnectionInfo}
 \alias{sqliteDescribeConnection}
 \alias{sqliteCloseConnection}
@@ -33,22 +32,21 @@
 \usage{
    ## SQLiteDriver-related
    sqliteInitDriver(max.con=10, fetch.default.rec = 500, force.reload=FALSE)
-   sqliteDriverInfo(obj, what)
+   sqliteDriverInfo(obj, what, ...)
    sqliteDescribeDriver(obj, verbose = FALSE, ...)
    sqliteCloseDriver(drv, ...)
 
    ## SQLiteConnection-related
    sqliteNewConnection(drv, dbname, mode = 0)
-   sqliteCloneConnection(drv, ...)
-   sqliteConnectionInfo(obj, what)
+   sqliteConnectionInfo(obj, what, ...)
    sqliteDescribeConnection(obj, verbose = FALSE, ...)
-   sqliteCloseConnection(con, ..., force = FALSE)
+   sqliteCloseConnection(con, ...)
 
    ## SQLiteResult-related
-   sqliteExecStatement(con, statement)
+   sqliteExecStatement(con, statement, limit)
    sqliteFetch(res, n=0, ...)
-   sqliteQuickSQL(con, statement, ...)
-   sqliteResultInfo(obj, what)
+   sqliteQuickSQL(con, statement)
+   sqliteResultInfo(obj, what, ...)
    sqliteDescribeResult(obj, verbose = FALSE, ...)
    sqliteCloseResult(res, ...)
 
@@ -92,8 +90,7 @@
    an \code{SQLiteDriver} object as produced by \code{sqliteInit}.
 }
 \item{con}{
-   an \code{SQLiteConnection} object as produced by \code{sqliteNewConnection}
-   and \code{sqliteCloneConnection}.
+   an \code{SQLiteConnection} object as produced by \code{sqliteNewConnection}.
 }
 \item{res}{
    an \code{SQLiteResult} object as produced by by \code{sqliteExecStatement}.
@@ -118,6 +115,10 @@
 }
 \item{statement}{
    character string holding SQL statements.
+}
+\item{limit}{
+   integer specifying maximum number or rows to fetch.  The default
+   is -1 (fetch all rows).
 }
 \item{n}{
    number of rows to fetch from the given result set. A value of -1
@@ -169,8 +170,6 @@
    operation succeeded or not.
 
    \code{sqliteNewConnection} returns an \code{SQLiteConnection} object.
-
-   \code{sqliteCloneConnection} returns an \code{SQLiteConnection} object.
 
    \code{sqliteConnectionInfo}returns a list of name-value metadata pairs.
 

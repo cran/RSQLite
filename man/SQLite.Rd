@@ -14,10 +14,10 @@ SQLite(max.con = 16, fetch.default.rec = 500, force.reload = F)
 }
 \arguments{
 \item{max.con }{
-  maximum number of connections that we intended to have open.
+  maximum number of connections that may be open at one time.
   This can be up to 100, a limit defined at compilation time.
   Note that since the SQLite engine is embedded (i.e., a set of C 
-  functions whithin the R/S-Plus process) connections consume very
+  functions within the R/S-Plus process) connections consume very
   little resources.
   }
 \item{fetch.default.rec}{
@@ -25,14 +25,14 @@ SQLite(max.con = 16, fetch.default.rec = 500, force.reload = F)
   (The \code{fetch} method uses this number as a default.)
   }
 \item{force.reload}{
-  should we reload (reinitialize) the package code?
+  should the package code be reloaded (reinitialized)?
   Setting this to \code{TRUE} allows you to change
   default settings.  Notice that all connections should be closed
   before re-loading.
   }
 }
 \value{
-An object \code{SQLiteDriver} that extends 
+An object of class \code{SQLiteDriver} which extends 
 \code{dbDriver} and 
 \code{dbObjectId}.
 This object is required to create connections
@@ -61,6 +61,7 @@ should be legal file names in the running platform.
 SQLite is a single-user database engine, so it has no concept of
 user.
 }
+\author{David A. James}
 \section{References}{
 See the Omega Project for Statistical Computing
 at \url{http://www.omegahat.org}
