@@ -1,4 +1,4 @@
-## $Id: zzz.R,v 1.5 2003/06/17 18:44:45 dj Exp dj $
+## $Id: zzz.R,v 1.6 2005/04/06 02:11:13 dj Exp dj $
 ".conflicts.OK" <- TRUE
 
 ## these are needed while source'ing the package (prior
@@ -13,8 +13,8 @@ function(lib, pkg)
    ## RSQLite.dll  -- there's got to be a better way...
 
    if(.Platform$OS.type=="windows"){
-      if(!is.loaded(symbol.C("sqlite_libversion")))
-         dyn.load(system.file("libs", "sqlite.dll", package = "RSQLite"))
+      if(!is.loaded(symbol.C("sqlite3_libversion")))
+         dyn.load(system.file("libs", "sqlite3.dll", package = "RSQLite"))
    }
 
    library.dynam("RSQLite", pkg, lib)
@@ -338,7 +338,7 @@ setMethod("dbGetException", "SQLiteConnection",
 setMethod("dbListTables", "SQLiteConnection", 
    def = function(conn, ...){
       out <- dbGetQuery(conn, 
-         'select name from sqlite_master where type="table" order by name',
+         "select name from sqlite_master where type='table' or type='view' order by name",
          ...)[,1]
       if(!is.null(out)) out else character()
    },
@@ -385,7 +385,7 @@ setMethod("isSQLKeyword",
    valueClass = "character"
 )
 ##
-## $Id: SQLiteSupport.R,v 1.2 2002/09/05 02:39:38 dj Exp dj $
+## $Id: SQLiteSupport.R,v 1.3 2005/04/06 02:10:24 dj Exp dj $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -700,7 +700,7 @@ function(con, name, ...)
 }
 ## this is exactly the same as ROracle's oraReadTable
 "sqliteReadTable" <-  
-function(con, name, row.names = "row.names", check.names = TRUE, ...)
+function(con, name, row.names = "row_names", check.names = TRUE, ...)
 ## Should we also allow row.names to be a character vector (as in read.table)?
 ## is it "correct" to set the row.names of output data.frame?
 ## Use NULL, "", or 0 as row.names to prevent using any field as row.names.
@@ -713,16 +713,16 @@ function(con, name, row.names = "row.names", check.names = TRUE, ...)
    ## should we set the row.names of the output data.frame?
    nms <- names(out)
    j <- switch(mode(row.names),
-           "character" = if(row.names=="") 0 else
+           character = if(row.names=="") 0 else
                match(tolower(row.names), tolower(nms), 
                      nomatch = if(missing(row.names)) 0 else -1),
-           "numeric", "logical" = row.names,
-           "NULL" = 0,
+           numeric=, logical = row.names,
+           NULL = 0,
            0)
    if(as.numeric(j)==0) 
       return(out)
    if(is.logical(j)) ## Must be TRUE
-      j <- match("row.names", tolower(nms), nomatch=0) 
+      j <- match(row.names, tolower(nms), nomatch=0) 
    if(j<1 || j>ncol(out)){
       warning("row.names not set on output data.frame (non-existing field)")
       return(out)
@@ -806,15 +806,19 @@ function(con, name, value, field.types, row.names = TRUE,
   dots <- list(...)
   safe.write(value, file = fn, batch = dots$batch)
   on.exit(unlink(fn), add = TRUE)
-  sql4 <- paste("COPY '", name,"' FROM '", fn, "' USING DELIMITERS ','", sep="")
-  rs <- try(dbSendQuery(new.con, sql4))
-  if(inherits(rs, ErrorClass)){
-    warning("could not load data into table")
-    return(FALSE)
-  } 
-  else 
-    dbClearResult(rs)
-  TRUE
+  if(FALSE){
+    sql4 <- paste("COPY '",name,"' FROM '",fn,"' USING DELIMITERS ','",sep="")
+    rs <- try(dbSendQuery(new.con, sql4))
+    if(inherits(rs, ErrorClass)){
+      warning("could not load data into table")
+      return(FALSE)
+    } 
+    else 
+      dbClearResult(rs)
+    TRUE
+  }
+  conId <- as(new.con, "integer")
+  .Call("RS_SQLite_importFile", conId, name, fn, ",", PACKAGE = "RSQLite")
 }
  
 ## from ROracle, except we don't quote strings here.

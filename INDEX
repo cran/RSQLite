@@ -18,7 +18,7 @@ fetch-methods           Fetch records from a previously executed query
 isIdCurrent             Check whether an dbObjectId handle object is
                         valid or not
 SQLite                  Instantiate the SQLite engine from the current
-                        R/S-Plus session.
+                        R session.
 SQLiteConnection-class
                         Class SQLiteConnection
 SQLiteDriver-class      Class SQLiteDriver

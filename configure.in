@@ -1,5 +1,5 @@
 dnl 
-dnl $Id: configure.in,v 1.4 2003/10/17 15:37:19 dj Exp dj $
+dnl $Id: configure.in,v 1.6 2005/04/06 14:10:46 dj Exp dj $
 dnl
 dnl R embedding of the SQLite engine.
 dnl
@@ -16,7 +16,7 @@ dnl The resulting configure script implements the following logic:
 dnl
 dnl 1. If both PKG_CPPFLAGS and PKG_LIBS are defined, use them and exit.
 dnl
-dnl 2. We check for sqlite.h and -lsqlite in system directories, and if
+dnl 2. We check for sqlite3.h and -lsqlite3 in system directories, and if
 dnl    found, we use these (provide the user does not specifically request 
 dnl    another version, 3. and 4. see below).
 dnl
@@ -46,6 +46,17 @@ dnl
 AC_INIT(src/RS-SQLite.c)
 
 AC_PROG_CPP
+AC_PROG_CC
+
+# As suggested by BDR, I may need to use CFLAGS to compile under 64-bit
+# (I can't test this), but see "Writing R Extensions"
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+   echo "could not determine R_HOME"
+   exit 1
+fi
+CC=`"${R_HOME}/bin/R" CMD config CC`
+CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 
 FOUND_ALL="no"
 
@@ -57,10 +68,10 @@ test -n "${PKG_CPPFLAGS}" -a -n "${PKG_LIBS}"  && FOUND_ALL="yes"
 # can we find SQLite in the system directories? (users may still want/need
 # to use another version/installation)
 #
-AC_CHECK_LIB(sqlite, sqlite_open, 
+AC_CHECK_LIB(sqlite3, sqlite3_open, 
              HAVE_SQLITE="yes", 
              HAVE_SQLITE="")
-AC_CHECK_HEADERS(sqlite.h, 
+AC_CHECK_HEADERS(sqlite3.h, 
              HAVE_SQLITE_H="yes", 
              HAVE_SQLITE_H="")
 
@@ -105,10 +116,10 @@ fi
 if test -z "${PKG_LIBS}" ; then
    if test -n "${SQLITE_LIB}" ;  then
       # use the one specified in --with-sqlite-*
-      PKG_LIBS="-L${SQLITE_LIB} -lsqlite"
+      PKG_LIBS="-L${SQLITE_LIB} -lsqlite3"
    else
       # use the one in the system dirs (if there's one)
-      test -n "${HAVE_SQLITE}" && PKG_LIBS="-lsqlite"
+      test -n "${HAVE_SQLITE}" && PKG_LIBS="-lsqlite3"
    fi
 fi
 
@@ -135,7 +146,7 @@ fi
 
 # 
 # do users want/need to install our own copy SQLite (taken from
-# www.hwaci.com/sw/sqlite)? If provided, force installation regardless
+# http://www.sqlite.org)? If provided, force installation regardless
 # whether there's one already or not.
 #
 # SQLITE_TDIR will store the target SQLite installation directory.
@@ -180,7 +191,14 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    : ${TAR=tar}
    : ${GZIP=gzip}
    : ${MAKE=make}
-   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.8.6.tar.gz"}
+   : ${SQLITE_TAR="${base_dir}/src/sqlite-3.*.*.tar.gz"}
+
+   if test -r "${SQLITE_TAR}" ; then
+      echo "Could not read sqlite source tar file (${SQLITE_TAR})."
+      echo "Set and export the shell variable SQLITE_TAR to the appropriate"
+      echo "pathname, e.g., 'export SQLITE_TAR=$HOME/sqlite-3.2.1.tar.gz'"
+      exit 1
+   fi
 
    tmp_dir=/tmp/bld_sqlite$$
    mkdir "${tmp_dir}" && cd "${tmp_dir}"
@@ -201,6 +219,7 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    echo ""
    export SQLITE_TDIR
    ( ./configure --silent --prefix=${SQLITE_TDIR}    \
+                 --disable-tcl \
                  --enable-shared=${SQLITE_SHARED} && \
        ${MAKE} && ${MAKE} install && ${MAKE} clean ) >/tmp/sqlite$$ 2>&1
 
@@ -211,7 +230,7 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
       echo "INSTRUCTIONS:"
       echo ""
       echo "  1. You need to install SQLite manually.   For details,"
-      echo "     consult the web site www.sqlite.org"
+      echo "     consult the web site http://www.sqlite.org"
       echo ""
       echo "  2. After installing SQLite, re-run R CMD INSTALL, specifying"
       echo "     the location of the SQLite directories, e.g.,"
@@ -229,7 +248,7 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
   
    # Since we installed successfully, now we set PKG_* vars and exit
    PKG_CPPFLAGS="-I${SQLITE_TDIR}/include"
-   PKG_LIBS="-L${SQLITE_TDIR}/lib -lsqlite"
+   PKG_LIBS="-L${SQLITE_TDIR}/lib -lsqlite3"
    FOUND_ALL="yes"
 
    echo ""
@@ -276,7 +295,7 @@ if test "${FOUND_ALL}" = "no" ; then
       echo ""
       echo "Configuration error:"
       echo '  could not find the SQLite "sqlite.h" header or the'
-      echo "  library -lsqlite"
+      echo "  library -lsqlite3"
       echo ""
       echo "INSTRUCTIONS:"
       echo ""
@@ -285,7 +304,7 @@ if test "${FOUND_ALL}" = "no" ; then
       echo "   and libraries, for example (using Bourne shell syntax):"
       echo ""
       echo '      export PKG_CPPFLAGS="-I<SQLite-include>"'
-      echo '      export PKG_LIBS="-L<SQLite-libs> -lsqliteclient"'
+      echo '      export PKG_LIBS="-L<SQLite-libs> -lsqliteclient3"'
       echo ""
       echo "2. Re-run the R INSTALL command:"
       echo ""

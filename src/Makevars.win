@@ -1,2 +1,2 @@
 PKG_CPPFLAGS=
-PKG_LIBS=-L../inst/libs -lsqlite
+PKG_LIBS=-Lwindows -lsqlite3

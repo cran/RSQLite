@@ -54,7 +54,7 @@
 
    ## data mappings and convenience functions
    sqliteDataType(obj, ...)
-   sqliteReadTable(con, name, row.names = "row.names", check.names = TRUE, ...)
+   sqliteReadTable(con, name, row.names = "row_names", check.names = TRUE, ...)
    sqliteWriteTable(con, name, value, field.types, row.names = TRUE, 
       overwrite=FALSE, append=FALSE, ...)
    sqliteTableFields(con, name, ...)

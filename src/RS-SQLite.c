@@ -20,7 +20,10 @@
 
 #include "RS-SQLite.h"
 
+/* size_t getline(char**, size_t*, FILE*); */
 char *compiledVarsion = SQLITE_VERSION;
+int RS_sqlite_import(sqlite3 *db, const char *zTable, 
+                     const char *zFile, const char *separator);
 
 /* The macro NA_STRING is a CHRSXP in R but a char * in Splus */
 #ifdef USING_R
@@ -52,12 +55,13 @@ char *compiledVarsion = SQLITE_VERSION;
  * (this should be extended to allow multiple errors in the structure, 
  * like in the ODBC API.)
  *
- * For details on SQLite see www.hwaci.com/sw/sqlite/index.html
+ * For details on SQLite see http://www.sqlite.org.
  * TODO:
  *    1. Make sure the code is thread-safe, in particular,
  *       we need to remove the PROBLEM ... ERROR macros
  *       in RS_DBI_errorMessage() because it's definetely not 
  *       thread-safe.  But see RS_DBI_setException().
+ *     2. Update to the SQLite 3 API
  */
 
 
@@ -72,7 +76,7 @@ RS_SQLite_init(s_object *config_params, s_object *reload)
   Mgr_Handle *mgrHandle;
   Sint  fetch_default_rec, force_reload, max_con;
   const char *drvName = "SQLite";
-  const char *clientVersion = sqlite_libversion();
+  const char *clientVersion = sqlite3_libversion();
 
   /* make sure we're running with the "right" version of the SQLite library */
   if(strcmp(clientVersion, compiledVarsion)){
@@ -218,9 +222,9 @@ RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *s_con_params)
   RS_DBI_connection   *con;
   RS_SQLite_conParams *conParams;
   Con_Handle  *conHandle;
-  sqlite      *db_connection;
+  sqlite3     *db_connection, **pDb;
   char        *dbname = NULL, **errMsg = NULL;
-  int         mode;
+  int         rc, mode;
 
   if(!is_validHandle(mgrHandle, MGR_HANDLE_TYPE))
     RS_DBI_errorMessage("invalid SQLiteManager", RS_DBI_ERROR);
@@ -229,10 +233,14 @@ RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *s_con_params)
   dbname = CHR_EL(s_con_params, 0);
   mode = (Sint) atol(CHR_EL(s_con_params,1)); 
   errMsg = (char **) calloc((size_t) 1, sizeof(char *));
+  pDb = (sqlite3 **) calloc((size_t) 1, sizeof(sqlite3 *));
 
-  db_connection = sqlite_open(dbname, mode, errMsg);
-
-  if(!db_connection){
+  /* version 2 api
+   * db_connection = sqlite_open(dbname, mode, errMsg);
+   */
+  rc = sqlite3_open(dbname, pDb);
+  db_connection = *pDb;           /* available, even if open fails! See API */
+  if(rc != SQLITE_OK){
      char buf[256];
      sprintf(buf, "could not connect to dbname \"%s\"\n", dbname);
      free(errMsg[0]);
@@ -244,7 +252,7 @@ RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *s_con_params)
   conHandle = RS_DBI_allocConnection(mgrHandle, (Sint) 1); 
   con = RS_DBI_getConnection(conHandle);
   if(!con){
-    sqlite_close(db_connection);
+    (void) sqlite3_close(db_connection);
     RS_DBI_freeConnection(conHandle);
     RS_DBI_errorMessage("could not alloc space for connection object",
                         RS_DBI_ERROR);
@@ -264,8 +272,9 @@ RS_SQLite_closeConnection(Con_Handle *conHandle)
   S_EVALUATOR
 
   RS_DBI_connection *con;
-  sqlite *db_connection;
+  sqlite3 *db_connection;
   s_object *status;
+  int      rc;
 
   con = RS_DBI_getConnection(conHandle);
   if(con->num_res>0){
@@ -273,9 +282,24 @@ RS_SQLite_closeConnection(Con_Handle *conHandle)
      "close the pending result sets before closing this connection",
      RS_DBI_ERROR);
   }
+
+  db_connection = (sqlite3 *) con->drvConnection;
+  rc = sqlite3_close(db_connection);
+  if(rc==SQLITE_BUSY){
+    RS_DBI_errorMessage(
+     "finalize the pending prepared statements before closing this connection",
+     RS_DBI_ERROR);
+  }
+  else if(rc!=SQLITE_OK){
+    RS_DBI_errorMessage(
+     "internal error: SQLite could not close the connection",
+     RS_DBI_ERROR);
+  }
+
   /* make sure we first free the conParams and SQLite connection from
    * the RS-RBI connection object.
    */
+
   if(con->conParams){
      RS_SQLite_freeConParams(con->conParams);
      /* we must set con->conParms to NULL (not just free it) to signal 
@@ -283,8 +307,7 @@ RS_SQLite_closeConnection(Con_Handle *conHandle)
       */
      con->conParams = (RS_SQLite_conParams *) NULL;
   }
-  db_connection = (sqlite *) con->drvConnection;
-  sqlite_close(db_connection);
+  free(db_connection);
   con->drvConnection = (void *) NULL;
 
   RS_SQLite_freeException(con);
@@ -306,13 +329,13 @@ RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object *s_limit)
   RS_DBI_connection *con;
   Res_Handle        *rsHandle;
   RS_DBI_resultSet  *res;
-  sqlite            *db_connection;
+  sqlite3           *db_connection;
   int      state;
   Sint     res_id, *cbState;
   char     *dyn_statement, **errMsg;
 
   con = RS_DBI_getConnection(conHandle);
-  db_connection = (sqlite *) con->drvConnection;
+  db_connection = (sqlite3 *) con->drvConnection;
   dyn_statement = RS_DBI_copyString(CHR_EL(statement,0));
 
   /* Do we have a pending resultSet in the current connection?  
@@ -352,7 +375,7 @@ RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object *s_limit)
   cbState[1] = cbState[2] = -1;      /* to be init in RS_SQLite_stdCallback */
   res->drvData = (void *) cbState;
 
-  state = sqlite_exec(db_connection, 
+  state = sqlite3_exec(db_connection, 
 	              dyn_statement, 
 	              RS_SQLite_stdCallback, 
                       (void *) rsHandle,   /* will be passed to the callback*/
@@ -580,8 +603,14 @@ RS_SQLite_fetch(s_object *rsHandle, s_object *max_rec)
 	   RS_DBI_ERROR);
 
   n = INT_EL(max_rec,0);                    /* return up to n recs */
-  if(n<=0)
+  if(n<0)
      num_rec = rec_left;                    /* return everything */
+  else if(n==0){                              
+     int n_default;
+     n_default = RS_DBI_getManager(rsHandle)->fetch_default_rec;
+     n_default = (n_default <= 0) ? rec_left : n_default;
+     num_rec = (rec_left <= n_default)? rec_left : n_default;
+  }
   else
      num_rec = (rec_left <= n)? rec_left : n;
 
@@ -901,4 +930,238 @@ RS_SQLite_typeNames(s_object *typeIds)
   }
   MEM_UNPROTECT(1);
   return typeNames;
+}
+
+s_object *    /* returns TRUE/FALSE */
+RS_SQLite_importFile(
+  Con_Handle *conHandle,
+  s_object *s_tablename,
+  s_object *s_filename,
+  s_object *s_separator 
+)
+{
+  S_EVALUATOR
+
+  RS_DBI_connection *con;
+  sqlite3           *db_connection;
+  char              *zFile, *zTable, *zSep, *s;
+  Sint              rc;
+  s_object          *output;
+
+
+  s = CHR_EL(s_tablename, 0);
+  zTable = (char *) malloc( strlen(s)+1);
+  if(!zTable){
+    RS_DBI_errorMessage("could not allocate memory", RS_DBI_ERROR);
+  }
+  (void) strcpy(zTable, s);
+
+  s = CHR_EL(s_filename, 0);
+  zFile = (char *) malloc( strlen(s)+1);
+  if(!zFile){
+    free(zTable);
+    RS_DBI_errorMessage("could not allocate memory", RS_DBI_ERROR);
+  }
+  (void) strcpy(zFile, s);
+
+  s = CHR_EL(s_separator, 0);
+  zSep = (char *) malloc( strlen(s)+1);
+  if(!zSep){
+    free(zTable); 
+    free(zFile);
+    RS_DBI_errorMessage("could not allocate memory", RS_DBI_ERROR);
+  }
+  (void) strcpy(zSep, s);
+
+  con = RS_DBI_getConnection(conHandle);
+  db_connection = (sqlite3 *) con->drvConnection;
+
+  rc = RS_sqlite_import(db_connection, zTable, zFile, zSep);
+  
+  free(zTable);
+  free(zFile);
+  free(zSep);
+
+  MEM_PROTECT(output = NEW_LOGICAL((Sint) 1));
+  LOGICAL_POINTER(output)[0] = rc;
+  MEM_UNPROTECT(1);
+  return output; 
+}
+
+/* The following code comes directly from SQLite's shell.c, with 
+ * obvious minor changes. 
+ */
+int
+RS_sqlite_import(
+   sqlite3 *db, 
+   const char *zTable,          /* table must already exist */
+   const char *zFile, 
+   const char *separator
+)
+{
+    sqlite3_stmt *pStmt;        /* A statement */
+    int rc;                     /* Result code */
+    int nCol;                   /* Number of columns in the table */
+    int nByte;                  /* Number of bytes in an SQL string */
+    int i, j;                   /* Loop counters */
+    int nSep;                   /* Number of bytes in separator[] */
+    char *zSql;                 /* An SQL statement */
+    char *zLine = NULL;         /* A single line of input from the file */
+    char **azCol;               /* zLine[] broken up into columns */
+    char *zCommit;              /* How to commit changes */   
+    FILE *in;                   /* The input file */
+    int lineno = 0;             /* Line number of input file */
+
+    nSep = strlen(separator);
+    if( nSep==0 ){
+      RS_DBI_errorMessage(
+         "RS_sqlite_import: non-null separator required for import",
+         RS_DBI_ERROR);
+    }
+    zSql = sqlite3_mprintf("SELECT * FROM '%q'", zTable);
+    if( zSql==0 ) return 0;
+    nByte = strlen(zSql);
+    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);
+    sqlite3_free(zSql);
+    if( rc ){
+      char errMsg[512];
+      (void) sprintf(errMsg, "RS_sqlite_import: %s", sqlite3_errmsg(db));
+      RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+      nCol = 0;
+    }else{
+      nCol = sqlite3_column_count(pStmt);
+    }
+    sqlite3_finalize(pStmt);
+    if( nCol==0 ) return 0;
+    zSql = malloc( nByte + 20 + nCol*2 );
+    if( zSql==0 ) return 0;
+    sqlite3_snprintf(nByte+20, zSql, "INSERT INTO '%q' VALUES(?", zTable);
+    j = strlen(zSql);
+    for(i=1; i<nCol; i++){
+      zSql[j++] = ',';
+      zSql[j++] = '?';
+    }
+    zSql[j++] = ')';
+    zSql[j] = 0;
+    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);
+    free(zSql);
+    if( rc ){
+      char errMsg[512];
+      (void) sprintf(errMsg, "RS_sqlite_import: %s", sqlite3_errmsg(db));
+      RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+      sqlite3_finalize(pStmt);
+      return 0;
+    }
+    in = fopen(zFile, "rb");
+    if( in==0 ){
+      char errMsg[512];
+      (void) sprintf(errMsg, "RS_sqlite_import: cannot open file %s", zFile);
+      RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+      sqlite3_finalize(pStmt);
+      return 0;
+    }
+    azCol = malloc( sizeof(azCol[0])*(nCol+1) );
+    if( azCol==0 ) return 0;
+    sqlite3_exec(db, "BEGIN", 0, 0, 0);
+    zCommit = "COMMIT";
+    while( (zLine = RS_sqlite_getline(in)) != NULL){
+      char *z;
+      i = 0;
+      lineno++;
+      azCol[0] = zLine;
+      for(i=0, z=zLine; *z && *z!='\n' && *z!='\r'; z++){
+        if( *z==separator[0] && strncmp(z, separator, nSep)==0 ){
+          *z = 0;
+          i++;
+          if( i<nCol ){
+            azCol[i] = &z[nSep];
+            z += nSep-1;
+          }
+        }
+      }
+      if( i+1!=nCol ){
+        char errMsg[512];
+        (void) sprintf(errMsg, 
+               "RS_sqlite_import: %s line %d expected %d columns of data but found %d",
+               zFile, lineno, nCol, i+1);
+        RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+        zCommit = "ROLLBACK";
+        break;
+      }
+      for(i=0; i<nCol; i++){
+        sqlite3_bind_text(pStmt, i+1, azCol[i], -1, SQLITE_STATIC);
+      }
+      if(sqlite3_step(pStmt)!=SQLITE_DONE){
+        char errMsg[512];
+        (void) sprintf(errMsg, 
+                 "RS_sqlite_import: internal error: sqlite3_step() filed");
+        RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+      }
+      rc = sqlite3_reset(pStmt);
+      free(zLine);
+      zLine = NULL;
+      if( rc!=SQLITE_OK ){
+        char errMsg[512];
+        (void) sprintf(errMsg,"RS_sqlite_import: %s", sqlite3_errmsg(db));
+        RS_DBI_errorMessage(errMsg, RS_DBI_ERROR);
+        zCommit = "ROLLBACK";
+        break;
+      }
+    }
+    free(azCol);
+    fclose(in);
+    sqlite3_finalize(pStmt);
+    sqlite3_exec(db, zCommit, 0, 0, 0);
+    return 1;
+}
+
+/* the following is only needed (?) on windows (getline is a GNU extension
+ * and it gave me problems with minGW)
+ */
+
+char *
+RS_sqlite_getline(FILE *in)
+{
+   /* caller must free memory */
+   char   *buf;
+   size_t nc, i;
+   int    c;
+
+   nc = 1024; i = 0;
+   buf = (char *) malloc(nc);
+   if(!buf)
+      RS_DBI_errorMessage("RS_sqlite_getline could not malloc", RS_DBI_ERROR);
+   while(TRUE){
+      c=fgetc(in);
+      if(i==nc){
+        nc = 2 * nc;
+        buf = (char *) realloc((void *) buf, nc);
+        if(!buf)
+          RS_DBI_errorMessage(
+             "RS_sqlite_getline could not realloc", RS_DBI_ERROR);
+      }
+      if(c==EOF) 
+        break;
+      buf[i++] = c;
+      if(c=='\n'){
+        buf[i++] = '\0';
+        break;
+      }
+    }
+
+    if(i==0){              /* empty line */
+      free(buf);
+      buf = (char *) NULL;
+    }
+    else if(i<2 || buf[i-2]!='\n'){   /* bad input (incomplete line) */
+      RS_DBI_errorMessage("RS_sqlite_getline: incomplete line", RS_DBI_WARNING);
+      if(i<2){
+         buf[0] = '\n'; buf[1] = '\0';
+      }
+      else {
+         buf[i-2] = '\n'; buf[i-1] = '\0';
+      }
+    }
+
+    return buf;
 }

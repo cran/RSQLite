@@ -3,7 +3,7 @@
 \alias{SQLite}
 \alias{SQLiteDriver}
 \title{
-  Instantiate the SQLite engine from the current R/S-Plus session.
+  Instantiate the SQLite engine from the current R session.
 }
 \description{
 This function creates and initializes the SQLite engine.
@@ -18,7 +18,7 @@ SQLite(max.con = 16, fetch.default.rec = 500, force.reload = FALSE)
   maximum number of connections that may be open at one time.
   This can be up to 100, a limit defined at compilation time.
   Note that since the SQLite engine is embedded (i.e., a set of C 
-  functions within the R/S-Plus process) connections consume very
+  functions within the R process) connections consume very
   little resources.
   }
 \item{fetch.default.rec}{
@@ -41,7 +41,7 @@ There can be many SQLite database instances running
 simultaneously.
 }
 \section{Side Effects}{
-The R/S-Plus client part of the database communication is initialized,
+The R client part of the database communication is initialized,
 but note that connecting to database instances needs to be done through
 calls to \code{dbConnect}.
 }
@@ -49,7 +49,7 @@ calls to \code{dbConnect}.
 This object is a singleton, that is, on subsequent invocations
 it returns the same initialized object. 
 
-This implementation allows the R/S-Plus embedded SQLite engine
+This implementation allows the R embedded SQLite engine
 to work with multiple database instances through multiple connections 
 simultaneously.
 
@@ -65,14 +65,14 @@ is required.
 \section{References}{
 See the Omega Project for Statistical Computing
 \url{http://stat.bell-labs.com/RS-DBI}
-for more details on the R/S-Plus database interface.
+for more details on the R database interface.
 
 See the Adobe PDF file \code{DBI.pdf} under the \code{doc}
 subdirectory of the DBI package, i.e., 
 \code{system.file("doc", "DBI.pdf", package = "DBI")}
 
 See the documentation at the SQLite Web site
-\url{http://www.hwaci/com/sw/sqlite/index.html} for details.
+\url{http://www.sqlite.org} for details.
 }
 \seealso{
 On database drivers:

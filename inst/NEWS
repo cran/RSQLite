@@ -1,6 +1,31 @@
+Version 0.4-0
+
+* First attempt at using the new SQLite Version 3 API.  This version 
+  is a bridge to the new API, but it does not make available the new 
+  capabilities (e.g., prepared statements, data bindings, etc.) but 
+  prepares us for those new features.  
+  
+* Clean up some installation code (mainly to make it easy to automatically
+  build on Windows, as per Kurt Hornik and Uwe Ligges suggestions).
+  
+* Fixed bug that ignored "fetch.default.rec" in SQLite()/dbDriver()
+  (as reported by Duncan Murdoch)
+
+* Fixed bug in dbReadTable() that was not recognizing "row.names" in its
+  default, thus it now re-creates a data.frame that has been exported
+  with dbWriteTable().
+
+* Fixed bug where dbListTables was not listing views (as reported by 
+  Doug Bates).
+
+* Added code in "configure.in" to determine CC/CFLAGS used in compiling R
+  (as suggested by Brian D. Ripley to get it to compile on 64-bit machines).  
+  As of today, I can't test this myself.
+
 Version 0.3-5
 
-* Documentation typos, trivial packaging changes, as per CRAN maintainer request.
+* Documentation typos, trivial packaging changes, as per CRAN maintainer 
+  request.
 
 Version 0.3-4
 

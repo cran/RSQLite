@@ -10,8 +10,8 @@ into RSQLite-win.zip, as per Kurt Hornik suggestion.]
 1. Untared latest RSQLite_<version>.tar.gz 
 
 2. Got the SQLite Windows library zip from 
-   http://www.hwcia.com/sw/sqlite/sqlitedll.zip 
-   (renamed it to ./libs/sqlitedll-<version>.zip)
+   http://www.sqlite.org/sqlitedll-3.1.6.zip 
+   and save it to ./libs.
 
    This zip includes "sqlite.def" and "sqlite.dll" which provide
    the Windows SQLite engine.

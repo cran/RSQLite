@@ -1,7 +1,7 @@
 #ifndef _RS_SQLite_H
 #define _RS_SQLite_H 1
 /*  
- * $Id: RS-SQLite.h,v 1.3 2003/06/16 19:00:39 dj Exp dj $
+ * $Id: RS-SQLite.h,v 1.4 2005/04/06 02:11:56 dj Exp dj $
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
@@ -25,9 +25,9 @@ extern  "C" {
 #endif
 
 #ifdef WIN32
-#  include "windows/sqlite.h"
+#  include "windows/sqlite3.h"
 #else
-#  include <sqlite.h>
+#  include <sqlite3.h>
 #endif
 
 #include <string.h>
@@ -40,6 +40,7 @@ extern  "C" {
 
 /* SQLite connection parameters struct, allocating and freeing 
  * methods.  This is pretty simple, since SQLite does not recognise users 
+ * TODO: SQLite 3.0 api allows for key/value strings.
  */
 typedef struct st_sdbi_conParams {
   char *dbname;
@@ -65,16 +66,17 @@ void                RS_SQLite_freeConParams(RS_SQLite_conParams *conParams);
  */
   
 /* dbManager */
-Mgr_Handle *RS_SQLite_init(s_object *config_params, s_object *reload); s_object
-*RS_SQLite_close(Mgr_Handle *mgrHandle); 
+Mgr_Handle *RS_SQLite_init(s_object *config_params, s_object *reload);
+s_object   *RS_SQLite_close(Mgr_Handle *mgrHandle); 
 
 /* dbConnection */
-Con_Handle *RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object
-*con_params); Con_Handle *RS_SQLite_cloneConnection(Con_Handle *conHandle);
+Con_Handle *RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *con_params);
+Con_Handle *RS_SQLite_cloneConnection(Con_Handle *conHandle);
 s_object   *RS_SQLite_closeConnection(Con_Handle *conHandle);
 /* we simulate db exceptions ourselves */
-void        RS_SQLite_setException(RS_DBI_connection *con, int errorNum, const
-char *errorMsg); s_object   *RS_SQLite_getException(Con_Handle *conHandle);
+void        RS_SQLite_setException(RS_DBI_connection *con, int errorNum, 
+                                   const char *errorMsg); 
+s_object   *RS_SQLite_getException(Con_Handle *conHandle);
 /* err No, Msg */
 
 /* currently we only provide a "standard" callback to sqlite_exec() -- this
@@ -83,14 +85,16 @@ char *errorMsg); s_object   *RS_SQLite_getException(Con_Handle *conHandle);
  * driver.  Other interesting callbacks should allow us to easily implement the
  * dbApply() ideas also in the RMySQL driver
  */
-int       RS_SQLite_stdCallback(void *resHandle, int ncol, char **row, char
-**colNames);
+int       RS_SQLite_stdCallback(void *resHandle, int ncol, char **row, 
+                                char **colNames);
 
 /* dbResultSet */
-Res_Handle *RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object
-*s_limit); s_object   *RS_SQLite_fetch(Res_Handle *rsHandle, s_object
-*max_rec); s_object   *RS_SQLite_closeResultSet(Res_Handle *rsHandle); void
-RS_SQLite_initFields(RS_DBI_resultSet *res, int ncol, char **colNames);
+Res_Handle *RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, 
+                           s_object *s_limit);
+s_object   *RS_SQLite_fetch(Res_Handle *rsHandle, s_object *max_rec);
+s_object   *RS_SQLite_closeResultSet(Res_Handle *rsHandle);
+void        RS_SQLite_initFields(RS_DBI_resultSet *res, int ncol, 
+                                 char **colNames);
 
 s_object   *RS_SQLite_validHandle(Db_Handle *handle);      /* boolean */
 
@@ -101,6 +105,12 @@ RS_DBI_fields *RS_SQLite_createDataMappings(Res_Handle *resHandle);
 s_object *RS_SQLite_managerInfo(Mgr_Handle *mgrHandle);
 s_object *RS_SQLite_connectionInfo(Con_Handle *conHandle);
 s_object *RS_SQLite_resultSetInfo(Res_Handle *rsHandle);
+
+/*  The following imports the delim-fields of a file into an existing table*/
+s_object *RS_SQLite_importFile(Con_Handle *conHandle, s_object *s_tablename,
+                               s_object *s_filename, s_object *s_separator);
+
+char * RS_sqlite_getline(FILE *in);
 
 /* the following type names should be the  SQL-92 data types, and should
  * be moved to the RS-DBI.h
