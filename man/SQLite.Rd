@@ -1,8 +1,8 @@
 \name{SQLite}
 \alias{SQLite}
-\alias{SQLiteManager}
+\alias{SQLiteDriver}
 \title{
-  Instantiate the SQLite engine from the current R/S session.
+  Instantiate the SQLite engine from the current R/S-Plus session.
 }
 \description{
 This function creates and initializes the SQLite engine.
@@ -10,12 +10,15 @@ It returns an object that allows you to connect to the SQLite
 embedded engine.
 }
 \usage{
-SQLite(max.con = 10, fetch.default.rec = 500, force.reload = F)
+SQLite(max.con = 16, fetch.default.rec = 500, force.reload = F)
 }
 \arguments{
 \item{max.con }{
   maximum number of connections that we intended to have open.
   This can be up to 100, a limit defined at compilation time.
+  Note that since the SQLite engine is embedded (i.e., a set of C 
+  functions whithin the R/S-Plus process) connections consume very
+  little resources.
   }
 \item{fetch.default.rec}{
   number of records to fetch at one time from the database.
@@ -29,8 +32,8 @@ SQLite(max.con = 10, fetch.default.rec = 500, force.reload = F)
   }
 }
 \value{
-An object \code{SQLiteManager} that extends 
-\code{dbManager} and 
+An object \code{SQLiteDriver} that extends 
+\code{dbDriver} and 
 \code{dbObjectId}.
 This object is required to create connections
 to the embedded SQLite database.
@@ -38,7 +41,7 @@ There can be many SQLite database instances running
 simultaneously.
 }
 \section{Side Effects}{
-The R/S client part of the database communication is initialized,
+The R/S-Plus client part of the database communication is initialized,
 but note that connecting to database instances needs to be done through
 calls to \code{dbConnect}.
 }
@@ -46,7 +49,7 @@ calls to \code{dbConnect}.
 This object is a singleton, that is, on subsequent invocations
 it returns the same initialized object. 
 
-This implementation allows the R/S embedded SQLite engine
+This implementation allows the R/S-Plus embedded SQLite engine
 to work with multiple database instances through multiple connections 
 simultaneously.
 
@@ -61,55 +64,53 @@ user.
 \section{References}{
 See the Omega Project for Statistical Computing
 at \url{http://www.omegahat.org}
-for more details on the R/S database interface.
+for more details on the R/S-Plus database interface.
 
-See the Adobe PDF file \code{RS-DBI.pdf} under the \code{doc}
+See the Adobe PDF file \code{DBI.pdf} under the \code{doc}
 subdirectory of this package, i.e., 
-\code{.path.package("RSQLite")/doc/RS-DBI.pdf}.
+\code{.path.package("RSQLite")/doc/DBI.pdf}.
 
 See the documentation at the SQLite Web site
 \url{http://www.hwaci/com/sw/sqlite/index.html} for details.
 }
 \seealso{
-On database managers:
+On database drivers:
 
-\code{\link{dbManager}}
+\code{\link[DBI]{dbDriver}}
 \code{\link{SQLite}}
-\code{\link{load}}
-\code{\link{unload}}
+\code{\link[DBI]{dbUnloadDriver}}
+\code{\link[DBI]{dbListConnections}}
 
 On connections, SQL statements and resultSets:
 
-\code{\link{dbExecStatement}}
-\code{\link{dbExec}}
-\code{\link{fetch}}
-\code{\link{quickSQL}}
+\code{\link[DBI]{dbConnect}}
+\code{\link[DBI]{dbDisconnect}}
+\code{\link[DBI]{dbSendQuery}}
+\code{\link[DBI]{dbGetQuery}}
+\code{\link[DBI]{fetch}}
+\code{\link[DBI]{dbListResults}}
 
 On transaction management:
 
-\code{\link{commit}}
-\code{\link{rollback}}
+\code{\link[DBI]{dbCommit}}
+\code{\link[DBI]{dbRollback}}
 
 On meta-data:
 
-\code{\link{describe}}
-\code{\link{getVersion}}
-\code{\link{getDatabases}}
-\code{\link{getTables}}
-\code{\link{getFields}}
-\code{\link{getCurrentDatabase}}
-\code{\link{getTableIndices}}
-\code{\link{getException}}
-\code{\link{getStatement}}
-\code{\link{hasCompleted}}
-\code{\link{getRowCount}}
-\code{\link{getAffectedRows}}
-\code{\link{getNullOk}}
-\code{\link{getInfo}}
+\code{\link{summary}}
+\code{\link[DBI]{dbGetInfo}}
+\code{\link[DBI]{dbListTables}}
+\code{\link[DBI]{dbListFields}}
+\code{\link[DBI]{dbColumnsInfo}}
+\code{\link[DBI]{dbGetException}}
+\code{\link[DBI]{dbGetStatement}}
+\code{\link[DBI]{dbHasCompleted}}
+\code{\link[DBI]{dbGetRowCount}}
+\code{\link[DBI]{dbGetAffectedRows}}
 }
 \examples{\dontrun{
    # create a SQLite instance and create one connection.
-   m <- dbManager("SQLite")
+   m <- dbDriver("SQLite")
    
    # initialize a new database "base.dbms" in the current directory
    # and copy some data.frame from the base package into it
@@ -119,13 +120,13 @@ On meta-data:
    assignTable(con, "USArrests", USArrests, overwrite = T)
    
    # query
-   rs <- dbExecStatement(con, "select * from USArrests")
+   rs <- dbSendQuery(con, "select * from USArrests")
    d1 <- fetch(rs, n = 10)      # extract data in chunks of 10 rows
-   hasCompleted(rs)
+   dbHasCompleted(rs)
    d2 <- fetch(rs, n = -1)      # extract all remaining data
-   hasCompleted(rs)
-   close(rs)
-   getTables(con)    
+   dbHasCompleted(rs)
+   dbClearResult(rs)
+   dbListTables(con)    
    }
 }
 \keyword{interface}

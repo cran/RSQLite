@@ -1,4 +1,4 @@
-/* $Id$
+/* $Id: RS-SQLite.c,v 1.3 2002/09/05 21:03:02 dj Exp dj $
  *
  *
  * Copyright (C) 1999 The Omega Project for Statistical Computing.
@@ -22,15 +22,9 @@
 
 /* The macro NA_STRING is a CHRSXP in R but a char * in Splus */
 #ifdef USING_R
-#  define RS_NA_STRING CHR_EL(NA_STRING,0)
+#  define RS_NA_STRING "<NA>"            /* CHR_EL(NA_STRING,0)  */
 #else
 #  define RS_NA_STRING NA_STRING
-#endif
-
-#ifndef USING_R
-#  error("the function RS_DBI_invokeBeginGroup() has not been implemented in S")
-#  error("the function RS_DBI_invokeEndGroup()   has not been implemented in S")
-#  error("the function RS_DBI_invokeNewRecord()  has not been implemented in S")
 #endif
 
 /* R and S Database Interface to the SQLite embedded SQL engine
@@ -300,7 +294,7 @@ RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object *s_limit)
   RS_DBI_resultSet  *res;
   sqlite            *db_connection;
   int      state;
-  Sint     res_id, is_select, *limit;
+  Sint     res_id, *cbState;
   char     *dyn_statement, **errMsg;
 
   con = RS_DBI_getConnection(conHandle);
@@ -326,26 +320,28 @@ RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object *s_limit)
        RS_SQLite_closeResultSet(rsHandle);
   }
 
-  /* allocate a new result set */
+  /* allocate and init a new result set */
 
   rsHandle =  RS_DBI_allocResultSet(conHandle);
   res = RS_DBI_getResultSet(rsHandle);
   res->completed = (Sint) 0;
   res->statement = dyn_statement;
-  limit = (Sint *) malloc(sizeof(Sint));
+  cbState = (Sint*) malloc((size_t) 3*sizeof(Sint)); 
   errMsg = (char **) malloc((size_t) 1);
-  if(!errMsg || !limit)
+  if(!errMsg || !cbState)
      RS_DBI_errorMessage("could not allocate memory", RS_DBI_ERROR);
   if(GET_LENGTH(s_limit))
-     *limit = INT_EL(s_limit,0);    /* how many rows we actually fetch */
+     cbState[0] = INT_EL(s_limit,0); /* how many rows we actually fetch */
   else
-     *limit = (Sint) -1;            /* fetch all */
-  res->drvData = (void *) limit;
+     cbState[0] = (Sint) -1;         /* fetch all */
+
+  cbState[1] = cbState[2] = -1;      /* to be init in RS_SQLite_stdCallback */
+  res->drvData = (void *) cbState;
 
   state = sqlite_exec(db_connection, 
 	              dyn_statement, 
 	              RS_SQLite_stdCallback, 
-                      (void *) rsHandle, 
+                      (void *) rsHandle,   /* will be passed to the callback*/
 		      errMsg);
 
   if(state!=SQLITE_OK && state!=SQLITE_ABORT){ 
@@ -406,62 +402,77 @@ RS_SQLite_stdCallback(
       void *rh,       /* resultSet handle  with which we simulate cursors */
       int ncol,       /* num of columns in the result set */
       char **data,    /* ncol-array with the (char) data for the current row */
-      char **colNames /* array of column nanes */
+      char **colNames /* array of column names */
       )
 {
    RS_DBI_manager   *mgr;
    Res_Handle       *rsHandle;
    RS_DBI_resultSet *res;
-   RS_DBI_fields    *flds;
-   int  i, j;
-   Sint    *limit;
-   size_t n, cells_alloc, cells_used, cells_left;
+   int   j;
+   Sint  *cbState, rows_affected, rows_per_fetch;
    char **rows;       /* ptr into our fake cursor in the resultSet */
 
    rsHandle = (Res_Handle *) rh;
    res = RS_DBI_getResultSet(rsHandle);
    mgr = RS_DBI_getManager(rsHandle);
-   cells_alloc = ncol * (mgr->fetch_default_rec);/* TODO: increase on demand */
+   rows_affected = res->rowsAffected;
+   rows_per_fetch = mgr->fetch_default_rec;
 
-   /* if res->rowsAffected is -1 then res is un-initialized */
-   if(res->rowsAffected<0){
-      res->rowsAffected = (Sint) 0; 
-      res->isSelect = (Sint) 1;    /* we get here only on select statements */
+   /* the state (size of allocated space) across callbacks is kept in cbState.
+    * This callback argument keeps track of the size of the space allocated 
+    * for the resultSet (which is stored in res->drvResult) 
+    * cbState is a triple of Sint's
+    *   cbState[0]  absolute max num of rows that the resultSet will hold
+    *               (-1 means no limit);
+    *   cbState[1]  num or currently allocated rows;
+    *   cbState[2]  num of incremental rows (this is be doubled each time
+    *               we go thru the re-allocation step).
+    */
+
+   cbState = (Sint *) res->drvData; 
+
+   if(rows_affected<0){
+      /* if res->rowsAffected is -1 then resultSet is un-initialized.
+       * Note that we get here only for select statements, thus we 
+       * record the fact here.
+       */
+      res->rowsAffected = rows_affected = (Sint) 0; 
+      res->isSelect = (Sint) 1;    
       RS_SQLite_initFields(res, ncol, colNames);
-      rows = (char **) calloc(cells_alloc, sizeof(char *));
+      cbState[1] = cbState[2] = rows_per_fetch; 
+      rows = (char **) calloc((size_t) cbState[1]*ncol, sizeof(char *));
       res->drvResultSet = (void *) rows;
    }
    else {
       rows = (char **) res->drvResultSet;
    }
 
-   limit = (Sint *) res->drvData;
-   if(*limit>0 && res->rowsAffected >= *limit)  /* do we have all the rows */
+   /* reach absolute maximum number of rows? */
+   if(cbState[0]>0 && rows_affected>=cbState[0])
       return SQLITE_ABORT;  
 
-   cells_used = res->rowsAffected * ncol;
-   cells_left = cells_alloc - cells_used;
-
-   /* do we need extra space in our fake cursor? */
-   if( cells_left < ncol){
-      rows = (char **) realloc((void *) rows, cells_alloc * sizeof(char *));
+   if(cbState[1] == rows_affected){ /* have we exhausted allocated space? */
+      cbState[2] *= 2;              /* add twice increment */
+      cbState[1] += cbState[2];
+      rows = (char **) realloc((void *) rows, 
+                               (size_t) ncol*cbState[1]*sizeof(char *));
       if(!rows) {
 	 res->drvResultSet = (void *) NULL;
 	 RS_DBI_freeResultSet(rsHandle);
 	 return SQLITE_NOMEM;
       }
+      else
+         res->drvResultSet = (void *) rows;
    }
    
    /* we just copy each column to the row buffer in the result set */
-   i = res->rowsAffected;
    for(j=0; j<ncol; j++){
       if(data[j]==0) 
-	 rows[i*ncol+j] = RS_DBI_copyString(RS_NA_STRING);
+	 rows[rows_affected*ncol+j] = RS_DBI_copyString(RS_NA_STRING);
       else
-         rows[i*ncol+j] = RS_DBI_copyString(data[j]);
+         rows[rows_affected*ncol+j] = RS_DBI_copyString(data[j]);
    }
    res->rowsAffected += (Sint) 1;
-   res->drvResultSet = (void *) rows;
 
    return 0;
 }
@@ -475,7 +486,7 @@ void RS_SQLite_initFields(RS_DBI_resultSet *res, int ncol, char **colNames)
          return;      /* no output or already initialized -- should we warn?*/
    }
    flds = RS_DBI_allocFields((Sint) ncol); /* BUG: mem leak if this fails */
-   flds->num_fields = (Sint) ncol;
+   flds->num_fields = ncol;
    for(j=0; j<ncol; j++){
       if(colNames[j])
          flds->name[j] = RS_DBI_copyString(colNames[j]);
@@ -524,14 +535,14 @@ RS_SQLite_fetch(s_object *rsHandle, s_object *max_rec)
 {
   S_EVALUATOR
 
-  RS_DBI_manager   *mgr;
   RS_DBI_resultSet *res;
   RS_DBI_fields    *flds;
   char             **rows;          /* ptr to our cache */
-  s_object  *output, *s_tmp;
+  s_object  *output;
   int    i, j, k, null_item;
-  Sint   *Sclass, completed;
-  Sint   n, num_rec, num_fields, rec_left;
+  Stype  *Sclass; 
+  Sint   n, completed, num_rec, rec_left;
+  int    num_fields;
 
   res = RS_DBI_getResultSet(rsHandle);
   if(res->isSelect != 1){
@@ -690,14 +701,16 @@ RS_SQLite_closeResultSet(s_object *resHandle)
   RS_DBI_resultSet *result;
   s_object *status;
   char     **rows;
-
+  Sint     i, j, nrows, ncols;
+  
   result = RS_DBI_getResultSet(resHandle);
   rows = (char **) result->drvResultSet;
   if(rows){
-     int  i,n;
-     n = sizeof(rows)/sizeof(char *);
-     for(i=0; i<n; i++)
-	if(rows[i]) free(rows[i]);
+     nrows = result->rowsAffected;
+     ncols = result->fields->num_fields;
+     for(i=0; i<nrows; i++)
+        for(j=0; j<ncols; j++)
+           if(rows[i*ncols+j]) free(rows[i*ncols+j]);
      free(rows);
   }
   /* need to NULL drvResultSet, otherwise can't free the rsHandle */
@@ -775,7 +788,6 @@ RS_SQLite_connectionInfo(Con_Handle *conHandle)
 {
   S_EVALUATOR
   
-  sqlite   *db_con;
   RS_SQLite_conParams *conParams;
   RS_DBI_connection  *con;
   s_object   *output;
@@ -857,34 +869,21 @@ RS_SQLite_resultSetInfo(Res_Handle *rsHandle)
   return output;
 }
 
-char *
-RS_SQLite_getFieldTypeName(Sint t)
-{
-  int i;
-  char buf[512];
-
-  for (i = 0; RS_SQLite_fieldTypes[i].typeName; i++) {
-    if (RS_SQLite_fieldTypes[i].typeId == t)
-      return RS_SQLite_fieldTypes[i].typeName;
-  }
-  sprintf(buf, "unknown data type: %ld", (long)t);
-  RS_DBI_errorMessage(buf, RS_DBI_ERROR);
-  return (char *) 0; /* for -Wall */
-}
-
 s_object *
-RS_SQLite_getFieldTypeNames(s_object *type)
+RS_SQLite_typeNames(s_object *typeIds)
 {
   s_object *typeNames;
   Sint n;
   Sint *typeCodes;
   int i;
+  char *s;
   
-  n = LENGTH(type);
-  typeCodes = INTEGER_DATA(type);
+  n = LENGTH(typeIds);
+  typeCodes = INTEGER_DATA(typeIds);
   MEM_PROTECT(typeNames = NEW_CHARACTER(n));
   for(i = 0; i < n; i++) {
-    SET_CHR_EL(typeNames,i,C_S_CPY(RS_SQLite_getFieldTypeName(typeCodes[i])));
+    s = RS_DBI_getTypeName(typeCodes[i], RS_SQLite_fieldTypes);
+    SET_CHR_EL(typeNames, i, C_S_CPY(s));
   }
   MEM_UNPROTECT(1);
   return typeNames;

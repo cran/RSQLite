@@ -1,8 +1,9 @@
 #ifndef _RS_DBI_H
 #define _RS_DBI_H 1
-/*  $Id$
+/*  
+ *  $Id: RS-DBI.h,v 1.5 2002/05/20 20:55:45 dj Exp dj $
  *
- * Copyright (C) 1999 The Omega Project for Statistical Computing.
+ * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,6 +30,7 @@ extern "C" {
 #endif
 
 #include "S4R.h"
+#include <unistd.h>
 
 pid_t getpid(); 
 
@@ -199,7 +201,7 @@ Sint  RS_DBI_listEntries(Sint *table, Sint length, Sint *entries);
 void  RS_DBI_freeEntry(Sint *table, Sint indx);
 
 /* description of the fields in a result set */
-RS_DBI_fields *RS_DBI_allocFields(Sint num_fields);
+RS_DBI_fields *RS_DBI_allocFields(int num_fields);
 s_object      *RS_DBI_getFieldDescriptions(RS_DBI_fields *flds);
 void           RS_DBI_freeFields(RS_DBI_fields *flds);
 
@@ -225,65 +227,29 @@ void  RS_DBI_setException(Db_Handle *handle,
 /* utility funs (copy strings, convert from R/S types to string, etc.*/
 char     *RS_DBI_copyString(const char *str);
 char     *RS_DBI_nCopyString(const char *str, size_t len, int del_blanks);
-char     *RS_DBI_dataTypeName(Sint typeCode);   /* R/S data types not DBMS*/
-s_object *RS_DBI_SclassNames(s_object *types);  /* same, but callable
-						   from S/R */
+
+/* We now define a generic data type name-Id mapping struct
+ * and initialize the RS_dataTypeTable[].  Each driver could
+ * define similar table for generating friendly type names
+ */
+struct data_types {
+    char *typeName;
+    Sint typeId;
+};
+
+/* return the primitive type name for a primitive type id */
+char     *RS_DBI_getTypeName(Sint typeCode, const struct data_types table[]);
+/* same, but callable from S/R and vectorized */
+s_object *RS_DBI_SclassNames(s_object *types);  
+
 s_object *RS_DBI_createNamedList(char  **names, 
 				 Stype *types,
 				 Sint  *lengths,
 				 Sint  n);
 s_object *RS_DBI_copyFields(RS_DBI_fields *flds);
-/* the following is just S and R tables of data type codes and names */
-#ifdef USING_R
-/* the codes come from from R/src/main/util.c */
-static struct {
-  char *typeName;
-  Sint typeId;
-} RS_dataTypeTable[] = {
-    { "NULL",		NILSXP	   },  /* real types */
-    { "symbol",		SYMSXP	   },
-    { "pairlist",	LISTSXP	   },
-    { "closure",	CLOSXP	   },
-    { "environment",	ENVSXP	   },
-    { "promise",	PROMSXP	   },
-    { "language",	LANGSXP	   },
-    { "special",	SPECIALSXP },
-    { "builtin",	BUILTINSXP },
-    { "char",		CHARSXP	   },
-    { "logical",	LGLSXP	   },
-    { "integer",	INTSXP	   },
-    { "double",		REALSXP	   }, /*-  "real", for R <= 0.61.x */
-    { "complex",	CPLXSXP	   },
-    { "character",	STRSXP	   },
-    { "...",		DOTSXP	   },
-    { "any",		ANYSXP	   },
-    { "expression",	EXPRSXP	   },
-    { "list",		VECSXP	   },
-    /* aliases : */
-    { "numeric",	REALSXP	   },
-    { "name",		SYMSXP	   },
-    { (char *)0,	-1	   }
-};
 
-#else
-/* the following S type names are from "S.h" */
-static struct {
-    char *typeName;
-    Sint typeId;
-} RS_dataTypeTable[] = {
-    { "logical",	LGL	  },
-    { "integer",	INT	  },
-    { "single",		REAL	  },
-    { "numeric",	DOUBLE	  },
-    { "character",	CHAR	  },
-    { "list",		LIST	  },
-    { "complex",	COMPLEX	  },
-    { "raw",		RAW	  },
-    { "any",		ANY	  },
-    { "structure",	STRUCTURE },
-    { (char *)0,	-1	  }
-};
-#endif
+void RS_na_set(void *ptr, Stype type);
+extern const struct data_types RS_dataTypeTable[];
 
 #ifdef __cplusplus 
 }

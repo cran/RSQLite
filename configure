@@ -836,14 +836,14 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    : ${TAR=tar}
    : ${GZIP=gzip}
    : ${MAKE=make}
-   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.0.5.tar.gz"}
+   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.7.1.tar.gz"}
 
    tmp_dir=/tmp/bld_sqlite$$
    mkdir "${tmp_dir}" && cd "${tmp_dir}"
 
    ${GZIP} -c -d ${SQLITE_TAR} | ${TAR} xf - 
 
-   # compute name of source directory (as of 2.0.5, SQLite doesn't follow 
+   # compute name of source directory (as of 2.7.1, SQLite doesn't follow 
    # the GNU naming standard, and it untars into "sqlite")
    SQLITE_SRC=`basename ${SQLITE_TAR} | \
                sed 's/\.tar\.gz//' | sed 's/\.tgz//' | sed 's/\.tar//' `
@@ -892,14 +892,16 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    echo ""
    echo "SQLite installed successfully:"
    echo ""
-   echo "  Do not forget to verify whether you need to include the dir"
-   echo "  ${SQLITE_FINAL}/lib in your LD_LIBRARY_PATH, e.g., "
-   echo ""
-   echo "    LD_LIBRARY_PATH=${SQLITE_FINAL}/lib:\$LD_LIBRARY_PATH"
-   echo "    export LD_LIBRARY_PATH"
-   echo ""
-   echo "  prior to invoking R."
-   echo ""
+   if test "${SQLITE_SHARED}" = yes ; then
+      echo "  Do not forget to verify whether you need to include the dir"
+      echo "  ${SQLITE_FINAL}/lib in your LD_LIBRARY_PATH, e.g., "
+      echo ""
+      echo "    LD_LIBRARY_PATH=${SQLITE_FINAL}/lib:\$LD_LIBRARY_PATH"
+      echo "    export LD_LIBRARY_PATH"
+      echo ""
+      echo "  prior to invoking R."
+      echo ""
+   fi
    echo "-------------------------------------------------------------------"
    echo ""
    rm -rf "${tmp_dir}"

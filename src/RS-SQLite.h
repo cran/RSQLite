@@ -1,8 +1,9 @@
 #ifndef _RS_SQLite_H
 #define _RS_SQLite_H 1
-/*  $Id$
+/*  
+ * $Id: RS-SQLite.h,v 1.2 2002/09/05 02:44:44 dj Exp dj $
  *
- * Copyright (C) 1999 The Omega Project for Statistical Computing.
+ * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,11 +72,11 @@ void        RS_SQLite_setException(RS_DBI_connection *con, int errorNum, const c
 s_object   *RS_SQLite_getException(Con_Handle *conHandle);    /* err No, Msg */
 
 /* currently we only provide a "standard" callback to sqlite_exec() -- this
- * callback collect all the rows and puts them in a cache in the results set
+ * callback collects all the rows and puts them in a cache in the results set
  * (res->drvData) to simulate a cursor so that we can fetch() like in any other
  * driver.  
  * Other interesting callbacks should allow us to easily implement the
- * dbApply() ideasn also in the RMySQL driver
+ * dbApply() ideas also in the RMySQL driver
  */
 int       RS_SQLite_stdCallback(void *resHandle, int ncol, char **row, char **colNames);
 
@@ -115,14 +116,10 @@ enum SQL92_field_types {
      SQL92_TYPE_TIMESTAMP,
      SQL92_TYPE_DATE,
      SQL92_TYPE_TIME,
-     SQL92_TYPE_DATETIME,
+     SQL92_TYPE_DATETIME
 };
 
-
-struct {
-   char *typeName;
-   int  typeId;
-} RS_SQLite_fieldTypes[] = {
+const struct data_types RS_SQLite_fieldTypes[] = {
      { "SQL92_TYPE_NULL",       SQL92_TYPE_NULL     },
      { "SQL92_TYPE_BIT",        SQL92_TYPE_BIT      },
      { "SQL92_TYPE_BIT_VAR",    SQL92_TYPE_BIT_VAR  },
@@ -143,8 +140,7 @@ struct {
      { (char *) 0,              -1                  }
 };
 
-s_object *RS_SQLite_getFieldTypeNames(s_object *typeIds);
-char     *RS_SQLite_getFieldTypeName(Sint typeId);
+s_object *RS_SQLite_typeNames(s_object *typeIds);
 
 #ifdef _cplusplus
 }

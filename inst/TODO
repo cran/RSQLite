@@ -7,7 +7,5 @@
   be somewhat stable (he says!).  On the other hand, currently
   we cannot use both drivers simulatanously (this should be an
   easy fix).
-  
-* Once the R-SIG-DB nails down the common database interface,
-  we'll need to make RSQLite comply with it. (Shouldn't be too
-  difficult.)
+
+* Need to add the dbApply(), as in RMySQL.
