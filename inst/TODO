@@ -1,0 +1,13 @@
+* Need to do a lot more testing.  In particular the actual SQL
+  engine needs vigorous testing -- I've done very simple things
+  with it.
+
+* The actual R SQLite package shares an enormous amount of code
+  with both the RMySQL and ROracle drivers, so that piece should
+  be somewhat stable (he says!).  On the other hand, currently
+  we cannot use both drivers simulatanously (this should be an
+  easy fix).
+  
+* Once the R-SIG-DB nails down the common database interface,
+  we'll need to make RSQLite comply with it. (Shouldn't be too
+  difficult.)

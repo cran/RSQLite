@@ -1,0 +1,17 @@
+
+version 0.2-1
+
+* worked mostly in the configuration;  added the --enable-sqlite and
+  --with-sqlite arguments to have the RSQLite configuration also install 
+  SQLite or locate it, respectively.
+
+version 0.1-1
+
+* first implementation -- use the RS-DBI.[ch] code (which is the core
+  connection/cursor manager) "as is" and modified the RS-MySQL.[hc], 
+  (which sits directly on top of the MySQL C API) and replace the 
+  MySQL API calls with SQLite API calls.  This was pretty easy, except 
+  for the fact that the SQLite API is so miminal (3, yes, 3 C functions) 
+  with no support for connections, result set (cursors), data types, 
+  meta-data -- nothing.  So I had to simulate all this. (Actually it 
+  wasn't too bad).

@@ -1,0 +1,47 @@
+
+RSQLite -- Embedding the SQLite engine in R
+
+(The RSQLite package includes a copy of the SQLite 2.0.5
+ distribution from www.hwaci.com/sw/sqlite.)
+
+Installation
+------------
+
+There are 3 alternatives for installation:
+
+1. Simple installation:  
+
+      R CMD INSTALL RSQLite-<version>.tar.gz
+
+   the installation automatically detects whether SQLite is available
+   in your system;  if it's not available, it installs the SQLite engine
+   and the R-SQLite interface under the package.
+
+2. If you have SQLite installed in a non-system directory (e.g, in
+   $HOME/sqlite), use
+
+     export PKG_LIBS="-L$HOME/sqlite/lib -lsqlite"
+     export PKG_CPPFLAGS="-I$HOME/sqlite/include"
+   
+     R CMD INSTALL RSQLite-<version>.tar.gz
+
+3. Finally, if you don't have SQLite but you rather install it into
+   directory different than the RSQLite package (for instance,
+   $HOME/app/sqlite, use
+
+     R CMD INSTALL --configure-args=--enable-sqlite=$HOME/app/sqlite \
+               RSQLite-<version>.tar.gz
+
+Usage
+-----
+
+Note that if the SQLite library is in a non-system directory (e.g.,
+other than /lib, /usr/lib, /usr/local/lib) you may need to include
+it in our LD_LIBRARY_PATH, prior to invoking R.  For instance
+
+    export LD_LIBRARY_PATH=$HOME/sqlite/lib:$LD_LIBRARY_PATH 
+    R
+    > library(help=RSQLite)
+    > library(RSQLite)
+
+
