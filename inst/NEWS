@@ -1,3 +1,7 @@
+Version 0.3-4
+
+* Fixed documentation typos.
+
 Version 0.3-3
 
 * Minor fixes to accommadate R 1.8.0 changes to data.frame subsetting.

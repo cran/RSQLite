@@ -4,7 +4,7 @@
 \alias{SQLiteConnection-class}
 \title{Class SQLiteConnection}
 \description{SQLite connection class.}
-\section{Generators}
+\section{Generators}{
     The method \code{\link[DBI]{dbConnect}} is the main generator.
 }
 \section{Extends}{

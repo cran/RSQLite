@@ -4,7 +4,7 @@ dbConnect-methods       Create a connection object to an SQLite DBMS
 dbDataType-methods      Determine the SQL Data Type of an S object
 dbDriver-methods        SQLite implementation of the Database
                         Interface (DBI) classes and drivers
-dbGetInfo-methods       Database interface meta-data
+dbGetInfo               Database interface meta-data
 dbListTables-methods    List items from an SQLite DBMS and from
                         objects
 dbObjectId-class        Class dbObjectId
@@ -17,14 +17,14 @@ dbSetDataMappings-methods
 fetch-methods           Fetch records from a previously executed query
 isIdCurrent             Check whether an dbObjectId handle object is
                         valid or not
-make.db.names-methods   Make R/S-Plus identifiers into legal SQL
-                        identifiers
+SQLite                  Instantiate the SQLite engine from the current
+                        R/S-Plus session.
 SQLiteConnection-class
                         Class SQLiteConnection
 SQLiteDriver-class      Class SQLiteDriver
+sqliteInitDriver        Support Functions
 SQLiteObject-class      Class SQLiteObject
-SQLite                  Instantiate the SQLite engine from the current
-                        R/S-Plus session.
 SQLiteResult-class      Class SQLiteResult
-sqliteSupport           Support Functions
+SQLKeywords-methods     Make R/S-Plus identifiers into legal SQL
+                        identifiers
 summary-methods         Summarize an SQLite object

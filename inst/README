@@ -1,7 +1,7 @@
 
 RSQLite -- An embedded database engine in R
 
-SQLite (http://www.hwaic.com/sw/sqlite) is a public-domain,
+SQLite (http://www.sqlite.org) is a public-domain,
 single-user, very light-weight database engine that implements
 a decent subset of the SQL 92 standard, including the core
 table creation, updating, insertion, and selection operations,
