@@ -39,7 +39,7 @@ extern  "C" {
 #define RS_SQLITE_FETCH   500    /* records per fetch */
 
 /* SQLite connection parameters struct, allocating and freeing 
- * methods.  This is pretty simple, since SQLite does not recognises users 
+ * methods.  This is pretty simple, since SQLite does not recognise users 
  */
 typedef struct st_sdbi_conParams {
   char *dbname;
@@ -54,42 +54,43 @@ typedef struct st_sqlite_err {
 RS_SQLite_conParams *RS_SQLite_allocConParams(const char *dbname, int mode);
 void                RS_SQLite_freeConParams(RS_SQLite_conParams *conParams);
 
-/* The following functions are the S/R entry into the C implementation
- * (i.e., these are the only ones visible from R/S) we use the prefix
- * "RS_SQLite" in function names to denote this.
- * These functions are  built on top of the underlying RS_DBI manager, 
- * connection, and resultsets structures and functions (see RS-DBI.h).
+/* The following functions are the S/R entry into the C implementation (i.e.,
+ * these are the only ones visible from R/S) we use the prefix "RS_SQLite" in
+ * function names to denote this.  These functions are  built on top of the
+ * underlying RS_DBI manager, connection, and resultsets structures and
+ * functions (see RS-DBI.h).
  * 
  * Note: A handle is just an R/S object (see RS-DBI.h for details), i.e.,
- *       Mgr_Handle, Con_Handle, Res_Handle, Db_Handle are s_object.
+ * Mgr_Handle, Con_Handle, Res_Handle, Db_Handle are s_object.
  */
   
 /* dbManager */
-Mgr_Handle *RS_SQLite_init(s_object *config_params, s_object *reload);
-s_object   *RS_SQLite_close(Mgr_Handle *mgrHandle); 
+Mgr_Handle *RS_SQLite_init(s_object *config_params, s_object *reload); s_object
+*RS_SQLite_close(Mgr_Handle *mgrHandle); 
 
 /* dbConnection */
-Con_Handle *RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *con_params);
-Con_Handle *RS_SQLite_cloneConnection(Con_Handle *conHandle);
+Con_Handle *RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object
+*con_params); Con_Handle *RS_SQLite_cloneConnection(Con_Handle *conHandle);
 s_object   *RS_SQLite_closeConnection(Con_Handle *conHandle);
 /* we simulate db exceptions ourselves */
-void        RS_SQLite_setException(RS_DBI_connection *con, int errorNum, const char *errorMsg);
-s_object   *RS_SQLite_getException(Con_Handle *conHandle);    /* err No, Msg */
+void        RS_SQLite_setException(RS_DBI_connection *con, int errorNum, const
+char *errorMsg); s_object   *RS_SQLite_getException(Con_Handle *conHandle);
+/* err No, Msg */
 
 /* currently we only provide a "standard" callback to sqlite_exec() -- this
  * callback collects all the rows and puts them in a cache in the results set
  * (res->drvData) to simulate a cursor so that we can fetch() like in any other
- * driver.  
- * Other interesting callbacks should allow us to easily implement the
+ * driver.  Other interesting callbacks should allow us to easily implement the
  * dbApply() ideas also in the RMySQL driver
  */
-int       RS_SQLite_stdCallback(void *resHandle, int ncol, char **row, char **colNames);
+int       RS_SQLite_stdCallback(void *resHandle, int ncol, char **row, char
+**colNames);
 
 /* dbResultSet */
-Res_Handle *RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object *s_limit);
-s_object   *RS_SQLite_fetch(Res_Handle *rsHandle, s_object *max_rec);
-s_object   *RS_SQLite_closeResultSet(Res_Handle *rsHandle); 
-void        RS_SQLite_initFields(RS_DBI_resultSet *res, int ncol, char **colNames);
+Res_Handle *RS_SQLite_exec(Con_Handle *conHandle, s_object *statement, s_object
+*s_limit); s_object   *RS_SQLite_fetch(Res_Handle *rsHandle, s_object
+*max_rec); s_object   *RS_SQLite_closeResultSet(Res_Handle *rsHandle); void
+RS_SQLite_initFields(RS_DBI_resultSet *res, int ncol, char **colNames);
 
 s_object   *RS_SQLite_validHandle(Db_Handle *handle);      /* boolean */
 

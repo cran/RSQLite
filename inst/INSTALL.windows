@@ -4,6 +4,9 @@ Installing from sources:
 These are the steps I followed to create a Windows binary
 distribution.
 
+[UPDATE: (2005-01-30) archived all the Windows-specific files in ./libs
+into RSQLite-win.zip, as per Kurt Hornik suggestion.]
+
 1. Untared latest RSQLite_<version>.tar.gz 
 
 2. Got the SQLite Windows library zip from 

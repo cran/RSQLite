@@ -17,7 +17,7 @@
 \section{Methods}{\describe{
 \item{drv}{
   an object of class \code{SQLiteDriver}, or
-  the character string "SQLite" or an \code{SQLiteConnection}.
+  the character string "SQLite" or an \code{SQLiteConnection}.
   }
 \item{conn}{
   an \code{SQLiteConnection} object as produced by \code{dbConnect}.

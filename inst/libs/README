@@ -1,10 +1,11 @@
-SQLite Version 2.8.3, dated 2003/06/04.
+SQLite Version 2.8.6, dated 2003/06/04.
 
-The files "sqlite.def" and "sqlite.dll" provide the Windows SQLite 
-C library;  they were copied from
+The files "sqlite.def" and "sqlite.dll" in the zip archive "RSQLite-win.zip"
+provide the Windows SQLite C library, they were copied from
     http://www.hwcia.com/sw/sqlite/sqlitedll.zip 
 
-The file libsqlite.a was created from the above two files as follows:
+The file "libsqlite.a" (also in the above zip archive) was created from the 
+above two files as follows:
 
 dlltool --dllname sqlite.dll --def sqlite.def --ouput-lib libsqlite.a -k
 
@@ -16,4 +17,4 @@ Note that in src/Makevars.win we use this libsqlite.a file when we add
 The file sqlite.dll needs to be somewhere in the path, say ./libs
 
 The header file sqlite.h needs to be extracted from the Windows
-source file libs/sqlite-win32-2.8.3.zip into the "src" dir.
+source file libs/sqlite-win32-2.8.6.zip into the "src" dir.
