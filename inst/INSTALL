@@ -33,8 +33,8 @@ There are 3 alternatives for installation:
       R CMD INSTALL --configure-args=--with-sqlite-dir=$HOME/sqlite \
                     RSQLite-<version>.tar.gz
 
-3. If you don't have SQLite but you rather install it into a
-   directory different than the RSQLite package (for instance,
+3. If you don't have SQLite but you rather install the version we provide
+   into a directory different than the RSQLite package (for instance,
    $HOME/app/sqlite, use
 
       R CMD INSTALL --configure-args=--enable-sqlite=$HOME/app/sqlite \
@@ -53,7 +53,7 @@ For instance
     > library(help=RSQLite)
     > library(RSQLite)
 
-(if you use the --enable-sqlite configuration argument, the SQLite 
+(if you use the --enable-sqlite=DIR configuration argument, the SQLite 
 library is statically linked to the RSQLite R package, and you need 
 not worry about setting LD_LIBRARY_PATH.)
 

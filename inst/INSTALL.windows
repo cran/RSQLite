@@ -1,0 +1,33 @@
+Installing from sources:
+------------------------
+
+These are the steps I followed to create a Windows binary
+distribution.
+
+1. Untar RSQLite_0.3-2.tar.gz 
+
+2. Got the SQLite Windows library zip from 
+   http://www.hwcia.com/sw/sqlite/sqlitedll.zip 
+
+   This zip includes "sqlite.def" and "sqlite.dll" which provide
+   the Windows SQLite engine.
+
+   cd RSQLite\inst\libs unzip sqlitedll.zip
+
+3. Created "libs/libsqlite.a" from the above two files as follows:
+
+      dlltool --dllname sqlite.dll --def sqlite.def --ouput-lib libsqlite.a -k
+
+   (the -k is critical!)
+
+4. Copied the header file  "sqlite.h" from the sqlite_src.zip
+   Windows source distribution (which I renamed to
+   libs/sqlite-win32-3.8.3.zip) into the "src" directory.
+
+5. Created a Makevars.win in the "src" directory 
+
+   ## Makevars.win
+   PKG_CPPFLAGS=
+   PKG_LIBS=-L../inst/libs -lsqlite
+
+6. Ran Rcmd build --binary RSQLite 

@@ -1,5 +1,5 @@
 dnl 
-dnl $Id: configure.in,v 1.2 2002/09/06 12:45:11 dj Exp dj $
+dnl $Id: configure.in,v 1.3 2003/06/04 22:29:52 dj Exp dj $
 dnl
 dnl R embedding of the SQLite engine.
 dnl
@@ -31,7 +31,7 @@ dnl    we run configure/make/make install on the SQLite tarball.
 dnl    By default we install it in ${R_PACKAGE_DIR}/sqlite, but users
 dnl    may direct the installation to some other directory (or disable it 
 dnl    altogether) by
-dnl         --enable­sqlite=DIR   (DIR defaults to $R_PACKAGE_DIR/sqlite)
+dnl         --enable-sqlite=DIR   (DIR defaults to $R_PACKAGE_DIR/sqlite)
 dnl         --enable-sqlite=no
 dnl    or   --disable-sqlite
 dnl    (note that in this case we compile sqlite as a *static* library).
@@ -98,7 +98,7 @@ fi
 
 # 
 # We now determine whether we found the lib and header files (we still
-# need to check PKG_*, in case the user only defined one them)
+# need to check PKG_*, in case the user only defined one of them)
 #
 if test -z "${PKG_LIBS}" ; then
    if test -n "${SQLITE_LIB}" ;  then
@@ -157,7 +157,7 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    # before the actual $R_PACKAGE_DIR is fully created -- so we'll install 
    # it under inst/sqlite so that when R copies rescursevely "inst" into 
    # $R_PACKAGE_DIR the actual SQLite directoy will be $R_PACKGE_DIR/sqlite
-   # If user doesn't specify a directory, we only build static libraries
+   # If the user doesn't specify a directory, we only build static libraries
    # (to avoid the LD_LIBRARY_PATH dance).
  
    base_dir=`pwd`
@@ -178,14 +178,14 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    : ${TAR=tar}
    : ${GZIP=gzip}
    : ${MAKE=make}
-   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.7.1.tar.gz"}
+   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.8.3.tar.gz"}
 
    tmp_dir=/tmp/bld_sqlite$$
    mkdir "${tmp_dir}" && cd "${tmp_dir}"
 
    ${GZIP} -c -d ${SQLITE_TAR} | ${TAR} xf - 
 
-   # compute name of source directory (as of 2.7.1, SQLite doesn't follow 
+   # compute name of source directory (as of 2.8.3, SQLite doesn't follow 
    # the GNU naming standard, and it untars into "sqlite")
    SQLITE_SRC=`basename ${SQLITE_TAR} | \
                sed 's/\.tar\.gz//' | sed 's/\.tgz//' | sed 's/\.tar//' `

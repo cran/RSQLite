@@ -1,7 +1,7 @@
 #ifndef _RS_SQLite_H
 #define _RS_SQLite_H 1
 /*  
- * $Id: RS-SQLite.h,v 1.2 2002/09/05 02:44:44 dj Exp dj $
+ * $Id: RS-SQLite.h,v 1.3 2003/06/16 19:00:39 dj Exp dj $
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
@@ -24,7 +24,12 @@
 extern  "C" {
 #endif
 
-#include <sqlite.h>
+#ifdef WIN32
+#  include "windows/sqlite.h"
+#else
+#  include <sqlite.h>
+#endif
+
 #include <string.h>
 #include <unistd.h>   /* needed by getlogin() -- is this portable??? */
 

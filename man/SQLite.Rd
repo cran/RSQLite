@@ -59,17 +59,17 @@ should be legal file names in the running platform.
 }
 \section{User authentication}{
 SQLite is a single-user database engine, so it has no concept of
-user.
+a user.
 }
 \author{David A. James}
 \section{References}{
 See the Omega Project for Statistical Computing
-at \url{http://www.omegahat.org}
+at \url{http://www.omegahat.org} and \url{http://stat.bell-labs.com/RS-DBI}
 for more details on the R/S-Plus database interface.
 
 See the Adobe PDF file \code{DBI.pdf} under the \code{doc}
-subdirectory of this package, i.e., 
-\code{.path.package("RSQLite")/doc/DBI.pdf}.
+subdirectory of the DBI package, i.e., 
+\code{system.file("doc", "DBI.pdf", package = "DBI")}
 
 See the documentation at the SQLite Web site
 \url{http://www.hwaci/com/sw/sqlite/index.html} for details.
@@ -118,7 +118,7 @@ On meta-data:
    
    con <- dbConnect(m, dbname = "base.dbms")
    data(USArrests)
-   assignTable(con, "USArrests", USArrests, overwrite = T)
+   dbWriteTable(con, "USArrests", USArrests, overwrite = T)
    
    # query
    rs <- dbSendQuery(con, "select * from USArrests")

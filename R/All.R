@@ -1,17 +1,25 @@
-## $Id: zzz.R,v 1.3 2002/09/05 02:41:57 dj Exp dj $
+## $Id: zzz.R,v 1.5 2003/06/17 18:44:45 dj Exp dj $
 ".conflicts.OK" <- TRUE
 
 ## these are needed while source'ing the package (prior
 ## to library.dyname).
-library(methods, verbose = FALSE, warn.conflicts = FALSE)
-require(DBI, quietly = FALSE, warn.conflicts = FALSE)
+library(methods, warn.conflicts = FALSE)
+library(DBI, warn.conflicts = FALSE)
 
 ".First.lib" <- 
 function(lib, pkg)
 {
-  library.dynam("RSQLite", pkg, lib)
-  library(methods, verbose = FALSE, warn.conflicts = FALSE)
-  require(DBI, quietly = FALSE, warn.conflicts = FALSE)
+   ## need to dyn.load sqlite.dll before we attempt to load
+   ## RSQLite.dll  -- there's got to be a better way...
+
+   if(.Platform$OS.type=="windows"){
+      if(!is.loaded(symbol.C("sqlite_libversion")))
+         dyn.load(system.file("libs", "sqlite.dll", package = "RSQLite"))
+   }
+
+   library.dynam("RSQLite", pkg, lib)
+   library(methods, warn.conflicts = FALSE)
+   library(DBI, warn.conflicts = FALSE)
 }
 ##
 ## $Id: S4R.R,v 1.2 2002/08/27 13:44:27 dj Exp $
@@ -106,7 +114,7 @@ function(obj)
    .Call("RS_DBI_validHandle", obj, PACKAGE = .SQLitePkgName)
 }
 ##
-## $Id: SQLite.R,v 1.2 2002/09/05 02:39:38 dj Exp dj $
+## $Id: SQLite.R,v 1.3 2003/06/17 15:00:52 dj Exp dj $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -129,8 +137,7 @@ function(obj)
 ##
 
 .SQLitePkgName <- "RSQLite"
-.SQLitePkgRCS <- "$Id: SQLite.R,v 1.2 2002/09/05 02:39:38 dj Exp dj $"
-.SQLitePkgVersion <- package.description(.SQLitePkgName, field="Version")
+.SQLitePkgRCS <- "$Id: SQLite.R,v 1.3 2003/06/17 15:00:52 dj Exp dj $"
 .SQLite.NA.string <- "\\N"  ## on input SQLite interprets \N as NULL (NA)
 
 setOldClass("data.frame")   ## to avoid warnings in setMethod's valueClass arg

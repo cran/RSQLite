@@ -753,7 +753,7 @@ fi
 
 # 
 # We now determine whether we found the lib and header files (we still
-# need to check PKG_*, in case the user only defined one them)
+# need to check PKG_*, in case the user only defined one of them)
 #
 if test -z "${PKG_LIBS}" ; then
    if test -n "${SQLITE_LIB}" ;  then
@@ -815,7 +815,7 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    # before the actual $R_PACKAGE_DIR is fully created -- so we'll install 
    # it under inst/sqlite so that when R copies rescursevely "inst" into 
    # $R_PACKAGE_DIR the actual SQLite directoy will be $R_PACKGE_DIR/sqlite
-   # If user doesn't specify a directory, we only build static libraries
+   # If the user doesn't specify a directory, we only build static libraries
    # (to avoid the LD_LIBRARY_PATH dance).
  
    base_dir=`pwd`
@@ -836,14 +836,14 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    : ${TAR=tar}
    : ${GZIP=gzip}
    : ${MAKE=make}
-   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.7.1.tar.gz"}
+   : ${SQLITE_TAR="${base_dir}/inst/sqlite-2.8.3.tar.gz"}
 
    tmp_dir=/tmp/bld_sqlite$$
    mkdir "${tmp_dir}" && cd "${tmp_dir}"
 
    ${GZIP} -c -d ${SQLITE_TAR} | ${TAR} xf - 
 
-   # compute name of source directory (as of 2.7.1, SQLite doesn't follow 
+   # compute name of source directory (as of 2.8.3, SQLite doesn't follow 
    # the GNU naming standard, and it untars into "sqlite")
    SQLITE_SRC=`basename ${SQLITE_TAR} | \
                sed 's/\.tar\.gz//' | sed 's/\.tgz//' | sed 's/\.tar//' `

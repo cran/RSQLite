@@ -21,6 +21,7 @@
 \alias{.SQLitePkgVersion}
 \alias{.SQLitePkgRCS}
 \alias{.SQLite.NA.string}
+\alias{last.warning}
 %\alias{.SQLiteSQLKeywords}
 \alias{.conflicts.OK}
 %\non_function{}

@@ -1,4 +1,23 @@
-version 0.3-1
+Version 0.3-2
+
+* Ported to Windows.  It now installs fine under Windows with 
+
+    Rcmd INSTALL RSQLite_0.3-2.tar.gz
+
+  (there's also a binary RSQLite_0.3-2.zip)
+
+* Added code to verify that the SQLite library versions used for 
+  compilation and at runtime agree.
+
+* Added source sqlite-2.8.3.
+
+* Fixed minor documentation errors and removed the DBI.pdf documentation
+  file, which is included in the required DBI package.
+
+* The package now installs as a binary image by default (use the --no-save
+  argument to R CMD INSTALL to override this).
+
+Version 0.3-1
 
 * Moved the implementation to version 4 style classes, and it now
   it is fully compliant with the DBI 0.1-3.  
@@ -10,19 +29,19 @@ version 0.3-1
   database file from a version prior to 2.6 you'll need to update
   it -- for details see http://www.hwaic.com/sw/sqlite).
 
-version 0.2-1
+Version 0.2-1
 
 * Worked mostly in the configuration;  added the --enable-sqlite and
   --with-sqlite arguments to have the RSQLite configuration also install 
   SQLite or locate it, respectively.
 
-version 0.1-1
+Version 0.1-1
 
 * First implementation -- used the RS-DBI.[ch] code (which is the core
   connection/cursor manager) "as is" and modified the RS-MySQL.[hc], 
   (which sits directly on top of the MySQL C API) and replace the 
   MySQL API calls with SQLite API calls.  This was pretty easy, except 
-  for the fact that the SQLite API is so miminal (3, yes, 3 C functions) 
+  for the fact that the SQLite API is so minimal (3, yes, 3 C functions) 
   with no support for connections, result set (cursors), data types, 
   meta-data -- nothing.  So I had to simulate all this. (Actually it 
   wasn't too bad).

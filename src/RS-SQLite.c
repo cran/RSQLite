@@ -1,7 +1,7 @@
-/* $Id: RS-SQLite.c,v 1.3 2002/09/05 21:03:02 dj Exp dj $
+/* $Id: RS-SQLite.c,v 1.4 2003/06/04 22:26:56 dj Exp $
  *
  *
- * Copyright (C) 1999 The Omega Project for Statistical Computing.
+ * Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,12 @@
 
 #include "RS-SQLite.h"
 
+char *compiledVarsion = SQLITE_VERSION;
+
 /* The macro NA_STRING is a CHRSXP in R but a char * in Splus */
 #ifdef USING_R
-#  define RS_NA_STRING "<NA>"            /* CHR_EL(NA_STRING,0)  */
+/*#  define RS_NA_STRING "<NA>" */           /* CHR_EL(NA_STRING,0)  */
+#  define RS_NA_STRING CHAR_DEREF(NA_STRING)
 #else
 #  define RS_NA_STRING NA_STRING
 #endif
@@ -34,18 +37,20 @@
  * This driver hooks R/S and SQLite and implements the proposed S-DBI
  * generic R/S-database interface 0.2.
  * 
- * SQLite has a (very) minimilst API. In fact it has one, and only
+ * SQLite has a (very) minimilst API. In fact up to 2.7.6, it had one, and only
  * one function to exec SQL with no facilities for cursors, data types,
  * result sets, meta data -- nothing.   But it provides ONE and only one
  * hook in the form of a callback function that gets invoked for
  * each row that gets fetched.  So we'll simulate cursors ourseleves
  * through the RS_DBI_resultSet structure -- which is ideal for this.
  * We do this through what we consider the "standard" callback, but
- * clearly there are plenty of oppurtunities to directly hook *arbitrary*
+ * clearly there are plenty of opportunities to directly hook *arbitrary*
  * R/S computations directly into the database engine.  Cool!
  * Also we need to simulate (fake) exception objects. We do this piggy-
- * backing on the memeber "drvData" of the RS_DBI_connection structure.
- * The exception is a 2-member struct with errorNum and erroMsg.
+ * backing on the member "drvData" of the RS_DBI_connection structure.
+ * The exception is a 2-member struct with errorNum and erroMsg
+ * (this should be extended to allow multiple errors in the structure, 
+ * like in the ODBC API.)
  *
  * For details on SQLite see www.hwaci.com/sw/sqlite/index.html
  * TODO:
@@ -67,7 +72,16 @@ RS_SQLite_init(s_object *config_params, s_object *reload)
   Mgr_Handle *mgrHandle;
   Sint  fetch_default_rec, force_reload, max_con;
   const char *drvName = "SQLite";
+  const char *clientVersion = sqlite_libversion();
 
+  /* make sure we're running with the "right" version of the SQLite library */
+  if(strcmp(clientVersion, compiledVarsion)){
+     char  buf[256];
+     (void) sprintf(buf, 
+                    "%s mismatch between compiled version %s and runtime version %s",
+                    drvName, compiledVarsion, clientVersion);
+     RS_DBI_errorMessage(buf, RS_DBI_WARNING);
+  }
   if(GET_LENGTH(config_params)!=2){
      RS_DBI_errorMessage(
         "initialization error: must specify max num of conenctions and default number of rows per fetch", 
@@ -811,7 +825,7 @@ RS_SQLite_connectionInfo(Con_Handle *conHandle)
 #endif
   conParams = (RS_SQLite_conParams *) con->conParams;
   SET_LST_CHR_EL(output,0,0,C_S_CPY("localhost"));
-  SET_LST_CHR_EL(output,1,0,C_S_CPY(getlogin()));
+  SET_LST_CHR_EL(output,1,0,C_S_CPY(RS_NA_STRING));
   SET_LST_CHR_EL(output,2,0,C_S_CPY(conParams->dbname));
   SET_LST_CHR_EL(output,3,0,C_S_CPY("direct"));
   SET_LST_CHR_EL(output,4,0,C_S_CPY(SQLITE_VERSION));
