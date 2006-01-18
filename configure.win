@@ -3,6 +3,7 @@
 
 test -d inst/libs || mkdir inst/libs
 cp src/windows/sqlite3.dll inst/libs
+cp src/windows/sqlite3.h src      ## need the header file here
 
 ## build the libsqlite3.a library
 cd ./src/windows

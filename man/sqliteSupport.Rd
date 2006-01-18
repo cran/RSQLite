@@ -1,4 +1,4 @@
-% $Id: sqliteSupport.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: sqliteSupport.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{sqliteSupport}                % adapted from ROracle
 \alias{sqliteInitDriver}            % driver-related function
 \alias{sqliteDriverInfo}
@@ -16,6 +16,7 @@
 \alias{sqliteCloseResult}
 \alias{sqliteReadTable}
 \alias{sqliteWriteTable}            % convenience functions
+\alias{sqliteImportFile}            
 \alias{sqliteTableFields}
 \alias{sqliteDataType}
 \alias{.SQLitePkgName}              % constants
@@ -39,7 +40,7 @@
    sqliteCloseDriver(drv, ...)
 
    ## SQLiteConnection-related
-   sqliteNewConnection(drv, dbname, mode = 0)
+   sqliteNewConnection(drv, dbname, mode = 0, cache_size=NULL, synchronous=0)
    sqliteConnectionInfo(obj, what, ...)
    sqliteDescribeConnection(obj, verbose = FALSE, ...)
    sqliteCloseConnection(con, ...)
@@ -47,7 +48,7 @@
    ## SQLiteResult-related
    sqliteExecStatement(con, statement, limit)
    sqliteFetch(res, n=0, ...)
-   sqliteQuickSQL(con, statement)
+   sqliteQuickSQL(con, statement, ...)
    sqliteResultInfo(obj, what, ...)
    sqliteDescribeResult(obj, verbose = FALSE, ...)
    sqliteCloseResult(res, ...)
@@ -55,8 +56,10 @@
    ## data mappings and convenience functions
    sqliteDataType(obj, ...)
    sqliteReadTable(con, name, row.names = "row_names", check.names = TRUE, ...)
-   sqliteWriteTable(con, name, value, field.types, row.names = TRUE, 
-      overwrite=FALSE, append=FALSE, ...)
+   sqliteImportFile(con, name, value, field.types, overwrite=FALSE, 
+      append=FALSE, header, row.names, nrows=50, sep=",", eol="\n", 
+      skip = 0, ...)
+   sqliteWriteTable(con, name, value, row.names = TRUE, ...)
    sqliteTableFields(con, name, ...)
 }
 \arguments{
@@ -105,6 +108,22 @@
    positive integer describing the mode for opening the database
    (SQLite's underlying API currently does not yet use it, but
    it is reserved for future functionality).  The default is 0.
+}
+\item{cache_size}{
+   positive integer to pass to the \code{PRAGMA cache_size};  this
+   changes the maximum number of disk pages that SQLite will hold in
+   memory (SQLite's default is 2000 pages). 
+}
+\item{synchronous}{
+  values the \code{PRAGMA synchronous} flag, possible values are
+  0, 1, or 2 or the corresponding strings "OFF", "NORMAL", or "FULL".
+  The \code{RSQLite} package uses a default of 0 (OFF), although
+  SQLite's default is 2 (FULL) as of version 3.2.8. 
+  Users have reported significant speed ups using \code{sychronous="OFF"},
+  and the SQLite documentation itself implies considerably improved
+  performance at the very modest risk of database corruption in the
+  unlikely case of the operating system (\emph{not} the R application) 
+  crashing.
 }
 %\item{max.results}{
 %   positive integer indicating the maximum number of results that
@@ -156,6 +175,20 @@
    logical indicating whether to append \code{value} to the existing
    table \code{name}.
 }
+\item{header}{
+  logical, does the input file have a header line?  Default is the
+  same heuristic used by \code{read.table}, i.e., TRUE if the first
+  line has one fewer column that the second line.
+}
+\item{nrows}{
+   number of lines to rows to import using \code{read.table} from the
+  input file to create the proper table definition. Default is 50.
+}
+\item{sep}{field separator character.}
+\item{eol}{end-of-line separator.}
+\item{skip}{
+   number of lines to skip before reading data in the input file.
+}
 \item{\dots}{
    placeholder for future use.
 }
@@ -198,6 +231,9 @@
    DBMS table.
    
    \code{sqliteWriteTable}  returns a logical indicating whether the 
+   operation succeeded or not.
+   
+   \code{sqliteImportFile}  returns a logical indicating whether the 
    operation succeeded or not.
    
    \code{sqliteTableFields} returns a character vector with the 

@@ -1,4 +1,4 @@
-% $Id: dbConnect-methods.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: dbConnect-methods.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{dbConnect-methods}
 \docType{methods}
 \alias{dbDisconnect-methods}
@@ -23,9 +23,25 @@
   an \code{SQLiteConnection} object as produced by \code{dbConnect}.
   }
 \item{\dots }{
-  In the case of SQLite all you need is \code{dbname}, which
-  should refer to a file name.
-  }
+  As of RSQLite 0.4-1 you may specify values for the two \code{PRAGMAs}
+  \code{cache\_size} and \code{synchronous} when initializing a new
+  connection (this does not applies, obviously, to cloning an existing
+  connection).
+
+  RSQLite defaults \code{synchronous} to 0 (or "OFF"),
+  although SQLite's default as of 3.2.8 is 2 (FULL).
+  Possible values for \code{synchronous} are 0, 1, or 2 or the 
+  corresponding strings "OFF", "NORMAL", or "FULL".
+  Users have reported significant speed ups using \code{sychronous=0},
+  and the SQLite documentation itself implies considerable improved
+  performance at the very modest risk of database corruption in the
+  unlikely case of the operating system (\emph{not} the R application) 
+  crashing. See the SQLite documentation for the full details of this
+  \code{PRAGMA}.
+  
+  \code{cache\_size} can be a positive integer to change
+   the maximum number of disk pages that SQLite holds in
+   memory (SQLite's default is 2000 pages). }
 }
 }
 \section{Side Effects}{
@@ -69,7 +85,7 @@ data <- fetch(rs, n = -1)   # extract all rows
 dim(data)
 }
 }
-\keywords{methods}
+\keyword{methods}
 \keyword{interface}
 \keyword{database}
 % vim: syntax=tex

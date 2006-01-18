@@ -1,4 +1,4 @@
-% $Id: dbGetInfo-methods.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: dbGetInfo-methods.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{dbGetInfo-methods}
 \docType{methods}
 \alias{dbGetInfo}
@@ -72,7 +72,7 @@ names(dbGetInfo(con))
 names(dbGetInfo(rs)) 
 }
 }
-\keywords{methods}
+\keyword{methods}
 \keyword{interface}
 \keyword{database}
 % vim: syntax=tex

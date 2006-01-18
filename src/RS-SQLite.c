@@ -23,7 +23,7 @@
 /* size_t getline(char**, size_t*, FILE*); */
 char *compiledVarsion = SQLITE_VERSION;
 int RS_sqlite_import(sqlite3 *db, const char *zTable, 
-                     const char *zFile, const char *separator);
+       const char *zFile, const char *separator, const char *eol, int skip);
 
 /* The macro NA_STRING is a CHRSXP in R but a char * in Splus */
 #ifdef USING_R
@@ -209,7 +209,7 @@ RS_SQLite_freeException(RS_DBI_connection *con)
    RS_SQLite_exception *ex = (RS_SQLite_exception *) con->drvData;
 
    if(!ex) return;
-   if(!ex->errorMsg) free(ex->errorMsg);
+   if(ex->errorMsg) free(ex->errorMsg);
    free(ex);
    return;
 }
@@ -223,7 +223,7 @@ RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *s_con_params)
   RS_SQLite_conParams *conParams;
   Con_Handle  *conHandle;
   sqlite3     *db_connection, **pDb;
-  char        *dbname = NULL, **errMsg = NULL;
+  char        *dbname = NULL;
   int         rc, mode;
 
   if(!is_validHandle(mgrHandle, MGR_HANDLE_TYPE))
@@ -232,19 +232,13 @@ RS_SQLite_newConnection(Mgr_Handle *mgrHandle, s_object *s_con_params)
   /* unpack connection parameters from S object */
   dbname = CHR_EL(s_con_params, 0);
   mode = (Sint) atol(CHR_EL(s_con_params,1)); 
-  errMsg = (char **) calloc((size_t) 1, sizeof(char *));
   pDb = (sqlite3 **) calloc((size_t) 1, sizeof(sqlite3 *));
 
-  /* version 2 api
-   * db_connection = sqlite_open(dbname, mode, errMsg);
-   */
   rc = sqlite3_open(dbname, pDb);
   db_connection = *pDb;           /* available, even if open fails! See API */
   if(rc != SQLITE_OK){
      char buf[256];
      sprintf(buf, "could not connect to dbname \"%s\"\n", dbname);
-     free(errMsg[0]);
-     free(errMsg);
      RS_DBI_errorMessage(buf, RS_DBI_ERROR);
   }
 
@@ -284,7 +278,7 @@ RS_SQLite_closeConnection(Con_Handle *conHandle)
   }
 
   db_connection = (sqlite3 *) con->drvConnection;
-  rc = sqlite3_close(db_connection);
+  rc = sqlite3_close(db_connection);  /* it also frees db_connection */
   if(rc==SQLITE_BUSY){
     RS_DBI_errorMessage(
      "finalize the pending prepared statements before closing this connection",
@@ -307,7 +301,7 @@ RS_SQLite_closeConnection(Con_Handle *conHandle)
       */
      con->conParams = (RS_SQLite_conParams *) NULL;
   }
-  free(db_connection);
+  /* free(db_connection); */    /* freed by sqlite3_close? */
   con->drvConnection = (void *) NULL;
 
   RS_SQLite_freeException(con);
@@ -505,7 +499,8 @@ RS_SQLite_stdCallback(
    /* we just copy each column to the row buffer in the result set */
    for(j=0; j<ncol; j++){
       if(data[j]==0) 
-	 rows[rows_affected*ncol+j] = RS_DBI_copyString(RS_NA_STRING);
+	 /* rows[rows_affected*ncol+j] = RS_DBI_copyString(RS_NA_STRING); */
+	 rows[rows_affected*ncol+j] = (char *) 0;
       else
          rows[rows_affected*ncol+j] = RS_DBI_copyString(data[j]);
    }
@@ -937,15 +932,17 @@ RS_SQLite_importFile(
   Con_Handle *conHandle,
   s_object *s_tablename,
   s_object *s_filename,
-  s_object *s_separator 
+  s_object *s_separator,
+  s_object *s_eol,
+  s_object *s_skip
 )
 {
   S_EVALUATOR
 
   RS_DBI_connection *con;
   sqlite3           *db_connection;
-  char              *zFile, *zTable, *zSep, *s;
-  Sint              rc;
+  char              *zFile, *zTable, *zSep, *s, *s1, *zEol;
+  Sint              rc, skip;
   s_object          *output;
 
 
@@ -965,18 +962,25 @@ RS_SQLite_importFile(
   (void) strcpy(zFile, s);
 
   s = CHR_EL(s_separator, 0);
+  s1 = CHR_EL(s_eol, 0);
   zSep = (char *) malloc( strlen(s)+1);
-  if(!zSep){
+  zEol = (char *) malloc(strlen(s1)+1);
+  if(!zSep || !zEol){
     free(zTable); 
     free(zFile);
+    if(zSep) free(zSep);
+    if(zEol) free(zEol);
     RS_DBI_errorMessage("could not allocate memory", RS_DBI_ERROR);
   }
   (void) strcpy(zSep, s);
+  (void) strcpy(zEol, s1);
+
+  skip = (Sint) INT_EL(s_skip, 0);
 
   con = RS_DBI_getConnection(conHandle);
   db_connection = (sqlite3 *) con->drvConnection;
 
-  rc = RS_sqlite_import(db_connection, zTable, zFile, zSep);
+  rc = RS_sqlite_import(db_connection, zTable, zFile, zSep, zEol, skip);
   
   free(zTable);
   free(zFile);
@@ -996,7 +1000,9 @@ RS_sqlite_import(
    sqlite3 *db, 
    const char *zTable,          /* table must already exist */
    const char *zFile, 
-   const char *separator
+   const char *separator,
+   const char *eol,
+   Sint skip
 )
 {
     sqlite3_stmt *pStmt;        /* A statement */
@@ -1011,6 +1017,8 @@ RS_sqlite_import(
     char *zCommit;              /* How to commit changes */   
     FILE *in;                   /* The input file */
     int lineno = 0;             /* Line number of input file */
+
+    char *z;
 
     nSep = strlen(separator);
     if( nSep==0 ){
@@ -1064,10 +1072,10 @@ RS_sqlite_import(
     if( azCol==0 ) return 0;
     sqlite3_exec(db, "BEGIN", 0, 0, 0);
     zCommit = "COMMIT";
-    while( (zLine = RS_sqlite_getline(in)) != NULL){
-      char *z;
-      i = 0;
+    while( (zLine = RS_sqlite_getline(in, eol)) != NULL){
       lineno++;
+      if(lineno <= skip) continue;
+      i = 0;
       azCol[0] = zLine;
       for(i=0, z=zLine; *z && *z!='\n' && *z!='\r'; z++){
         if( *z==separator[0] && strncmp(z, separator, nSep)==0 ){
@@ -1088,9 +1096,16 @@ RS_sqlite_import(
         zCommit = "ROLLBACK";
         break;
       }
+
       for(i=0; i<nCol; i++){
-        sqlite3_bind_text(pStmt, i+1, azCol[i], -1, SQLITE_STATIC);
+        if(azCol[i][0]=='\\' && azCol[i][1]=='N'){   /* insert NULL for NA */
+          sqlite3_bind_null(pStmt, i+1);
+        }
+        else {
+          sqlite3_bind_text(pStmt, i+1, azCol[i], -1, SQLITE_STATIC);
+        }
       }
+
       if(sqlite3_step(pStmt)!=SQLITE_DONE){
         char errMsg[512];
         (void) sprintf(errMsg, 
@@ -1116,21 +1131,26 @@ RS_sqlite_import(
 }
 
 /* the following is only needed (?) on windows (getline is a GNU extension
- * and it gave me problems with minGW)
+ * and it gave me problems with minGW).  Note that we drop the (UNIX)
+ * new line character.  The R function safe.write() explicitly uses
+ * eol = '\n' even on Windows.
  */
 
 char *
-RS_sqlite_getline(FILE *in)
+RS_sqlite_getline(FILE *in, const char *eol)
 {
    /* caller must free memory */
-   char   *buf;
-   size_t nc, i;
+   char   *buf, ceol;
+   size_t nc, i, neol;
    int    c;
 
    nc = 1024; i = 0;
    buf = (char *) malloc(nc);
    if(!buf)
       RS_DBI_errorMessage("RS_sqlite_getline could not malloc", RS_DBI_ERROR);
+
+   neol = strlen(eol);  /* num of eol chars */
+   ceol = eol[neol-1];  /* last char in eol */
    while(TRUE){
       c=fgetc(in);
       if(i==nc){
@@ -1143,8 +1163,8 @@ RS_sqlite_getline(FILE *in)
       if(c==EOF) 
         break;
       buf[i++] = c;
-      if(c=='\n'){
-        buf[i++] = '\0';
+      if(c==ceol){           /* '\n'){ */
+        buf[i-neol] = '\0';   /* drop the newline char(s) */
         break;
       }
     }
@@ -1152,15 +1172,6 @@ RS_sqlite_getline(FILE *in)
     if(i==0){              /* empty line */
       free(buf);
       buf = (char *) NULL;
-    }
-    else if(i<2 || buf[i-2]!='\n'){   /* bad input (incomplete line) */
-      RS_DBI_errorMessage("RS_sqlite_getline: incomplete line", RS_DBI_WARNING);
-      if(i<2){
-         buf[0] = '\n'; buf[1] = '\0';
-      }
-      else {
-         buf[i-2] = '\n'; buf[i-1] = '\0';
-      }
     }
 
     return buf;

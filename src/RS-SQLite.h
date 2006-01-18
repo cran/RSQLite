@@ -1,7 +1,7 @@
 #ifndef _RS_SQLite_H
 #define _RS_SQLite_H 1
 /*  
- * $Id: RS-SQLite.h,v 1.4 2005/04/06 02:11:56 dj Exp dj $
+ * $Id: RS-SQLite.h,v 1.5 2006/01/18 14:22:13 dj Exp dj $
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
@@ -108,9 +108,11 @@ s_object *RS_SQLite_resultSetInfo(Res_Handle *rsHandle);
 
 /*  The following imports the delim-fields of a file into an existing table*/
 s_object *RS_SQLite_importFile(Con_Handle *conHandle, s_object *s_tablename,
-                               s_object *s_filename, s_object *s_separator);
+             s_object *s_filename, s_object *s_separator, s_object *s_obj,
+             s_object *s_skip);
 
-char * RS_sqlite_getline(FILE *in);
+/* TODO: general connection */
+char * RS_sqlite_getline(FILE *in, const char *eol); 
 
 /* the following type names should be the  SQL-92 data types, and should
  * be moved to the RS-DBI.h

@@ -1,4 +1,4 @@
-% $Id: SQLite.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: SQLite.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{SQLite}
 \alias{SQLite}
 \alias{SQLiteDriver}
@@ -7,8 +7,8 @@
 }
 \description{
 This function creates and initializes the SQLite engine.
-It returns an object that allows you to connect to the SQLite 
-embedded engine.
+It returns an object that allows you to connect to the SQLite engine
+embedded in R.
 }
 \usage{
 SQLite(max.con = 16, fetch.default.rec = 500, force.reload = FALSE)

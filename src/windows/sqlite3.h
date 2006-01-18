@@ -12,7 +12,7 @@
 ** This header file defines the interface that the SQLite library
 ** presents to client programs.
 **
-** @(#) $Id: sqlite.h.in,v 1.131 2005/03/21 04:04:03 danielk1977 Exp $
+** @(#) $Id: sqlite.h.in,v 1.141 2005/09/08 10:58:52 drh Exp $
 */
 #ifndef _SQLITE3_H_
 #define _SQLITE3_H_
@@ -31,7 +31,7 @@ extern "C" {
 #ifdef SQLITE_VERSION
 # undef SQLITE_VERSION
 #endif
-#define SQLITE_VERSION         "3.2.1"
+#define SQLITE_VERSION         "3.2.8"
 
 /*
 ** The format of the version string is "X.Y.Z<trailing string>", where
@@ -48,7 +48,7 @@ extern "C" {
 #ifdef SQLITE_VERSION_NUMBER
 # undef SQLITE_VERSION_NUMBER
 #endif
-#define SQLITE_VERSION_NUMBER 3002001
+#define SQLITE_VERSION_NUMBER 3002008
 
 /*
 ** The version string is also compiled into the library so that a program
@@ -158,7 +158,7 @@ int sqlite3_exec(
 */
 #define SQLITE_OK           0   /* Successful result */
 #define SQLITE_ERROR        1   /* SQL error or missing database */
-#define SQLITE_INTERNAL     2   /* An internal logic error in SQLite */
+#define SQLITE_INTERNAL     2   /* NOT USED. Internal logic error in SQLite */
 #define SQLITE_PERM         3   /* Access permission denied */
 #define SQLITE_ABORT        4   /* Callback routine requested an abort */
 #define SQLITE_BUSY         5   /* The database file is locked */
@@ -168,13 +168,13 @@ int sqlite3_exec(
 #define SQLITE_INTERRUPT    9   /* Operation terminated by sqlite3_interrupt()*/
 #define SQLITE_IOERR       10   /* Some kind of disk I/O error occurred */
 #define SQLITE_CORRUPT     11   /* The database disk image is malformed */
-#define SQLITE_NOTFOUND    12   /* (Internal Only) Table or record not found */
+#define SQLITE_NOTFOUND    12   /* NOT USED. Table or record not found */
 #define SQLITE_FULL        13   /* Insertion failed because database is full */
 #define SQLITE_CANTOPEN    14   /* Unable to open the database file */
 #define SQLITE_PROTOCOL    15   /* Database lock protocol error */
 #define SQLITE_EMPTY       16   /* Database is empty */
 #define SQLITE_SCHEMA      17   /* The database schema changed */
-#define SQLITE_TOOBIG      18   /* Too much data for one row of a table */
+#define SQLITE_TOOBIG      18   /* NOT USED. Too much data for one row */
 #define SQLITE_CONSTRAINT  19   /* Abort due to contraint violation */
 #define SQLITE_MISMATCH    20   /* Data type mismatch */
 #define SQLITE_MISUSE      21   /* Library used incorrectly */
@@ -373,8 +373,9 @@ void sqlite3_free_table(char **result);
 **
 ** We can use this text in an SQL statement as follows:
 **
-**      sqlite3_exec_printf(db, "INSERT INTO table VALUES('%q')",
-**          callback1, 0, 0, zText);
+**      char *z = sqlite3_mprintf("INSERT INTO TABLES('%q')", zText);
+**      sqlite3_exec(db, z, callback1, 0, 0);
+**      sqlite3_free(z);
 **
 ** Because the %q format string is used, the '\'' character in zText
 ** is escaped and the SQL generated is as follows:
@@ -452,6 +453,7 @@ int sqlite3_set_authorizer(
 #define SQLITE_DETACH               25   /* Database Name   NULL            */
 #define SQLITE_ALTER_TABLE          26   /* Database Name   Table Name      */
 #define SQLITE_REINDEX              27   /* Index Name      NULL            */
+#define SQLITE_ANALYZE              28   /* Table Name      NULL            */
 
 
 /*
@@ -463,11 +465,18 @@ int sqlite3_set_authorizer(
 #define SQLITE_IGNORE 2   /* Don't allow access, but don't generate an error */
 
 /*
-** Register a function that is called at every invocation of sqlite3_exec()
-** or sqlite3_prepare().  This function can be used (for example) to generate
-** a log file of all SQL executed against a database.
+** Register a function for tracing SQL command evaluation.  The function
+** registered by sqlite3_trace() is invoked at the first sqlite3_step()
+** for the evaluation of an SQL statement.  The function registered by
+** sqlite3_profile() runs at the end of each SQL statement and includes
+** information on how long that statement ran.
+**
+** The sqlite3_profile() API is currently considered experimental and
+** is subject to change.
 */
 void *sqlite3_trace(sqlite3*, void(*xTrace)(void*,const char*), void*);
+void *sqlite3_profile(sqlite3*,
+   void(*xProfile)(void*,const char*,sqlite_uint64), void*);
 
 /*
 ** This routine configures a callback function - the progress callback - that
@@ -688,8 +697,6 @@ int sqlite3_bind_parameter_index(sqlite3_stmt*, const char *zName);
 
 /*
 ** Set all the parameters in the compiled SQL statement to NULL.
-**
-******* THIS IS AN EXPERIMENTAL API AND IS SUBJECT TO CHANGE ******
 */
 int sqlite3_clear_bindings(sqlite3_stmt*);
 
@@ -1004,10 +1011,9 @@ int sqlite3_value_type(sqlite3_value*);
 void *sqlite3_aggregate_context(sqlite3_context*, int nBytes);
 
 /*
-** The pUserData parameter to the sqlite3_create_function() and
-** sqlite3_create_aggregate() routines used to register user functions
-** is available to the implementation of the function using this
-** call.
+** The pUserData parameter to the sqlite3_create_function()
+** routine used to register user functions is available to
+** the implementation of the function using this call.
 */
 void *sqlite3_user_data(sqlite3_context*);
 
@@ -1191,22 +1197,28 @@ int sqlite3_rekey(
 ** milisecond time resolution, then the time will be rounded up to 
 ** the nearest second. The number of miliseconds of sleep actually 
 ** requested from the operating system is returned.
-**
-******* THIS IS AN EXPERIMENTAL API AND IS SUBJECT TO CHANGE ******
 */
 int sqlite3_sleep(int);
 
 /*
-** Return TRUE (non-zero) of the statement supplied as an argument needs
+** Return TRUE (non-zero) if the statement supplied as an argument needs
 ** to be recompiled.  A statement needs to be recompiled whenever the
 ** execution environment changes in a way that would alter the program
 ** that sqlite3_prepare() generates.  For example, if new functions or
 ** collating sequences are registered or if an authorizer function is
 ** added or changed.
 **
-******* THIS IS AN EXPERIMENTAL API AND IS SUBJECT TO CHANGE ******
 */
 int sqlite3_expired(sqlite3_stmt*);
+
+/*
+** Move all bindings from the first prepared statement over to the second.
+** This routine is useful, for example, if the first prepared statement
+** fails with an SQLITE_SCHEMA error.  The same SQL can be prepared into
+** the second prepared statement then all of the bindings transfered over
+** to the second statement before the first statement is finalized.
+*/
+int sqlite3_transfer_bindings(sqlite3_stmt*, sqlite3_stmt*);
 
 /*
 ** If the following global variable is made to point to a
@@ -1224,7 +1236,7 @@ extern char *sqlite3_temp_directory;
 ** This function is called to recover from a malloc() failure that occured
 ** within the SQLite library. Normally, after a single malloc() fails the 
 ** library refuses to function (all major calls return SQLITE_NOMEM).
-** This function library state so that it can be used again.
+** This function restores the library state so that it can be used again.
 **
 ** All existing statements (sqlite3_stmt pointers) must be finalized or
 ** reset before this call is made. Otherwise, SQLITE_BUSY is returned.
@@ -1240,6 +1252,22 @@ extern char *sqlite3_temp_directory;
 ** SQLITE_OMIT_GLOBALRECOVER at compile time.
 */
 int sqlite3_global_recover();
+
+/*
+** Test to see whether or not the database connection is in autocommit
+** mode.  Return TRUE if it is and FALSE if not.  Autocommit mode is on
+** by default.  Autocommit is disabled by a BEGIN statement and reenabled
+** by the next COMMIT or ROLLBACK.
+*/
+int sqlite3_get_autocommit(sqlite3*);
+
+/*
+** Return the sqlite3* database handle to which the prepared statement given
+** in the argument belongs.  This is the same database handle that was
+** the first argument to the sqlite3_prepare() that was used to create
+** the statement in the first place.
+*/
+sqlite3 *sqlite3_db_handle(sqlite3_stmt*);
 
 #ifdef __cplusplus
 }  /* End of the 'extern "C"' block */

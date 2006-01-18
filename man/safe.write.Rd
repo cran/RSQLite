@@ -1,4 +1,4 @@
-% $Id: safe.write.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: safe.write.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{safe.write}
 \alias{safe.write}
 \title{Write a data.frame avoiding exceeding memory limits}
@@ -7,13 +7,16 @@
    exceeding memory limits for very large data.frames.
 }
 \usage{
-safe.write(value, file, batch, ..., quote.string=FALSE)
+safe.write(value, file, batch, row.names = TRUE, ..., sep = ',', 
+  eol = '\n', quote.string=FALSE)
 }
 \arguments{
   \item{value}{a data.frame;}
   \item{file}{a file object (connection, file name, etc).}
   \item{batch}{maximum number of rows to write at a time.}
   \item{\dots}{any other arguments are passed to \code{write.table}.}
+  \item{sep}{field separator passed to \code{write.table}.}
+  \item{eol}{end of line character passed to \code{write.table}.}
   \item{quote.string}{logical value passed to \code{write.table}.}
 }
 \details{

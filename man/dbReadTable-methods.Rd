@@ -1,4 +1,4 @@
-% $Id: dbReadTable-methods.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: dbReadTable-methods.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{dbReadTable-methods}
 \docType{methods}
 \alias{dbReadTable-methods}
@@ -7,6 +7,7 @@
 \alias{dbRemoveTable-methods}
 \alias{dbReadTable,SQLiteConnection,character-method}
 \alias{dbWriteTable,SQLiteConnection,character,data.frame-method}
+\alias{dbWriteTable,SQLiteConnection,character,character-method}
 \alias{dbExistsTable,SQLiteConnection,character-method}
 \alias{dbRemoveTable,SQLiteConnection,character-method}
 \title{
@@ -30,7 +31,11 @@
   a character string specifying a table name.
   }
 \item{value}{
-  a data.frame (or coercible to data.frame).
+  a data.frame (or coercible to data.frame) object 
+  or a file name (character).  In the first case, the data.frame
+  is written to a temporary file and then imported to SQLite;
+  when \code{value} is a character, it is interpreted as a
+  file name and its contents imported to SQLite.
   }
 \item{row.names}{
   in the case of \code{dbReadTable}, this argument can be a string or
@@ -46,19 +51,57 @@
   }
 \item{overwrite}{
   a logical specifying whether to overwrite an existing table
-  or not.  Its default is \code{FALSE}.
+  or not.  Its default is \code{FALSE}.  (See the BUGS section below).
   }
 \item{append}{
   a logical specifying whether to append to an existing table
   in the DBMS.  Its default is \code{FALSE}.
   }
-\item{\dots }{any optional arguments.}
+\item{\dots }{
+  optional arguments.
+
+  When \code{dbWriteTable} is used to import data from a file, 
+  you may optionally specify \code{header=}, \code{row.names=},
+  \code{col.names=}, \code{sep=}, \code{eol=}, \code{field.types=}, 
+  and \code{skip=}.
+
+  \code{header} is a logical indicating whether the first data line
+  (but see \code{skip}) has a header or not.  If missing, it value
+  is determined following \code{\link[base]{read.table}} convention,
+  namely, it is set to TRUE if and only if the first row has one
+  fewer field that the number of columns.
+
+  \code{row.names} is a logical to specify whether the first column
+  is a set of row names.  If missing its defualt follows the 
+  \code{\link[base]{read.table}} convention.
+  
+  \code{col.names} a character vector with column names (these names
+  will be filtered with \code{\link[DBI]{make.db.names}} to 
+  ensure valid SQL identifiers. (See also \code{field.types} below.)
+
+  The field separator \code{sep=} defaults to \code{','}.
+
+  The end-of-line delimiter \code{eol} defaults to \code{'\n'}.
+
+  \code{skip} specifies number of lines to skip before reading the data
+  and it defaults to 0. 
+
+  \code{field.types} is a list of named field SQL types where 
+  \code{names(field.types)} provide the new table's column names 
+  (if missing, field types are inferred using \code{\link[DBI]{dbDataType}}).
+ }
 }
 }
 
 \value{
    A data.frame in the case of \code{dbReadTable}; otherwise a logical 
    indicating whether the operation was successful.  
+}
+\section{BUGS}{
+  These RSQLite methods do not use transactions, thus it is dangerous 
+  to specify \code{overwrite=TRUE} in \code{dbWriteTable} (the
+  table is first removed and in case the data exporting fails
+  the original table is lost forever).
 }
 \note{
    Note that the data.frame returned by \code{dbReadTable} only has
@@ -73,6 +116,7 @@
    or \url{http://stat.bell-labs.com/RS-DBI}.
 }
 \seealso{
+  \code{\link{sqliteImportFile}},
   \code{\link{SQLite}},
   \code{\link[DBI]{dbDriver}},
   \code{\link[DBI]{dbConnect}},
@@ -97,7 +141,7 @@ else
 }
 }
 }
-\keywords{methods}
+\keyword{methods}
 \keyword{interface}
 \keyword{database}
 % vim: syntax=tex

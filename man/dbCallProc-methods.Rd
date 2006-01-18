@@ -1,4 +1,4 @@
-% $Id: dbCallProc-methods.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: dbCallProc-methods.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{dbCallProc-methods}
 \docType{methods}
 \alias{dbCallProc-methods}
@@ -33,7 +33,7 @@
    \code{\link[DBI]{dbGetInfo}},
    \code{\link[DBI]{dbReadTable}}.
 }
-\keywords{methods}
+\keyword{methods}
 \keyword{interface}
 \keyword{database}
 % vim: syntax=tex

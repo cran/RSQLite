@@ -1,3 +1,19 @@
+Version 0.4-1
+
+* Added a method for dbWriteTable to write table from a text file, e.g.,
+  dbWriteTable(con, "tablename", "filename")
+
+* Fixed problems exporting/importing NA's (thanks to Ronngui Huang for
+  a very clear bug report).
+
+* Fixed double free() in the C code, a tiny memory leak, and configure now 
+  builds sqlite properly on 64-bit linux (thanks to Seth Falcon for these).
+
+* dbConnect() now accepts values for the "cache_size" and "sychnronous" 
+  PRAGMAs ("synchronous" defaults to 0 or "off") to improve
+  performance (thanks to Charles Loboz for pointing these out, see the
+  file "rsqlitePerf.txt").
+
 Version 0.4-0
 
 * First attempt at using the new SQLite Version 3 API.  This version 

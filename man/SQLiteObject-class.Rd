@@ -1,4 +1,4 @@
-% $Id: SQLiteObject-class.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: SQLiteObject-class.Rd,v 1.2 2003/11/04 16:41:02 dj Exp $
 \name{SQLiteObject-class}
 \docType{class}
 \alias{SQLiteObject-class}

@@ -1,4 +1,4 @@
-% $Id: make.db.names-methods.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: make.db.names-methods.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{make.db.names-methods}
 \docType{methods}
 \alias{SQLKeywords-methods}
@@ -81,7 +81,7 @@ for(i in seq(along = export) )
    dbWriteTable(con, name = tabs[i],  get(export[i]))
 }
 }
-\keywords{methods}
+\keyword{methods}
 \keyword{interface}
 \keyword{database}
 % vim: syntax=tex

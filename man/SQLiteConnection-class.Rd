@@ -1,4 +1,4 @@
-% $Id: SQLiteConnection-class.Rd,v 1.2 2003/11/04 16:41:02 dj Exp dj $
+% $Id: SQLiteConnection-class.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
 \name{SQLiteConnection-class}
 \docType{class}
 \alias{SQLiteConnection-class}

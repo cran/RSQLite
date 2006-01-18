@@ -1,4 +1,4 @@
-## $Id: zzz.R,v 1.6 2005/04/06 02:11:13 dj Exp dj $
+## $Id: zzz.R,v 1.6 2005/04/06 02:11:13 dj Exp $
 ".conflicts.OK" <- TRUE
 
 ## these are needed while source'ing the package (prior
@@ -114,7 +114,7 @@ function(obj)
    .Call("RS_DBI_validHandle", obj, PACKAGE = .SQLitePkgName)
 }
 ##
-## $Id: SQLite.R,v 1.3 2003/06/17 15:00:52 dj Exp dj $
+## $Id: SQLite.R,v 1.4 2006/01/18 14:23:19 dj Exp dj $
 ##
 ## Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
 ##
@@ -137,7 +137,7 @@ function(obj)
 ##
 
 .SQLitePkgName <- "RSQLite"
-.SQLitePkgRCS <- "$Id: SQLite.R,v 1.3 2003/06/17 15:00:52 dj Exp dj $"
+.SQLitePkgRCS <- "$Id: SQLite.R,v 1.4 2006/01/18 14:23:19 dj Exp dj $"
 .SQLite.NA.string <- "\\N"  ## on input SQLite interprets \N as NULL (NA)
 
 setOldClass("data.frame")   ## to avoid warnings in setMethod's valueClass arg
@@ -260,6 +260,16 @@ setMethod("dbWriteTable",
                    value="data.frame"),
    def = function(conn, name, value, ...)
       sqliteWriteTable(conn, name, value, ...),
+   valueClass = "logical"
+)
+
+## create/load table from a file via dbWriteTable (the argument
+## value specifies a file name).  TODO, value a connection.
+setMethod("dbWriteTable", 
+   sig = signature(conn = "SQLiteConnection", name = "character",
+                   value="character"),
+   def = function(conn, name, value, ...)
+      sqliteImportFile(conn, name, value, ...),
    valueClass = "logical"
 )
 setMethod("dbRemoveTable", 
@@ -385,7 +395,7 @@ setMethod("isSQLKeyword",
    valueClass = "character"
 )
 ##
-## $Id: SQLiteSupport.R,v 1.3 2005/04/06 02:10:24 dj Exp dj $
+## $Id: SQLiteSupport.R,v 1.4 2006/01/18 14:23:19 dj Exp dj $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -475,13 +485,28 @@ function(obj, what="", ...)
 ## the SQLite API as the default database (SQLite config specific)
 ## while NULL means "no database".
 "sqliteNewConnection"<- 
-function(drv, dbname = "", mode=0)
+function(drv, dbname = "", mode=0, cache_size=NULL, synchronous=0)
 {
   con.params <- as.character(c(dbname, mode))
   drvId <- as(drv, "integer")
   conId <- .Call("RS_SQLite_newConnection", drvId, con.params, 
                  PACKAGE ="RSQLite")
-  new("SQLiteConnection", Id = conId)
+  con <- new("SQLiteConnection", Id = conId)
+
+  ## experimental PRAGMAs
+  try({
+    if(!is.null(cache_size))
+      dbGetQuery(con, sprintf("PRAGMA cache_size=%d", as.integer(cache_size)))
+    if(is.numeric(synchronous))
+      nsync <- as.integer(synchronous)
+    else if(is.character(synchronous))
+      nsync <- 
+        pmatch(tolower(synchronous), c("off", "normal", "full"), nomatch = 1) - 1
+    else nsync <- 0
+    dbGetQuery(con, sprintf("PRAGMA synchronous=%d", as.integer(nsync)))
+   }, silent = TRUE)
+
+  con
 }
 
 "sqliteDescribeConnection" <- 
@@ -567,7 +592,7 @@ function(con, statement, limit = -1)
 ## helper function: it exec's *and* retrieves a statement. It should
 ## be named somehting else.
 "sqliteQuickSQL" <- 
-function(con, statement)
+function(con, statement, ...)
 {
    nr <- length(dbListResults(con))
    if(nr>0){                     ## are there resultSets pending on con?
@@ -580,7 +605,7 @@ function(con, statement)
       invisible()
       return(NULL)
    }
-   res <- sqliteFetch(rs, n = -1)
+   res <- sqliteFetch(rs, n = -1, ...)
    if(dbHasCompleted(rs))
       dbClearResult(rs)
    else 
@@ -735,44 +760,46 @@ function(con, name, row.names = "row_names", check.names = TRUE, ...)
    out
 }
 
-"sqliteWriteTable" <-
-function(con, name, value, field.types, row.names = TRUE, 
-  overwrite=FALSE, append=FALSE, ...)
-## TODO: This function should execute its sql as a single transaction,
-## and allow converter functions.
-## Create table "name" (must be an SQL identifier) and populate
-## it with the values of the data.frame "value"
-## BUG: In the unlikely event that value has a field called "row.names"
-## we could inadvertently overwrite it (here the user should set row.names=F)
-## (I'm reluctantly adding the code re: row.names -- I'm not 100% comfortable
-## using data.frames as the basic data for relations.)
+"dbBuildTableDefinition" <-
+function(dbObj, name, value, field.types = NULL, row.names = TRUE, ...)
 {
-  if(overwrite && append)
-    stop("overwrite and append cannot both be TRUE")
   if(!is.data.frame(value))
     value <- as.data.frame(value)
-  if(row.names){
+  if(!is.null(row.names) && row.names){
     value  <- cbind(row.names(value), value)  ## can't use row.names= here
     names(value)[1] <- "row.names" 
   }
-  if(missing(field.types) || is.null(field.types)){
+  if(is.null(field.types)){
     ## the following mapping should be coming from some kind of table
     ## also, need to use converter functions (for dates, etc.)
-    field.types <- sapply(value, dbDataType, dbObj = con)
+    field.types <- sapply(value, dbDataType, dbObj = dbObj)
   } 
   i <- match("row.names", names(field.types), nomatch=0)
   if(i>0) ## did we add a row.names value?  If so, it's a text field.
-    field.types[i] <- dbDataType(con, field.types$row.names)
-  names(field.types) <- make.db.names(con, names(field.types), allow.keywords=F)
+    field.types[i] <- dbDataType(dbObj, field.types$row.names)
+  names(field.types) <- 
+    make.db.names(dbObj, names(field.types), allow.keywords = FALSE)
+
+  ## need to create a new (empty) table
+  flds <- paste(names(field.types), field.types)
+  paste("CREATE TABLE", name, "\n(", paste(flds, collapse=",\n\t"), "\n)")
+}
+
+"sqliteImportFile" <-
+function(con, name, value, field.types = NULL, overwrite = FALSE, 
+  append = FALSE, header, row.names, nrows = 50, sep = ",", 
+  eol="\n", skip = 0, ...)
+{
+  if(overwrite && append)
+    stop("overwrite and append cannot both be TRUE")
 
   ## Do we need to clone the connection (ie., if it is in use)?
   if(length(dbListResults(con))!=0){ 
     new.con <- dbConnect(con)              ## there's pending work, so clone
     on.exit(dbDisconnect(new.con))
   } 
-  else {
+  else 
     new.con <- con
-  }
 
   if(dbExistsTable(con,name)){
     if(overwrite){
@@ -785,45 +812,75 @@ function(con, name, value, field.types, row.names = TRUE,
       warning(paste("table", name, "exists in database: aborting dbWriteTable"))
       return(FALSE)
     }
-  } 
-  if(!dbExistsTable(con,name)){      ## need to re-test table for existance 
-    ## need to create a new (empty) table
-    sql1 <- paste("create table ", name, "\n(\n\t", sep="")
-    sql2 <- paste(paste(names(field.types), field.types), collapse=",\n\t", 
-                  sep="")
-    sql3 <- "\n)\n"
-    sql <- paste(sql1, sql2, sql3, sep="")
-    rs <- try(dbSendQuery(new.con, sql))
-    if(inherits(rs, ErrorClass)){
-      warning("could not create table: aborting assignTable")
-      return(FALSE)
-    } 
-    else 
-      dbClearResult(rs)
   }
 
-  fn <- tempfile("rsdbi")
-  dots <- list(...)
-  safe.write(value, file = fn, batch = dots$batch)
-  on.exit(unlink(fn), add = TRUE)
-  if(FALSE){
-    sql4 <- paste("COPY '",name,"' FROM '",fn,"' USING DELIMITERS ','",sep="")
-    rs <- try(dbSendQuery(new.con, sql4))
+  ## compute full path name (have R expand ~, etc)
+  fn <- file.path(dirname(value), basename(value))
+  if(missing(header) || missing(row.names)){
+    f <- file(fn, open="r")
+    if(skip>0) 
+      readLines(f, n=skip)
+    flds <- count.fields(textConnection(readLines(f, n=2)), sep)
+    close(f)
+    nf <- length(unique(flds))
+  }
+  if(missing(header)){
+    header <- nf==2
+  }
+  if(missing(row.names)){
+    if(header)
+      row.names <- if(nf==2) TRUE else FALSE
+    else
+      row.names <- FALSE
+  }
+
+  new.table <- !dbExistsTable(con, name)
+  if(new.table){
+    ## need to init table, say, with the first nrows lines
+    d <- read.table(fn, sep=sep, header=header, skip=skip, nrows=nrows, ...)
+    sql <- 
+      dbBuildTableDefinition(new.con, name, d, field.types = field.types,
+        row.names = row.names)
+    rs <- try(dbSendQuery(new.con, sql))
     if(inherits(rs, ErrorClass)){
-      warning("could not load data into table")
+      warning("could not create table: aborting sqliteImportFile")
       return(FALSE)
     } 
     else 
       dbClearResult(rs)
-    TRUE
   }
-  conId <- as(new.con, "integer")
-  .Call("RS_SQLite_importFile", conId, name, fn, ",", PACKAGE = "RSQLite")
+  else if(!append){
+    warning(sprintf("table %s already exists -- use append=TRUE?", name))
+  }
+  rc <- 
+      try({
+         skip <- skip + as.integer(header)
+         conId <- as(con, "integer")
+         .Call("RS_SQLite_importFile", conId, name, fn, sep, eol,
+            as(skip, "integer"), PACKAGE = "RSQLite")
+      })
+  if(inherits(rc, ErrorClass)){
+    if(new.table) dbRemoveTable(new.con, name)
+    return(FALSE)
+  }
+  TRUE
+}
+
+"sqliteWriteTable" <-
+function(con, name, value, row.names = TRUE, ...)
+{
+  fn <- tempfile("rsdbi")
+  on.exit(unlink(fn), add = TRUE)
+  dots <- list(...)
+  safe.write(value, file = fn, batch = dots$batch, row.names = row.names)
+  a <- list(con = con, name = name, value = fn, header = TRUE)
+  do.call("sqliteImportFile", c(a, dots))
 }
  
 ## from ROracle, except we don't quote strings here.
 "safe.write" <- 
-function(value, file, batch, ..., quote.string = FALSE)
+function(value, file, batch, row.names = TRUE, ..., 
+  sep = ',', eol = '\n', quote.string = FALSE)
 ## safe.write makes sure write.table don't exceed available memory by batching
 ## at most batch rows (but it is still slowww)
 {  
@@ -839,14 +896,10 @@ function(value, file, batch, ..., quote.string = FALSE)
    from <- 1 
    to <- min(batch, N)
    while(from<=N){
-      if(usingR())
-         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE, 
-               quote = quote.string, sep=",", na = .SQLite.NA.string, 
-               row.names=FALSE, col.names=FALSE, eol = '\n', ...)
-      else
-         write.table(value[from:to,, drop=FALSE], file = file, append = TRUE, 
-               quote.string = quote.string, sep=",", na = .SQLite.NA.string, 
-               dimnames.write=FALSE, end.of.row = '\n', ...)
+     write.table(value[from:to,, drop=FALSE], file = file, 
+        append = from>1,
+        quote = quote.string, sep=sep, na = .SQLite.NA.string, 
+        row.names=row.names, col.names=(from==1), eol = eol, ...)
       from <- to+1
       to <- min(to+batch, N)
    }
@@ -861,7 +914,7 @@ function(value, file, batch, ..., quote.string = FALSE)
   rs.class <- data.class(obj)
   rs.mode <- storage.mode(obj)
   if(rs.class=="numeric"){
-    sql.type <- if(rs.mode=="integer") "bigint" else  "double"
+    sql.type <- if(rs.mode=="integer") "int" else  "double"
   } 
   else {
     sql.type <- switch(rs.class,

@@ -220,7 +220,7 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    export SQLITE_TDIR
    ( ./configure --silent --prefix=${SQLITE_TDIR}    \
                  --disable-tcl \
-                 --enable-shared=${SQLITE_SHARED} && \
+                 --enable-shared=${SQLITE_SHARED} --with-pic && \
        ${MAKE} && ${MAKE} install && ${MAKE} clean ) >/tmp/sqlite$$ 2>&1
 
    if test $? -ne 0 ; then
