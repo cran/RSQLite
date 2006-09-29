@@ -1,0 +1,12 @@
+# Package Information for pkg-config
+
+prefix=/export/home/sfalcon/proj/r-dbi/SQLite/RSQLite/inst/sqlite
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: SQLite
+Description: SQL database engine
+Version: 3.2
+Libs: -L${libdir} -lsqlite3
+Cflags: -I${includedir}

@@ -1,4 +1,4 @@
-% $Id: SQLiteDriver-class.Rd,v 1.2 2003/11/04 16:41:02 dj Exp $
+% $Id: SQLiteDriver-class.Rd 129 2003-11-04 16:41:02Z dj $
 \name{SQLiteDriver-class}
 \docType{class}
 \alias{SQLiteDriver-class}

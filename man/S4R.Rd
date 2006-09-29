@@ -1,4 +1,4 @@
-% $Id: S4R.Rd,v 1.2 2003/11/04 16:41:02 dj Exp $
+% $Id: S4R.Rd 129 2003-11-04 16:41:02Z dj $
 \name{S4R}
 \alias{ErrorClass}
 \alias{usingR}

@@ -1,4 +1,4 @@
-% $Id: sqliteSupport.Rd,v 1.3 2006/01/18 14:21:45 dj Exp dj $
+% $Id: sqliteSupport.Rd 152 2006-01-18 14:23:19Z dj $
 \name{sqliteSupport}                % adapted from ROracle
 \alias{sqliteInitDriver}            % driver-related function
 \alias{sqliteDriverInfo}

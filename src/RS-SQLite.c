@@ -1,4 +1,4 @@
-/* $Id: RS-SQLite.c,v 1.4 2003/06/04 22:26:56 dj Exp $
+/* $Id: RS-SQLite.c 191 2006-09-29 16:59:53Z sethf $
  *
  *
  * Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
@@ -1029,7 +1029,7 @@ RS_sqlite_import(
     zSql = sqlite3_mprintf("SELECT * FROM '%q'", zTable);
     if( zSql==0 ) return 0;
     nByte = strlen(zSql);
-    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);
+    rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
     sqlite3_free(zSql);
     if( rc ){
       char errMsg[512];
@@ -1051,7 +1051,7 @@ RS_sqlite_import(
     }
     zSql[j++] = ')';
     zSql[j] = 0;
-    rc = sqlite3_prepare(db, zSql, 0, &pStmt, 0);
+    rc = sqlite3_prepare(db, zSql, -1, &pStmt, 0);
     free(zSql);
     if( rc ){
       char errMsg[512];

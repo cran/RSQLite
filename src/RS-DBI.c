@@ -1,5 +1,5 @@
 /* 
- * $Id: RS-DBI.c,v 1.1 2006/01/18 14:22:13 dj Exp dj $ 
+ * $Id: RS-DBI.c 152 2006-01-18 14:23:19Z dj $ 
  *
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing
