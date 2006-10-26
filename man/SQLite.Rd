@@ -1,4 +1,4 @@
-% $Id: SQLite.Rd 163 2006-08-31 23:02:35Z sethf $
+% $Id: SQLite.Rd 209 2006-10-26 00:43:45Z sethf $
 \name{SQLite}
 \alias{SQLite}
 \alias{SQLiteDriver}
