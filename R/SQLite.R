@@ -1,5 +1,5 @@
 ##
-## $Id: SQLite.R 213 2006-10-26 16:52:40Z sethf $
+## $Id: SQLite.R 226 2006-11-06 21:42:23Z sethf $
 ##
 ## Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
 ##
@@ -22,10 +22,35 @@
 ##
 
 .SQLitePkgName <- "RSQLite"
-.SQLitePkgRCS <- "$Id: SQLite.R 213 2006-10-26 16:52:40Z sethf $"
+.SQLitePkgRCS <- "$Id: SQLite.R 226 2006-11-06 21:42:23Z sethf $"
 .SQLite.NA.string <- "\\N"  ## on input SQLite interprets \N as NULL (NA)
 
 setOldClass("data.frame")   ## to avoid warnings in setMethod's valueClass arg
+
+## ------------------------------------------------------------------
+## Begin DBI extensions: 
+##
+## generics dbSendPreparedQuery, dbGetPreparedQuery 
+## and dbBeginTransaction
+##
+setGeneric("dbSendPreparedQuery", 
+   def = function(conn, statement, bind.data, ...) 
+           standardGeneric("dbSendPreparedQuery"),
+   valueClass = "DBIResult"
+)
+setGeneric("dbGetPreparedQuery", 
+   def = function(conn, statement, bind.data, ...) 
+           standardGeneric("dbGetPreparedQuery")
+)
+setGeneric("dbBeginTransaction", 
+   def = function(conn, ...)
+           standardGeneric("dbBeginTransaction"),
+   valueClass = "logical"
+)
+##
+## End DBI extensions
+## ------------------------------------------------------------------
+
 
 ##
 ## Class: SQLiteDriver
@@ -35,9 +60,10 @@ setClass("SQLiteObject", representation("DBIObject", "dbObjectId", "VIRTUAL"))
 setClass("SQLiteDriver", representation("DBIDriver", "SQLiteObject"))
 
 "SQLite" <-
-function(max.con=16, fetch.default.rec = 500, force.reload=FALSE)
+function(max.con=16, fetch.default.rec = 500, force.reload=FALSE,
+         shared.cache=FALSE)
 {
-   sqliteInitDriver(max.con, fetch.default.rec, force.reload)
+   sqliteInitDriver(max.con, fetch.default.rec, force.reload, shared.cache)
 }
 
 setMethod("dbUnloadDriver", "SQLiteDriver",
@@ -82,7 +108,7 @@ setMethod("dbConnect", "character",
 setMethod("dbConnect", "SQLiteConnection",
    def = function(drv, ...){
       con.id <- as(drv, "integer")
-      new.id <- .Call("RS_SQLite_cloneConnection", con.id, PACKAGE = "RSQLite")
+      new.id <- .Call("RS_SQLite_cloneConnection", con.id, PACKAGE = .SQLitePkgName)
       new("SQLiteConnection", Id = new.id)
    },
    valueClass = "SQLiteConnection"
@@ -98,7 +124,7 @@ setMethod("dbGetInfo", "SQLiteConnection",
 setMethod("dbGetException", "SQLiteConnection",
    def = function(conn, ...){
       id <- as(conn, "integer")
-      .Call("RS_SQLite_getException", id, PACKAGE = "RSQLite")
+      .Call("RS_SQLite_getException", id, PACKAGE = .SQLitePkgName)
    },
    valueClass = "list"    ## TODO: should return a SQLiteException
 )
@@ -109,11 +135,27 @@ setMethod("dbSendQuery",
    },
    valueClass = "SQLiteResult"
 )
+setMethod("dbSendPreparedQuery", 
+   sig = signature(conn = "SQLiteConnection", statement = "character",
+                   bind.data = "data.frame"),
+   def = function(conn, statement, bind.data, ...){
+      sqliteExecStatement(conn, statement, bind.data, ...)
+   },
+   valueClass = "SQLiteResult"
+)
 setMethod("dbGetQuery",
    sig = signature(conn = "SQLiteConnection", statement = "character"),
    def = function(conn, statement, ...){
       sqliteQuickSQL(conn, statement, ...)
    },
+)
+setMethod("dbGetPreparedQuery", 
+   sig = signature(conn = "SQLiteConnection", statement = "character",
+                   bind.data = "data.frame"),
+   def = function(conn, statement, bind.data, ...){
+      sqliteQuickSQL(conn, statement, bind.data, ...)
+   },
+   valueClass = "SQLiteResult"
 )
 setMethod("summary", "SQLiteConnection",
    def = function(object, ...) sqliteDescribeConnection(object, ...)
@@ -121,6 +163,18 @@ setMethod("summary", "SQLiteConnection",
 
 setMethod("dbCallProc", "SQLiteConnection",
    def = function(conn, ...) .NotYetImplemented()
+)
+
+setMethod("dbCommit", "SQLiteConnection",
+   def = function(conn, ...) sqliteTransactionStatement(conn, "COMMIT")
+)
+
+setMethod("dbRollback", "SQLiteConnection",
+   def = function(conn, ...) sqliteTransactionStatement(conn, "ROLLBACK")
+)
+
+setMethod("dbBeginTransaction", "SQLiteConnection",
+   def = function(conn, ...) sqliteTransactionStatement(conn, "BEGIN")
 )
 
 ##
@@ -225,7 +279,7 @@ setMethod("dbHasCompleted", "SQLiteResult",
 setMethod("dbGetException", "SQLiteConnection",
    def = function(conn, ...){
      id <- as.integer(conn)
-     .Call("RS_SQLite_getException", id[1:2], PACKAGE = "RSQLite")
+     .Call("RS_SQLite_getException", id[1:2], PACKAGE = .SQLitePkgName)
    },
    valueClass = "list"
 )
@@ -234,8 +288,12 @@ setMethod("dbListTables", "SQLiteConnection",
    def = function(conn, ...){
       out <- dbGetQuery(conn,
          "select name from sqlite_master where type='table' or type='view' order by name",
-         ...)[,1]
-      if(!is.null(out)) out else character()
+         ...)
+      if (is.null(out) || nrow(out) == 0)
+        out <- character(0)
+      else
+        out <- out[, 1]
+      out
    },
    valueClass = "character"
 )

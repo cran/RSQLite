@@ -1,5 +1,5 @@
 ##
-## $Id: SQLiteSupport.R 213 2006-10-26 16:52:40Z sethf $
+## $Id: SQLiteSupport.R 224 2006-11-04 18:57:48Z sethf $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -19,12 +19,14 @@
 ##
 
 "sqliteInitDriver" <-
-function(max.con = 16, fetch.default.rec = 500, force.reload=FALSE)
+function(max.con = 16, fetch.default.rec = 500, force.reload=FALSE,
+         shared.cache=FALSE)
 ## return a manager id
 {
   config.params <- as.integer(c(max.con, fetch.default.rec))
   force <- as.logical(force.reload)
-  id <- .Call("RS_SQLite_init", config.params, force, PACKAGE = "RSQLite")
+  cache <- as.logical(shared.cache)
+  id <- .Call("RS_SQLite_init", config.params, force, cache, PACKAGE = .SQLitePkgName)
   new("SQLiteDriver", Id = id)
 }
 
@@ -32,7 +34,7 @@ function(max.con = 16, fetch.default.rec = 500, force.reload=FALSE)
 function(drv, ...)
 {
   drvId <- as(drv, "integer")
-  .Call("RS_SQLite_closeManager", drvId, PACKAGE = "RSQLite")
+  .Call("RS_SQLite_closeManager", drvId, PACKAGE = .SQLitePkgName)
 }
 
 "sqliteDescribeDriver" <-
@@ -60,6 +62,7 @@ function(obj, verbose = FALSE, ...)
       show(info$connectionIds[[i]])
     }
   }
+  cat("  Shared Cache:", info$"shared_cache", "\n")
   invisible(NULL)
 }
 
@@ -69,7 +72,7 @@ function(obj, what="", ...)
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
   drvId <- as(obj, "integer")[1]
-  info <- .Call("RS_SQLite_managerInfo", drvId, PACKAGE = "RSQLite")
+  info <- .Call("RS_SQLite_managerInfo", drvId, PACKAGE = .SQLitePkgName)
   drvId <- info$managerId
   ## replace drv/connection id w. actual drv/connection objects
   conObjs <- vector("list", length = info$"num_con")
@@ -89,11 +92,11 @@ function(obj, what="", ...)
 ## the SQLite API as the default database (SQLite config specific)
 ## while NULL means "no database".
 "sqliteNewConnection"<-
-function(drv, dbname = "", mode=0, cache_size=NULL, synchronous=0)
+function(drv, dbname = "", loadable.extensions=FALSE, cache_size=NULL, synchronous=0)
 {
   if (!is.null(dbname))
     dbname <- path.expand(dbname)
-  con.params <- as.character(c(dbname, mode))
+  con.params <- as.character(c(dbname, as.integer(loadable.extensions)))
   drvId <- as(drv, "integer")
   conId <- .Call("RS_SQLite_newConnection", drvId, con.params,
                  PACKAGE ="RSQLite")
@@ -128,6 +131,7 @@ function(obj, verbose = FALSE, ...)
   cat("  Host:", info$host, "\n")
   cat("  Dbname:", info$dbname, "\n")
   cat("  Connection type:", info$conType, "\n")
+  cat("  Loadable extensions:", info$loadableExtensions, "\n")
   if(verbose){
     cat("  SQLite engine version: ", info$serverVersion, "\n")
     cat("  SQLite engine thread id: ", info$threadId, "\n")
@@ -150,7 +154,7 @@ function(con, ...)
      return(TRUE)
   }
   conId <- as(con, "integer")
-  .Call("RS_SQLite_closeConnection", conId, PACKAGE = "RSQLite")
+  .Call("RS_SQLite_closeConnection", conId, PACKAGE = .SQLitePkgName)
 }
 
 "sqliteConnectionInfo" <-
@@ -159,7 +163,7 @@ function(obj, what="", ...)
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
   id <- as(obj, "integer")
-  info <- .Call("RS_SQLite_connectionInfo", id, PACKAGE = "RSQLite")
+  info <- .Call("RS_SQLite_connectionInfo", id, PACKAGE = .SQLitePkgName)
   if(length(info$rsId)){
     rsId <- vector("list", length = length(info$rsId))
     for(i in seq(along = info$rsId))
@@ -172,21 +176,54 @@ function(obj, what="", ...)
     info
 }
 
+
+"sqliteQuickColumn" <- function(con, table, column)
+{
+    conId <- as(con, "integer")
+    .Call("RS_SQLite_quick_column", conId, as.character(table),
+          as.character(column), PACKAGE="RSQLite")
+}
+    
+
+sqliteTransactionStatement <-
+function(con, statement)
+## checks for any open resultsets, and closes them if completed.
+## the statement is then executed on the connection, and returns
+## whether it executed without an error or not.
+{
+  ## are there resultSets pending on con?
+  if(length(dbListResults(con)) > 0){
+    res <- dbListResults(con)[[1]]
+    if(!dbHasCompleted(res)){
+      stop("connection with pending rows, close resultSet before continuing")
+    }
+    dbClearResult(res)
+  }
+
+  rc <- try(dbGetQuery(con, statement))
+  !inherits(rc, ErrorClass)
+}
+
+
 "sqliteExecStatement" <-
-function(con, statement, limit = -1)
+function(con, statement, bind.data=NULL)
 ## submits the sql statement to SQLite and creates a
 ## dbResult object if the SQL operation does not produce
 ## output, otherwise it produces a resultSet that can
 ## be used for fetching rows.
-## limit specifies how many rows we actually put in the
-## resultSet
 {
   conId <- as(con, "integer")
   statement <- as(statement, "character")
-  limit <- as(limit, "integer")
+  if (!is.null(bind.data)) {
+      bind.data <- as.data.frame(bind.data)
+      if (nrow(bind.data) == 0) {
+          warning("ignoring zero-row bind.data")
+          bind.data <- NULL
+      }
+  }
   rsId <- .Call("RS_SQLite_exec",
-                conId, statement, limit,
-                PACKAGE = "RSQLite")
+                conId, statement, bind.data,
+                PACKAGE = .SQLitePkgName)
 #  out <- new("SQLitedbResult", Id = rsId)
 #  if(dbGetInfo(out, what="isSelect")
 #    out <- new("SQLiteResultSet", Id = rsId)
@@ -196,16 +233,16 @@ function(con, statement, limit = -1)
 }
 
 ## helper function: it exec's *and* retrieves a statement. It should
-## be named somehting else.
+## be named something else.
 "sqliteQuickSQL" <-
-function(con, statement, ...)
+function(con, statement, bind.data=NULL, ...)
 {
    nr <- length(dbListResults(con))
    if(nr>0){                     ## are there resultSets pending on con?
       new.con <- dbConnect(con)   ## yep, create a clone connection
       on.exit(dbDisconnect(new.con))
-      rs <- sqliteExecStatement(new.con, statement)
-   } else rs <- sqliteExecStatement(con, statement)
+      rs <- sqliteExecStatement(new.con, statement, bind.data)
+   } else rs <- sqliteExecStatement(con, statement, bind.data)
    if(dbHasCompleted(rs)){
       dbClearResult(rs)            ## no records to fetch, we're done
       invisible()
@@ -240,7 +277,7 @@ function(res, n=0, ...)
   }
   n <- as(n, "integer")
   rsId <- as(res, "integer")
-  rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = "RSQLite")
+  rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
   if(length(rel)==0 || length(rel[[1]])==0)
     return(data.frame(NULL))
   for(j in seq(along = rel))
@@ -260,13 +297,13 @@ function(obj, what = "", ...)
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
    id <- as(obj, "integer")
-   info <- .Call("RS_SQLite_resultSetInfo", id, PACKAGE = "RSQLite")
+   info <- .Call("RS_SQLite_resultSetInfo", id, PACKAGE = .SQLitePkgName)
    flds <- info$fieldDescription[[1]]
    if(!is.null(flds)){
        flds$Sclass <- .Call("RS_DBI_SclassNames", flds$Sclass,
-                            PACKAGE = "RSQLite")
+                            PACKAGE = .SQLitePkgName)
        flds$type <- .Call("RS_SQLite_typeNames", flds$type,
-                            PACKAGE = "RSQLite")
+                            PACKAGE = .SQLitePkgName)
        ## no factors
        info$fields <- structure(flds, row.names = paste(seq(along=flds$type)),
                                 class="data.frame")
@@ -308,7 +345,7 @@ function(res, ...)
      return(TRUE)
   }
   rsId <- as(res, "integer")
-  .Call("RS_SQLite_closeResultSet", rsId, PACKAGE = "RSQLite")
+  .Call("RS_SQLite_closeResultSet", rsId, PACKAGE = .SQLitePkgName)
 }
 
 "sqliteTableFields" <-
@@ -465,7 +502,7 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
          skip <- skip + as.integer(header)
          conId <- as(con, "integer")
          .Call("RS_SQLite_importFile", conId, name, fn, sep, eol,
-            as(skip, "integer"), PACKAGE = "RSQLite")
+            as(skip, "integer"), PACKAGE = .SQLitePkgName)
       })
   if(inherits(rc, ErrorClass)){
     if(new.table) dbRemoveTable(new.con, name)
