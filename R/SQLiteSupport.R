@@ -1,5 +1,5 @@
 ##
-## $Id: SQLiteSupport.R 224 2006-11-04 18:57:48Z sethf $
+## $Id: SQLiteSupport.R 237 2006-11-20 15:42:48Z sethf $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -272,23 +272,31 @@ function(res, n=0, ...)
 
   if(!isIdCurrent(res))
      stop("invalid result handle")
-  type.convert <- function(x, na.strings="NA", as.is=TRUE, dec="."){
-     .Internal(type.convert(x, na.strings, as.is, dec))
-  }
   n <- as(n, "integer")
   rsId <- as(res, "integer")
   rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
   if(length(rel)==0 || length(rel[[1]])==0)
     return(data.frame(NULL))
-  for(j in seq(along = rel))
-      rel[[j]] <- type.convert(rel[[j]], ...)
   ## create running row index as of previous fetch (if any)
   cnt <- dbGetRowCount(res)
   nrec <- length(rel[[1]])
-  indx <- seq(from = cnt - nrec + 1, length = nrec)
-  attr(rel, "row.names") <- as.character(indx)
+  indx <- seq(from = cnt - nrec + as.integer(1), length = nrec)
+  attr(rel, "row.names") <- as.integer(indx)
   class(rel) <- "data.frame"
   rel
+}
+
+"sqliteFetchOneColumn" <-
+function(con, statement, n=0, ...)
+{
+    rs <- dbSendQuery(con, statement)
+    on.exit(dbClearResult(rs))
+    n <- as(n, "integer")
+    rsId <- as(rs, "integer")
+    rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
+    if (length(rel) == 0 || length(rel[[1]]) == 0)
+      return(NULL)
+    rel[[1]]
 }
 
 "sqliteResultInfo" <-
@@ -482,7 +490,9 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
   new.table <- !dbExistsTable(con, name)
   if(new.table){
     ## need to init table, say, with the first nrows lines
-    d <- read.table(fn, sep=sep, header=header, skip=skip, nrows=nrows, ...)
+    d <- read.table(fn, sep=sep, header=header, skip=skip, nrows=nrows,
+                    na.strings=.SQLite.NA.string,
+                    stringsAsFactors=FALSE, ...)
     sql <-
       dbBuildTableDefinition(new.con, name, d, field.types = field.types,
         row.names = row.names)
@@ -559,15 +569,15 @@ function(value, file, batch, row.names = TRUE, ...,
   rs.class <- data.class(obj)
   rs.mode <- storage.mode(obj)
   if(rs.class=="numeric"){
-    sql.type <- if(rs.mode=="integer") "int" else  "double"
+    sql.type <- if(rs.mode=="integer") "INTEGER" else  "REAL"
   }
   else {
     sql.type <- switch(rs.class,
-                  character = "text",
-                  logical = "tinyint",
-                  factor = "text",	## up to 65535 characters
-                  ordered = "text",
-                  "text")
+                  character = "TEXT",
+                  logical = "INTEGER",
+                  factor = "TEXT",	## up to 65535 characters
+                  ordered = "TEXT",
+                  "TEXT")
   }
   sql.type
 }

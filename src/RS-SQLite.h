@@ -1,7 +1,7 @@
 #ifndef _RS_SQLite_H
 #define _RS_SQLite_H 1
 /*
- * $Id: RS-SQLite.h 222 2006-11-04 18:57:43Z sethf $
+ * $Id: RS-SQLite.h 246 2006-11-25 21:36:53Z sethf $
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
  *
@@ -60,6 +60,12 @@ typedef struct st_sqlite_bindparam {
 
 RS_SQLite_conParams *RS_SQLite_allocConParams(const char *dbname, int loadable_extensions);
 void                RS_SQLite_freeConParams(RS_SQLite_conParams *conParams);
+
+/* Convert declared column type string to SQLite column type.
+ * For example, "varchar" => SQLITE_TEXT
+ *
+ */
+int                 SQLite_decltype_to_type(const char *decltype);
 
 /* The following functions are the S/R entry into the C implementation (i.e.,
  * these are the only ones visible from R/S) we use the prefix "RS_SQLite" in

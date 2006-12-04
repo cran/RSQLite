@@ -1,4 +1,4 @@
-% $Id: sqliteSupport.Rd 223 2006-11-04 18:57:46Z sethf $
+% $Id: sqliteSupport.Rd 253 2006-12-04 06:16:16Z sethf $
 \name{sqliteSupport}                % adapted from ROracle
 \alias{sqliteInitDriver}            % driver-related function
 \alias{sqliteDriverInfo}
@@ -20,6 +20,7 @@
 \alias{sqliteImportFile}
 \alias{sqliteTableFields}
 \alias{sqliteDataType}
+\alias{sqliteFetchOneColumn}
 \alias{.SQLitePkgName}              % constants
 \alias{.SQLitePkgVersion}
 \alias{.SQLitePkgRCS}
