@@ -1,5 +1,5 @@
 ##
-## $Id: SQLiteSupport.R 237 2006-11-20 15:42:48Z sethf $
+## $Id: SQLiteSupport.R 271 2006-12-15 05:24:17Z sethf $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -183,7 +183,7 @@ function(obj, what="", ...)
     .Call("RS_SQLite_quick_column", conId, as.character(table),
           as.character(column), PACKAGE="RSQLite")
 }
-    
+
 
 sqliteTransactionStatement <-
 function(con, statement)
@@ -521,15 +521,110 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
   TRUE
 }
 
-"sqliteWriteTable" <-
-function(con, name, value, row.names = TRUE, ...)
+sqliteWriteTable <- function(con, name, value, row.names=TRUE,
+                              overwrite=FALSE, append=FALSE,
+                              field.types=NULL, ...)
 {
-  fn <- tempfile("rsdbi")
-  on.exit(unlink(fn), add = TRUE)
-  dots <- list(...)
-  safe.write(value, file = fn, batch = dots$batch, row.names = row.names)
-  a <- list(con = con, name = name, value = fn, header = TRUE)
-  do.call("sqliteImportFile", c(a, dots))
+      if (overwrite && append)
+        stop("overwrite and append cannot both be TRUE")
+
+      ## Do we need to clone the connection (ie., if it is in use)?
+      if (length(dbListResults(con))){
+          new.con <- dbConnect(con)              # there's pending work, so clone
+          on.exit(dbDisconnect(new.con))
+      } else {
+          new.con <- con
+      }
+
+      foundTable <- dbExistsTable(con, name)
+      new.table <- !foundTable
+      createTable <- (new.table || foundTable && overwrite)
+      removeTable <- (foundTable && overwrite)
+      success <- dbBeginTransaction(con)
+      if (!success) {
+          warning("unable to begin transaction")
+          return(FALSE)
+      }
+      ## sanity check
+      if (foundTable && !removeTable && !append) {
+          warning(paste("table", name,
+                        "exists in database: aborting dbWriteTable"))
+          success <- FALSE
+      }
+
+      if (removeTable) {
+          success <- tryCatch({
+              if (dbRemoveTable(con, name)) {
+                  TRUE
+              } else {
+                  warning(paste("table", name, "couldn't be overwritten"))
+                  FALSE
+              }
+          }, error=function(e) {
+              warning(conditionMessage(e))
+              FALSE
+          })
+      }
+
+      if (!success) {
+          dbRollback(con)
+          return(FALSE)
+      }
+
+      if (row.names) {
+          ## Need to handle row.names at this level
+          ## for the bind.data to work correctly.
+          ##
+          ## FIXME: for R >= 2.5, we should check
+          ## for numeric row.names and not convert
+          ## to character.
+          value <- cbind(row.names(value), value, stringsAsFactors=FALSE)
+          names(value)[1] <- "row.names"
+      }
+
+      if (createTable) {
+          sql <- dbBuildTableDefinition(new.con, name, value,
+                                        field.types=field.types,
+                                        row.names=FALSE)
+          success <- tryCatch({
+              dbGetQuery(new.con, sql)
+              TRUE
+          }, error=function(e) {
+              warning(conditionMessage(e))
+              FALSE
+          })
+          if (!success) {
+              dbRollback(con)
+              return(FALSE)
+          }
+      }
+
+      valStr <- paste(rep("?", ncol(value)), collapse=",")
+      sql <- sprintf("insert into %s values (%s)",
+                     name, valStr)
+      success <- tryCatch({
+          ## The 'finally' expression will have access to
+          ## this frame, not that of 'error'.  We want ret
+          ## to be defined even if an error occurs.
+          ret <- FALSE
+          rs <- dbSendPreparedQuery(new.con, sql, bind.data=value)
+          ret <- TRUE
+      }, error=function(e) {
+          warning(conditionMessage(e))
+          ret <- FALSE
+      }, finally={
+          if (exists("rs"))
+            dbClearResult(rs)
+          ret
+      })
+      if (!success)
+        dbRollback(con)
+      else {
+          success <- dbCommit(con)
+          if (!success)
+            dbRollback(con)
+      }
+      success
 }
 
 ## from ROracle, except we don't quote strings here.

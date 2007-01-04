@@ -1,4 +1,4 @@
-% $Id: sqliteSupport.Rd 253 2006-12-04 06:16:16Z sethf $
+% $Id: sqliteSupport.Rd 267 2006-12-14 16:16:02Z sethf $
 \name{sqliteSupport}                % adapted from ROracle
 \alias{sqliteInitDriver}            % driver-related function
 \alias{sqliteDriverInfo}
@@ -64,7 +64,9 @@
    sqliteImportFile(con, name, value, field.types, overwrite=FALSE,
       append=FALSE, header, row.names, nrows=50, sep=",", eol="\n",
       skip = 0, ...)
-   sqliteWriteTable(con, name, value, row.names = TRUE, ...)
+   sqliteWriteTable(con, name, value, row.names = TRUE,
+                    overwrite = FALSE, append = FALSE,
+                    field.types = NULL, ...)
    sqliteTableFields(con, name, ...)
 }
 \arguments{
