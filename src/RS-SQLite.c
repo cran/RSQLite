@@ -1,4 +1,4 @@
-/* $Id: RS-SQLite.c 273 2007-01-04 20:54:25Z sethf $
+/* $Id: RS-SQLite.c 277 2007-02-24 21:06:34Z sethf $
  *
  *
  * Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
@@ -134,6 +134,7 @@ RS_SQLite_closeManager(Mgr_Handle *mgrHandle)
   shared_cache = (Sint *)mgr->drvData;
   if(shared_cache){
     free(shared_cache);
+    mgr->drvData = NULL;
   }
 
   RS_DBI_freeManager(mgrHandle);

@@ -1,5 +1,5 @@
 dnl 
-dnl $Id: configure.in 276 2007-01-17 21:21:23Z sethf $
+dnl $Id: configure.in 278 2007-02-27 17:29:15Z sethf $
 dnl
 dnl R embedding of the SQLite engine.
 dnl
@@ -224,6 +224,8 @@ if test "${FOUND_ALL}" = "no" -a "${SQLITE_TDIR}" != "no" ; then
    # Since we installed successfully, now we set PKG_* vars and exit
    PKG_CPPFLAGS="-I${SQLITE_TDIR}/include"
    PKG_LIBS="${SQLITE_TDIR}/lib/libsqlite3.a"
+   AC_SEARCH_LIBS(fdatasync, [rt])
+   PKG_LIBS="${PKG_LIBS} $LIBS"
    FOUND_ALL="yes"
 
    echo ""
