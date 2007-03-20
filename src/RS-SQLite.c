@@ -1,4 +1,4 @@
-/* $Id: RS-SQLite.c 277 2007-02-24 21:06:34Z sethf $
+/* $Id: RS-SQLite.c 283 2007-03-19 20:18:52Z sethf $
  *
  *
  * Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
@@ -834,10 +834,15 @@ RS_SQLite_createParameterBinding(int n, s_object *bind_data,
       levels = GET_LEVELS(data);
 
       PROTECT( params[i].data = allocVector(STRING_TYPE, LENGTH(data)) );
-      for(j=0; j<LENGTH(data); j++)
-        SET_CHR_EL(params[i].data, j, STRING_ELT(levels, INT_EL(data, j)-1));
-
-      params[i].is_protected = 1;
+      for(j=0; j<LENGTH(data); j++) {
+          int factor_code = INT_EL(data, j);
+          if (factor_code == NA_INTEGER)
+              SET_CHR_EL(params[i].data, j, NA_STRING);
+          else
+              SET_CHR_EL(params[i].data, j,
+                         STRING_ELT(levels, factor_code - 1));
+          params[i].is_protected = 1;
+      }
     }
     else{
       params[i].type = STRING_TYPE;

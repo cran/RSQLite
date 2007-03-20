@@ -1,5 +1,5 @@
 ##
-## $Id: dbObjectId.R 65 2002-08-27 13:42:04Z dj $
+## $Id: dbObjectId.R 280 2007-03-17 16:37:56Z sethf $
 ## 
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##
@@ -53,12 +53,10 @@ setMethod("format", "dbObjectId",
    valueClass = "character"
 )
 
-setMethod("show", "dbObjectId", def = function(object) print(object))
-
-setMethod("print", "dbObjectId",
-   def = function(x, ...){
-      expired <- if(isIdCurrent(x)) "" else "Expired "
-      str <- paste("<", expired, class(x), ":", format(x), ">", sep="")
+setMethod("show", "dbObjectId",
+   def = function(object) {
+      expired <- if(isIdCurrent(object)) "" else "Expired "
+      str <- paste("<", expired, class(object), ":", format(object), ">", sep="")
       cat(str, "\n")
       invisible(NULL)
    }

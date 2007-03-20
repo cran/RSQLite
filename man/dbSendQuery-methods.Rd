@@ -1,4 +1,4 @@
-% $Id: dbSendQuery-methods.Rd 223 2006-11-04 18:57:46Z sethf $
+% $Id: dbSendQuery-methods.Rd 279 2007-03-17 16:37:51Z sethf $
 \name{dbSendQuery-methods}
 \docType{methods}
 \alias{dbSendQuery-methods}
@@ -7,7 +7,6 @@
 \alias{dbGetPreparedQuery}
 \alias{dbSendPreparedQuery-methods}
 \alias{dbGetPreparedQuery-methods}
-\alias{dbClearResult-methods}
 \alias{dbGetException-methods}
 \alias{dbSendQuery,SQLiteConnection,character-method}
 \alias{dbGetQuery,SQLiteConnection,character-method}
