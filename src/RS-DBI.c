@@ -1,5 +1,5 @@
 /* 
- * $Id: RS-DBI.c 227 2006-11-07 06:55:59Z sethf $ 
+ * $Id$ 
  *
  *
  * Copyright (C) 1999-2002 The Omega Project for Statistical Computing

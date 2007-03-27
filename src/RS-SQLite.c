@@ -1,4 +1,4 @@
-/* $Id: RS-SQLite.c 283 2007-03-19 20:18:52Z sethf $
+/* $Id$
  *
  *
  * Copyright (C) 1999-2003 The Omega Project for Statistical Computing.

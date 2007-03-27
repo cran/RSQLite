@@ -1,4 +1,4 @@
-% $Id: SQLiteResult-class.Rd 129 2003-11-04 16:41:02Z dj $
+% $Id$
 \name{SQLiteResult-class}
 \docType{class}
 \alias{SQLiteResult-class}
@@ -48,11 +48,6 @@ Class \code{"dbObjectId"}, by class "SQLiteObject".
  \code{\link{SQLiteResult-class}}
 }
 
-\examples{\dontrun{
-drv <- dbDriver("SQLite")
-con <- dbConnect(drv, dbname = "rsdbi.db")
-}
-}
 \keyword{database}
 \keyword{interface}
 \keyword{classes}

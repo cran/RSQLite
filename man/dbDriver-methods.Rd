@@ -1,4 +1,4 @@
-% $Id: dbDriver-methods.Rd 163 2006-08-31 23:02:35Z sethf $
+% $Id$
 \name{dbDriver-methods}
 \docType{methods}
 \alias{dbDriver-methods}

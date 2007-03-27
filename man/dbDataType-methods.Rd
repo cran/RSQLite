@@ -1,4 +1,4 @@
-% $Id: dbDataType-methods.Rd 163 2006-08-31 23:02:35Z sethf $
+% $Id$
 \name{dbDataType-methods}
 \docType{methods}
 \alias{dbDataType-methods}
@@ -32,11 +32,16 @@
   \code{\link[DBI]{isSQLKeyword}}
   \code{\link[DBI]{make.db.names}}
 }
-\examples{\dontrun{
+\examples{
 data(quakes)
 drv <- dbDriver("SQLite")
-sql.type <- dbDataType(drv, quakes)
-}
+sapply(quakes, function(x) dbDataType(drv, x))
+
+dbDataType(drv, 1)
+dbDataType(drv, as.integer(1))
+dbDataType(drv, "1")
+dbDataType(drv, charToRaw("1"))
+
 }
 \keyword{methods}
 \keyword{interface}

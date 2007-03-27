@@ -1,4 +1,4 @@
-% $Id: SQLiteDriver-class.Rd 129 2003-11-04 16:41:02Z dj $
+% $Id$
 \name{SQLiteDriver-class}
 \docType{class}
 \alias{SQLiteDriver-class}
@@ -43,7 +43,7 @@ Class \code{"dbObjectId"}, by class "SQLiteObject".
 
 \examples{\dontrun{
 drv <- dbDriver("SQLite")
-con <- dbConnect(drv, "user/password@dbname")
+con <- dbConnect(drv, dbname="path/to/dbfile")
 }
 }
 \keyword{database}
