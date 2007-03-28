@@ -1,5 +1,5 @@
 ##
-## $Id$
+## $Id: S4R.R 67 2002-08-27 13:44:27Z dj $
 ##
 ## S4/Splus/R compatibility 
 

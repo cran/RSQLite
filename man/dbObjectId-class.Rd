@@ -1,4 +1,4 @@
-% $Id$
+% $Id: dbObjectId-class.Rd 287 2007-03-28 14:35:16Z sethf $
 \name{dbObjectId-class}
 \docType{class}
 \alias{dbObjectId-class}
@@ -33,7 +33,7 @@ historically this class has existed mainly for R/S-Plus portability.}
 
 \examples{
   sqlite <- dbDriver("SQLite")
-  con <- dbConnect(sqlite, ":memory")
+  con <- dbConnect(sqlite, ":memory:")
   is(sqlite, "dbObjectId")   ## True
   is(con, "dbObjectId")  ## True
   isIdCurrent(con)       ## True

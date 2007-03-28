@@ -1,5 +1,5 @@
 ##
-## $Id$
+## $Id: SQLiteSupport.R 282 2007-03-19 20:18:51Z sethf $
 ##
 ## Copyright (C) 1999-2002 The Omega Project for Statistical Computing.
 ##

@@ -1,5 +1,5 @@
 ##
-## $Id$
+## $Id: SQLite.R 226 2006-11-06 21:42:23Z sethf $
 ##
 ## Copyright (C) 1999-2003 The Omega Project for Statistical Computing.
 ##
@@ -22,7 +22,7 @@
 ##
 
 .SQLitePkgName <- "RSQLite"
-.SQLitePkgRCS <- "$Id$"
+.SQLitePkgRCS <- "$Id: SQLite.R 226 2006-11-06 21:42:23Z sethf $"
 .SQLite.NA.string <- "\\N"  ## on input SQLite interprets \N as NULL (NA)
 
 setOldClass("data.frame")   ## to avoid warnings in setMethod's valueClass arg
