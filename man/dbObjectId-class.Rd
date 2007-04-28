@@ -1,4 +1,4 @@
-% $Id: dbObjectId-class.Rd 287 2007-03-28 14:35:16Z sethf $
+% $Id$
 \name{dbObjectId-class}
 \docType{class}
 \alias{dbObjectId-class}

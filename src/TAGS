@@ -1,0 +1,227 @@
+
+RS-DBI.c,1257
+static RS_DBI_manager *dbManager 34,1222
+RS_DBI_allocManager(37,1277
+RS_DBI_freeManager(109,3770
+RS_DBI_allocConnection(138,4484
+RS_DBI_freeConnection(207,6800
+RS_DBI_allocResultSet(262,8495
+RS_DBI_freeResultSet(309,10039
+RS_DBI_allocFields(345,11070
+RS_DBI_freeFields(370,11833
+RS_DBI_makeDataFrame(390,12449
+RS_DBI_allocOutput(443,13945
+RS_DBI_validHandle(521,15944
+RS_DBI_setException(545,16467
+RS_DBI_errorMessage(574,17328
+RS_DBI_copyString(597,17933
+RS_DBI_nCopyString(611,18292
+RS_DBI_copyfields(644,19029
+RS_DBI_createNamedList(686,20366
+RS_DBI_SclassNames(730,21495
+RS_DBI_asMgrHandle(762,22271
+RS_DBI_asConHandle(773,22465
+RS_DBI_asResHandle(785,22700
+RS_DBI_getManager(798,22980
+RS_DBI_getConnection(813,23344
+RS_DBI_getResultSet(832,23887
+RS_DBI_newEntry(857,24760
+RS_DBI_lookup(870,24982
+RS_DBI_listEntries(889,25355
+RS_DBI_freeEntry(900,25540
+is_validHandle(907,25684
+RS_DBI_managerInfo(958,27405
+RS_DBI_connectionInfo(1004,28792
+RS_DBI_resultSetInfo(1049,30287
+RS_DBI_getFieldDescriptions(1088,31443
+RS_DBI_getTypeName(1132,32835
+#define RS_DBI_MAX_IDENTIFIER_LENGTH 1162,34105
+RS_DBI_makeSQLNames(1164,34180
+RS_na_set(1206,35390
+RS_is_na(1231,35797
+const struct data_types RS_dataTypeTable[1256,36291
+
+RS-DBI.h,1207
+#define _RS_DBI_H 2,18
+#define getpid 37,1217
+#define pid_t 38,1240
+typedef enum enum_dbi_exception enum_dbi_exception54,1731
+  RS_DBI_MESSAGE,55,1765
+  RS_DBI_WARNING,56,1783
+  RS_DBI_ERROR,57,1801
+  RS_DBI_TERMINATE58,1817
+} DBI_EXCEPTION;DBI_EXCEPTION59,1836
+#define Mgr_Handle 65,1984
+#define Con_Handle 66,2012
+#define Res_Handle 67,2040
+#define Db_Handle 68,2068
+typedef enum enum_handle_type enum_handle_type72,2252
+  MGR_HANDLE_TYPE 73,2284
+  CON_HANDLE_TYPE 74,2334
+  RES_HANDLE_TYPE 75,2387
+} HANDLE_TYPE;HANDLE_TYPE76,2436
+#define MGR_ID(MGR_ID78,2453
+#define CON_ID(CON_ID79,2527
+#define RES_ID(RES_ID80,2571
+typedef struct st_sdbi_fields st_sdbi_fields91,3132
+} RS_DBI_fields;RS_DBI_fields102,3718
+typedef struct st_sdbi_exception st_sdbi_exception104,3736
+} RS_DBI_exception;RS_DBI_exception108,3976
+typedef struct st_sdbi_resultset st_sdbi_resultset114,4177
+} RS_DBI_resultSet;RS_DBI_resultSet126,4803
+typedef struct st_sdbi_connection st_sdbi_connection135,5147
+} RS_DBI_connection;RS_DBI_connection147,5785
+typedef struct st_sdbi_manager st_sdbi_manager150,5823
+} RS_DBI_manager;RS_DBI_manager161,6530
+struct data_types data_types243,10118
+
+RS-SQLite.c,1058
+char *compiledVarsion 24,898
+#  define RS_NA_STRING 39,1599
+#  define RS_NA_STRING 41,1650
+RS_SQLite_init(68,2646
+RS_SQLite_closeManager(120,4258
+RS_SQLite_cloneConnection(150,4921
+RS_SQLite_allocConParams(179,5795
+RS_SQLite_freeConParams(194,6242
+RS_SQLite_setException(206,6558
+RS_SQLite_freeException(231,7214
+RS_SQLite_newConnection(242,7431
+RS_SQLite_closeConnection(292,9115
+int SQLite_decltype_to_type(347,10575
+int RS_SQLite_get_row_count(387,12106
+SEXP RS_SQLite_quick_column(410,12780
+RS_SQLite_exec(491,15444
+RS_SQLite_createParameterBinding(729,23649
+RS_SQLite_freeParameterBinding(858,27058
+RS_SQLite_createDataMappings(872,27264
+RS_SQLite_fetch(954,29979
+RS_SQLite_mget(1119,35171
+RS_SQLite_getException(1294,40993
+RS_SQLite_closeResultSet(1326,41844
+RS_SQLite_managerInfo(1357,42607
+RS_SQLite_connectionInfo(1418,44610
+RS_SQLite_resultSetInfo(1471,46358
+RS_SQLite_typeNames(1504,47382
+RS_SQLite_importFile(1524,47820
+RS_sqlite_import(1592,49408
+RS_sqlite_getline(1729,53920
+int corrected_sqlite3_step(1781,55217
+
+RS-SQLite.h,1090
+#define _RS_SQLite_H 2,21
+#define RS_SQLITE_MAX_CON 38,1107
+#define RS_SQLITE_FETCH 39,1187
+typedef struct st_sdbi_conParams st_sdbi_conParams45,1440
+} RS_SQLite_conParams;RS_SQLite_conParams48,1519
+typedef struct st_sqlite_err st_sqlite_err50,1543
+} RS_SQLite_exception;RS_SQLite_exception53,1611
+typedef struct st_sqlite_bindparam st_sqlite_bindparam55,1635
+} RS_SQLite_bindParam;RS_SQLite_bindParam59,1733
+enum SQL92_field_types SQL92_field_types134,5008
+     SQL92_TYPE_NULL,135,5033
+     SQL92_TYPE_BIT,136,5055
+     SQL92_TYPE_BIT_VAR,137,5076
+     SQL92_TYPE_CHAR,138,5101
+     SQL92_TYPE_CHAR_VAR,139,5123
+     SQL92_TYPE_NCHAR,140,5149
+     SQL92_TYPE_NCHAR_VAR,141,5172
+     SQL92_TYPE_SMALLINT,142,5199
+     SQL92_TYPE_INTEGER,143,5225
+     SQL92_TYPE_DECIMAL,144,5250
+     SQL92_TYPE_FLOAT,145,5275
+     SQL92_TYPE_REAL,146,5298
+     SQL92_TYPE_DOUBLE,147,5320
+     SQL92_TYPE_TIMESTAMP,148,5344
+     SQL92_TYPE_DATE,149,5371
+     SQL92_TYPE_TIME,150,5393
+     SQL92_TYPE_DATETIME151,5415
+const struct data_types RS_SQLite_fieldTypes[154,5444
+
+S4R.h,3117
+#define S4R_H14,555
+#  define USING_SP527,806
+#  define USING_S429,883
+#    define USE_RINTERNALS 35,1007
+#      define SET_ELEMENT(SET_ELEMENT39,1213
+#  define singl 44,1352
+#  define Sint 45,1375
+#  define charPtr 46,1395
+#  define CHAR_DEREF(CHAR_DEREF47,1420
+#  define C_S_CPY(C_S_CPY48,1452
+#  define MEM_PROTECT(MEM_PROTECT49,1526
+#  define MEM_UNPROTECT(MEM_UNPROTECT50,1562
+#  define MEM_UNPROTECT_PTR(MEM_UNPROTECT_PTR51,1602
+#  define singl 53,1698
+#  define Sint 54,1720
+#  define charPtr 55,1740
+#  define CHAR_DEREF(CHAR_DEREF56,1766
+#  define C_S_CPY(C_S_CPY57,1792
+#  define RAW_DATA(RAW_DATA58,1866
+#  define MEM_PROTECT(MEM_PROTECT59,1941
+#  define MEM_UNPROTECT(MEM_UNPROTECT60,1976
+#  define MEM_UNPROTECT_PTR(MEM_UNPROTECT_PTR61,2008
+#  define COPY(COPY68,2209
+#  define COPY_ALL(COPY_ALL69,2258
+#  define EVAL_IN_FRAME(EVAL_IN_FRAME70,2308
+#  define GET_FROM_FRAME(GET_FROM_FRAME71,2359
+#  define ASSIGN_IN_FRAME(ASSIGN_IN_FRAME72,2417
+#  define Stype 77,2551
+#  define LOGICAL_TYPE	78,2585
+#  define INTEGER_TYPE	79,2616
+#  define NUMERIC_TYPE	80,2647
+#  define SINGLE_TYPE 81,2679
+#  define REAL_TYPE 82,2712
+#  define CHARACTER_TYPE 83,2745
+#  define STRING_TYPE 84,2777
+#  define COMPLEX_TYPE	85,2809
+#  define LIST_TYPE	86,2841
+#  define Stype 88,2875
+#  define LOGICAL_TYPE	89,2905
+#  define INTEGER_TYPE	90,2934
+#  define NUMERIC_TYPE	91,2963
+#  define SINGLE_TYPE 92,2995
+#  define REAL_TYPE 93,3026
+#  define CHARACTER_TYPE 94,3057
+#  define STRING_TYPE 95,3088
+#  define COMPLEX_TYPE	96,3119
+#  define LIST_TYPE	97,3152
+#  define RAW_TYPE	98,3179
+#  define INTEGER_DATA(INTEGER_DATA103,3249
+#  define S_NULL_ENTRY 105,3310
+#  define S_NULL_ENTRY 107,3350
+#define LGL_EL(LGL_EL127,4035
+#define INT_EL(INT_EL128,4081
+#define SGL_EL(SGL_EL129,4127
+#define FLT_EL(FLT_EL130,4172
+#define NUM_EL(NUM_EL131,4208
+#define DBL_EL(DBL_EL132,4254
+#define RAW_EL(RAW_EL133,4290
+#  define LST_EL(LST_EL135,4389
+#  define CHR_EL(CHR_EL136,4431
+#  define SET_CHR_EL(SET_CHR_EL137,4485
+#  define LST_EL(LST_EL139,4615
+#  define CHR_EL(CHR_EL140,4662
+#  define SET_CHR_EL(SET_CHR_EL141,4724
+#define LST_CHR_EL(LST_CHR_EL145,4849
+#define LST_LGL_EL(LST_LGL_EL146,4904
+#define LST_INT_EL(LST_INT_EL147,4959
+#define LST_SGL_EL(LST_SGL_EL148,5014
+#define LST_FLT_EL(LST_FLT_EL149,5069
+#define LST_NUM_EL(LST_NUM_EL150,5119
+#define LST_DBL_EL(LST_DBL_EL151,5174
+#define LST_RAW_EL(LST_RAW_EL152,5224
+#define LST_LST_EL(LST_LST_EL153,5279
+#  define SET_LST_CHR_EL(SET_LST_CHR_EL157,5456
+#  define SET_LST_CHR_EL(SET_LST_CHR_EL159,5537
+#  define NA_SET(NA_SET167,5757
+#  define NA_CHR_SET(NA_CHR_SET168,5800
+#  define IS_NA(IS_NA169,5852
+#  define NA_SET(NA_SET171,5900
+#  define NA_CHR_SET(NA_CHR_SET172,5940
+#  define IS_NA(IS_NA173,5989
+#  define SET_ROWNAMES(SET_ROWNAMES180,6115
+#  define GET_CLASS_NAME(GET_CLASS_NAME181,6180
+#  define SET_CLASS_NAME(SET_CLASS_NAME182,6223
+#  define SET_ROWNAMES(SET_ROWNAMES184,6275
+#  define SET_CLASS_NAME(SET_CLASS_NAME185,6348

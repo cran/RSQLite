@@ -1,4 +1,4 @@
-% $Id: dbCallProc-methods.Rd 163 2006-08-31 23:02:35Z sethf $
+% $Id$
 \name{dbCallProc-methods}
 \docType{methods}
 \alias{dbCallProc-methods}
