@@ -1,4 +1,3 @@
-% $Id$
 \name{dbSendQuery-methods}
 \docType{methods}
 \alias{dbSendQuery-methods}
@@ -15,21 +14,18 @@
 \alias{dbClearResult,SQLiteResult-method}
 \alias{dbGetException,SQLiteConnection-method}
 \title{
-  Execute a statement on a given database connection
+  Execute a SQL statement on a database connection
 }
 \description{
-   These methods are straight-forward implementations of the corresponding
-   generic functions.
-   
-   The prepared variants take an extra data.frame, which performs parameter
-   binding.
+   These are the primary methods for interacting with a database via SQL
+   queries.
 }
 \section{Methods}{\describe{
-\item{conn}{
-  an \code{SQLiteConnection} object.
-  }
-\item{statement}{a character vector of length 1 with the SQL statement.}
-\item{res}{an \code{SQLiteResult} object.}
+\item{conn}{a \code{SQLiteConnection} object.}
+\item{statement}{a character vector of length one specifying the SQL
+statement that should be executed.  Only a single SQL statment should be
+provided.}
+\item{res}{a \code{SQLiteResult} object.}
 \item{\dots }{additional parameters.}
 }
 }
@@ -47,12 +43,22 @@
   \code{\link[DBI]{dbGetInfo}},
   \code{\link[DBI]{dbReadTable}}.
 }
-\examples{\dontrun{
-drv <- dbDriver("MySQL")
-con <- dbConnect(drv)
-res <- dbSendQuery(con, "SELECT * from liv25")
-data <- fetch(res, n = -1)
-}
+\examples{
+con <- dbConnect(SQLite(), ":memory:")
+data(USArrests)
+dbWriteTable(con, "arrests", USArrests)
+
+res <- dbSendQuery(con, "SELECT * from arrests")
+data <- fetch(res, n = 2)
+data
+dbClearResult(res)
+
+dbGetQuery(con, "SELECT * from arrests limit 3")
+
+tryCatch(dbGetQuery(con, "SELECT * FROM tableDoesNotExist"),
+         error=function(e) { print("caught") })
+dbGetException(con)
+
 }
 \keyword{methods}
 \keyword{interface}
