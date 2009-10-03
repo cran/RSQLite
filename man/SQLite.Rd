@@ -106,12 +106,12 @@ On meta-data:
 \code{\link[DBI]{dbGetInfo}},
 \code{\link[DBI]{dbListTables}},
 \code{\link[DBI]{dbListFields}},
-\code{\link[DBI]{dbColumnsInfo}},
+\code{\link[DBI]{dbColumnInfo}},
 \code{\link[DBI]{dbGetException}},
 \code{\link[DBI]{dbGetStatement}},
 \code{\link[DBI]{dbHasCompleted}},
 \code{\link[DBI]{dbGetRowCount}},
-\code{\link[DBI]{dbGetAffectedRows}}.
+\code{\link[DBI]{dbGetRowsAffected}}.
 }
 \examples{
    # create a SQLite instance and create one connection.
