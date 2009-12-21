@@ -143,7 +143,7 @@ RS_SQLite_cloneConnection(Con_Handle conHandle)
   Mgr_Handle mgrHandle;
   RS_DBI_connection  *con;
   RS_SQLite_conParams *conParams;
-  SEXP dbname, allow_ext;
+  SEXP dbname, allow_ext, vfs, flags;
   Con_Handle ans;
 
   /* get connection params used to open existing connection */
@@ -157,13 +157,16 @@ RS_SQLite_cloneConnection(Con_Handle conHandle)
    */
   PROTECT(dbname = mkString(conParams->dbname));
   PROTECT(allow_ext = ScalarLogical(conParams->loadable_extensions));
-  ans = RS_SQLite_newConnection(mgrHandle, dbname, allow_ext);
-  UNPROTECT(2);
+  PROTECT(vfs = mkString(conParams->vfs));
+  PROTECT(flags = ScalarInteger(conParams->flags));
+  ans = RS_SQLite_newConnection(mgrHandle, dbname, allow_ext, flags, vfs);
+  UNPROTECT(4);
   return ans;
 }
 
 RS_SQLite_conParams *
-RS_SQLite_allocConParams(const char *dbname, int loadable_extensions)
+RS_SQLite_allocConParams(const char *dbname, int loadable_extensions,
+                         int flags, const char *vfs)
 {
   RS_SQLite_conParams *conParams;
 
@@ -173,15 +176,20 @@ RS_SQLite_allocConParams(const char *dbname, int loadable_extensions)
                        RS_DBI_ERROR);
   }
   conParams->dbname = RS_DBI_copyString(dbname);
+  if (vfs)
+      conParams->vfs = RS_DBI_copyString(vfs);
+  else
+      conParams->vfs = RS_DBI_copyString("");
   conParams->loadable_extensions = loadable_extensions;
+  conParams->flags = flags;
   return conParams;
 }
 
 void
 RS_SQLite_freeConParams(RS_SQLite_conParams *conParams)
 {
-  if(conParams->dbname)
-     free(conParams->dbname);
+  if (conParams->dbname) free(conParams->dbname);
+  if (conParams->vfs) free(conParams->vfs);
   /* conParams->loadable_extensions is an int, thus needs no free */
   free(conParams);
   conParams = (RS_SQLite_conParams *)NULL;
@@ -226,7 +234,8 @@ RS_SQLite_freeException(RS_DBI_connection *con)
 }
 
 Con_Handle
-RS_SQLite_newConnection(Mgr_Handle mgrHandle, SEXP dbfile, SEXP allow_ext)
+RS_SQLite_newConnection(Mgr_Handle mgrHandle, SEXP dbfile, SEXP allow_ext,
+                        SEXP s_flags, SEXP s_vfs)
 {
   RS_DBI_connection   *con;
   RS_SQLite_conParams *conParams;
@@ -234,12 +243,16 @@ RS_SQLite_newConnection(Mgr_Handle mgrHandle, SEXP dbfile, SEXP allow_ext)
   sqlite3     *db_connection, **pDb;
   const char  *dbname = NULL;
   int         rc, loadable_extensions;
+  const char *vfs = NULL;
+  int mode = 0;
+  int open_flags = 0;
 
   if(!is_validHandle(mgrHandle, MGR_HANDLE_TYPE))
     RS_DBI_errorMessage("invalid SQLiteManager", RS_DBI_ERROR);
 
-  if (TYPEOF(dbfile) != STRSXP || length(dbfile) != 1)
-      error("'dbname' must be a length one character vector");
+  if (TYPEOF(dbfile) != STRSXP || length(dbfile) != 1
+      || STRING_ELT(dbfile, 0) == NA_STRING)
+      error("'dbname' must be a length one character vector and not NA");
   dbname = CHAR(STRING_ELT(dbfile, 0));
 
   if (!isLogical(allow_ext))
@@ -248,9 +261,24 @@ RS_SQLite_newConnection(Mgr_Handle mgrHandle, SEXP dbfile, SEXP allow_ext)
   if (loadable_extensions == NA_LOGICAL)
       error("'allow_ext' must be TRUE or FALSE, not NA");
 
+  if (!isNull(s_vfs)) {
+      if (!isString(s_vfs) || length(s_vfs) != 1
+          || STRING_ELT(s_vfs, 0) == NA_STRING) {
+          error("invalid argument 'vfs'");
+      }
+      vfs = CHAR(STRING_ELT(s_vfs, 0));
+      /* "" is not valid, NULL gives default value */
+      if (strlen(vfs) == 0) vfs = NULL;
+  }
+  
+  if (!isInteger(s_flags) || length(s_flags) != 1)
+      error("argument 'mode' must be length 1 integer, got %s, length: %d",
+            type2char(TYPEOF(s_flags)), length(s_flags));
+  open_flags = INTEGER(s_flags)[0];
+  
   pDb = (sqlite3 **) calloc((size_t) 1, sizeof(sqlite3 *));
 
-  rc = sqlite3_open(dbname, pDb);
+  rc = sqlite3_open_v2(dbname, pDb, open_flags, vfs);
   db_connection = *pDb;           /* available, even if open fails! See API */
   if(rc != SQLITE_OK){
      char buf[256];
@@ -270,7 +298,8 @@ RS_SQLite_newConnection(Mgr_Handle mgrHandle, SEXP dbfile, SEXP allow_ext)
                         RS_DBI_ERROR);
   }
   /* save connection parameters in the connection object */
-  conParams = RS_SQLite_allocConParams(dbname, loadable_extensions);
+  conParams = RS_SQLite_allocConParams(dbname, loadable_extensions,
+                                       open_flags, vfs);
   con->drvConnection = (void *) db_connection;
   con->conParams = (void *) conParams;
   RS_SQLite_setException(con, SQLITE_OK, "OK");
@@ -1390,49 +1419,45 @@ RS_SQLite_managerInfo(Mgr_Handle mgrHandle)
 }
 
 SEXP 
-RS_SQLite_connectionInfo(Con_Handle conHandle)
+RSQLite_connectionInfo(Con_Handle conHandle)
 {
-  RS_SQLite_conParams *conParams;
-  RS_DBI_connection  *con;
-  SEXP output;
-  Sint       i, n = 8, *res, nres;
-  char *conDesc[] = {"host", "user", "dbname", "conType",
-             "serverVersion", "threadId", "rsId", "loadableExtensions"};
-  Stype conType[] = {STRSXP, STRSXP, STRSXP,
-          STRSXP, STRSXP,
-              INTSXP, INTSXP, STRSXP};
-  Sint  conLen[]  = {1, 1, 1, 1, 1, 1, 1, 1};
+    int info_count = 6, i = 0, nres;
+    RS_DBI_connection *con = RS_DBI_getConnection(conHandle);
+    RS_SQLite_conParams *params = (RS_SQLite_conParams *) con->conParams;
+    SEXP rsIds;
 
-  con = RS_DBI_getConnection(conHandle);
-  conLen[6] = con->num_res;         /* num of open resultSets */
-  output = RS_DBI_createNamedList(conDesc, conType, conLen, n);
-  conParams = (RS_SQLite_conParams *) con->conParams;
-  SET_LST_CHR_EL(output,0,0,C_S_CPY("localhost"));
-  SET_LST_CHR_EL(output,1,0,C_S_CPY(RS_NA_STRING));
-  SET_LST_CHR_EL(output,2,0,C_S_CPY(conParams->dbname));
-  SET_LST_CHR_EL(output,3,0,C_S_CPY("direct"));
-  SET_LST_CHR_EL(output,4,0,C_S_CPY(SQLITE_VERSION));
+    SEXP info = PROTECT(NEW_LIST(info_count));
+    SEXP info_nms = PROTECT(NEW_CHARACTER(info_count));
+    SET_NAMES(info, info_nms);
+    UNPROTECT(1);
 
-  LST_INT_EL(output,5,0) = (Sint) -1;
+    SET_STRING_ELT(info_nms, i, mkChar("dbname"));
+    SET_VECTOR_ELT(info, i++, mkString(params->dbname));
 
-  res = (Sint *) S_alloc( (long) con->length, (int) sizeof(Sint));
-  nres = RS_DBI_listEntries(con->resultSetIds, con->length, res);
-  if(nres != con->num_res){
-    RS_DBI_errorMessage(
-    "internal error: corrupt RS_DBI resultSet table",
-    RS_DBI_ERROR);
-  }
-  for( i = 0; i < con->num_res; i++){
-    LST_INT_EL(output,6,i) = (Sint) res[i];
-  }
+    SET_STRING_ELT(info_nms, i, mkChar("serverVersion"));
+    SET_VECTOR_ELT(info, i++, mkString(SQLITE_VERSION));
 
-  if(conParams->loadable_extensions)
-    SET_LST_CHR_EL(output,7,0,C_S_CPY("on"));
-  else
-    SET_LST_CHR_EL(output,7,0,C_S_CPY("off"));
+    SET_STRING_ELT(info_nms, i, mkChar("rsId"));
+    rsIds = PROTECT(NEW_INTEGER(con->length));
+    nres = RS_DBI_listEntries(con->resultSetIds, con->length, INTEGER(rsIds));
+    SET_LENGTH(rsIds, nres);
+    SET_VECTOR_ELT(info, i++, rsIds);
+    UNPROTECT(1);
 
-  return output;
+    SET_STRING_ELT(info_nms, i, mkChar("loadableExtensions"));
+    SET_VECTOR_ELT(info, i++,
+                   mkString(params->loadable_extensions ? "on" : "off"));
+
+    SET_STRING_ELT(info_nms, i, mkChar("flags"));
+    SET_VECTOR_ELT(info, i++, ScalarInteger(params->flags));
+
+    SET_STRING_ELT(info_nms, i, mkChar("vfs"));
+    SET_VECTOR_ELT(info, i++, mkString(params->vfs));
+
+    UNPROTECT(1);
+    return info;
 }
+
 SEXP 
 RS_SQLite_resultSetInfo(Res_Handle rsHandle)
 {
@@ -1749,3 +1774,35 @@ int corrected_sqlite3_step(sqlite3_stmt *pStatement){
   }
   return rc;
 }
+
+SEXP RS_SQLite_copy_database(Con_Handle conHandle, SEXP s)
+{
+    if (!isString(s) || length(s) != 1) {
+        error("filename must be a length one character vector, "
+              "got a %s with length %d",
+              type2char(TYPEOF(s)), length(s));
+    }
+    SEXP elt = STRING_ELT(s, 0);
+    if (elt == NA_STRING || length(elt) == 0) {
+        error("invalid filename: '%s'", CHAR(elt));
+    }
+    /* TODO: should we verify that the filename is different from the
+       one associated with the source database?
+    */
+    const char *fname = CHAR(elt);
+    RS_DBI_connection *con = RS_DBI_getConnection(conHandle);
+    sqlite3 *dbTo, *dbFrom = (sqlite3 *)con->drvConnection;
+    int rc = sqlite3_open(fname, &dbTo);
+    if (rc == SQLITE_OK) {
+        sqlite3_backup *backup = sqlite3_backup_init(dbTo, "main",
+                                                     dbFrom, "main");
+        if (backup) {
+            sqlite3_backup_step(backup, -1);
+            sqlite3_backup_finish(backup);
+        }
+        rc = sqlite3_errcode(dbTo);
+    }
+    sqlite3_close(dbTo);
+    return rc == 0 ? ScalarLogical(1) : ScalarLogical(0);
+}
+

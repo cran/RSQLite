@@ -92,15 +92,36 @@ function(obj, what="", ...)
 ## the SQLite API as the default database (SQLite config specific)
 ## while NULL means "no database".
 "sqliteNewConnection"<-
-function(drv, dbname = "", loadable.extensions=FALSE, cache_size=NULL, synchronous=0)
+function(drv, dbname = "", loadable.extensions = FALSE, cache_size = NULL,
+         synchronous = 0, flags = NULL, vfs = NULL)
 {
   if (is.null(dbname))
     dbname <- ""
+  ## path.expand converts as.character(NA) => "NA"
+  if (any(is.na(dbname)))
+      stop("'dbname' must not be NA")
   dbname <- path.expand(dbname)
   loadable.extensions <- as.logical(loadable.extensions)
+  if (!is.null(vfs)) {
+      if (.Platform[["OS.type"]] == "windows") {
+          warning("vfs customization not available on this platform.",
+                  " Ignoring value: vfs = ", vfs)
+      } else {
+          if (length(vfs) != 1L)
+              stop("'vfs' must be NULL or a character vector of length one")
+          allowed <- c("unix-posix", "unix-afp", "unix-flock", "unix-dotfile",
+                       "unix-none")
+          if (!(vfs %in% allowed)) {
+              stop("'vfs' must be one of ",
+                   paste(allowed, collapse=", "),
+                   ". See http://www.sqlite.org/compile.html")
+          }
+      }
+  }
+  flags <- if (is.null(flags)) SQLITE_RWC else flags
   drvId <- as(drv, "integer")
   conId <- .Call("RS_SQLite_newConnection", drvId,
-                 dbname, loadable.extensions, PACKAGE ="RSQLite")
+                 dbname, loadable.extensions, flags, vfs, PACKAGE ="RSQLite")
   con <- new("SQLiteConnection", Id = conId)
 
   ## experimental PRAGMAs
@@ -128,22 +149,19 @@ function(obj, verbose = FALSE, ...)
   }
   info <- dbGetInfo(obj)
   show(obj)
-  cat("  User:", info$user, "\n")
-  cat("  Host:", info$host, "\n")
-  cat("  Dbname:", info$dbname, "\n")
-  cat("  Connection type:", info$conType, "\n")
+  cat("  Database name:", info$dbname, "\n")
   cat("  Loadable extensions:", info$loadableExtensions, "\n")
-  if(verbose){
-    cat("  SQLite engine version: ", info$serverVersion, "\n")
-    cat("  SQLite engine thread id: ", info$threadId, "\n")
-  }
+  cat("  File open flags:", info$falgs, "\n")
+  cat("  Virtual File System:", info$vfs, "\n")
+  cat("  SQLite engine version: ", info$serverVersion, "\n")
+  cat("  Results Sets:\n")
   if(length(info$rsId)>0){
     for(i in seq(along.with = info$rsId)){
       cat("   ", i, " ")
       show(info$rsId[[i]])
     }
   } else
-    cat("  No resultSet available\n")
+    cat("   No open result sets\n")
   invisible(NULL)
 }
 
@@ -164,7 +182,7 @@ function(obj, what="", ...)
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
   id <- as(obj, "integer")
-  info <- .Call("RS_SQLite_connectionInfo", id, PACKAGE = .SQLitePkgName)
+  info <- .Call("RSQLite_connectionInfo", id, PACKAGE = .SQLitePkgName)
   if(length(info$rsId)){
     rsId <- vector("list", length = length(info$rsId))
     for(i in seq(along.with = info$rsId))
@@ -201,7 +219,7 @@ function(con, statement)
     dbClearResult(res)
   }
 
-  rc <- try(dbGetQuery(con, statement))
+  rc <- try(dbGetQuery(con, statement), silent = TRUE)
   !inherits(rc, ErrorClass)
 }
 
@@ -617,8 +635,10 @@ sqliteWriteTable <- function(con, name, value, row.names=TRUE,
         dbRollback(con)
       else {
           success <- dbCommit(con)
-          if (!success)
+          if (!success) {
+            warning(dbGetException(con)[["errorMsg"]])
             dbRollback(con)
+          }
       }
       success
 }
@@ -671,4 +691,42 @@ function(value, file, batch, row.names = TRUE, ...,
                   "TEXT")
   }
   sql.type
+}
+
+sqliteCopyDatabase <- function(db, filename)
+{
+    conId <- as(db, "integer")
+    .Call("RS_SQLite_copy_database", conId, filename, PACKAGE = .SQLitePkgName)
+}
+
+## RSQLite RUnit unit test support
+.test_RSQLite <- function(dir, verbose = FALSE) {
+    require("RUnit", quietly=TRUE) || stop("RUnit not found")
+
+    .any_errors <- function(res) any(sapply(res, function(r) r[["nErr"]] > 0))
+    .any_fail <- function(res) any(sapply(res, function(r) r[["nFail"]] > 0))
+
+    if (missing(dir)) {
+        dir <- system.file("UnitTests", package="RSQLite")
+    }
+    cwd <- getwd()
+    on.exit(setwd(cwd))
+    setwd(dir)
+
+    ro <- getOption("RUnit")
+    ro[["silent"]] <- TRUE
+    ro[["verbose"]] <- as.integer(verbose)
+    orig.options = options("RUnit"=ro)
+    on.exit(options(orig.options), add = TRUE)
+
+    suite <- defineTestSuite(name="RSQLite RUnit Tests", dirs=".",
+                             testFileRegexp=".*_test\\.R$",
+                             rngKind="default",
+                             rngNormalKind="default")
+    result <- runTestSuite(suite)
+    printTextProtocol(result, showDetails=FALSE)
+    if (.any_errors(result) || .any_fail(result)) {
+        stop("RSQLite unit tests FAILED")
+    }
+    result
 }

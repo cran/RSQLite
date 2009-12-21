@@ -35,8 +35,12 @@ extern  "C" {
 
 #include "RS-DBI.h"
 
-#define RS_SQLITE_MAX_CON 100    /* arbitrary, since  SQLite is an SQL engine*/
-#define RS_SQLITE_FETCH   500    /* records per fetch */
+/* These control the open mode for new connections and
+   are mapped to the appropriate SQLite flag.
+ */
+#define RSQLITE_RWC 0
+#define RSQLITE_RW  1
+#define RSQLITE_RO  2
 
 /* SQLite connection parameters struct, allocating and freeing
  * methods.  This is pretty simple, since SQLite does not recognise users
@@ -45,6 +49,8 @@ extern  "C" {
 typedef struct st_sdbi_conParams {
   char *dbname;
   int  loadable_extensions;
+  int  flags;
+  char *vfs;
 } RS_SQLite_conParams;
 
 typedef struct st_sqlite_err {
@@ -60,7 +66,10 @@ typedef struct st_sqlite_bindparam {
 
 #define RSQLITE_MSG(msg, err_type) DBI_MSG(msg, err_type, "RSQLite")
 
-RS_SQLite_conParams *RS_SQLite_allocConParams(const char *dbname, int loadable_extensions);
+RS_SQLite_conParams *RS_SQLite_allocConParams(const char *dbname,
+                                              int loadable_extensions,
+                                              int flags, const char *vfs);
+
 void                RS_SQLite_freeConParams(RS_SQLite_conParams *conParams);
 
 /* Convert declared column type string to SQLite column type.
@@ -86,7 +95,7 @@ SEXP RS_SQLite_close(Mgr_Handle mgrHandle);
 
 /* dbConnection */
 Con_Handle RS_SQLite_newConnection(Mgr_Handle mgrHandle, SEXP dbfile,
-                                    SEXP allow_ext);
+                                   SEXP allow_ext, SEXP s_flags, SEXP s_vfs);
 Con_Handle RS_SQLite_cloneConnection(Con_Handle conHandle);
 SEXP RS_SQLite_closeConnection(Con_Handle conHandle);
 /* we simulate db exceptions ourselves */
@@ -120,13 +129,15 @@ RS_DBI_fields *RS_SQLite_createDataMappings(Res_Handle resHandle);
  * the manager, connections, and  result sets, respectively.
  */
 SEXP RS_SQLite_managerInfo(Mgr_Handle mgrHandle);
-SEXP RS_SQLite_connectionInfo(Con_Handle conHandle);
+SEXP RSQLite_connectionInfo(Con_Handle conHandle);
 SEXP RS_SQLite_resultSetInfo(Res_Handle rsHandle);
 
 /*  The following imports the delim-fields of a file into an existing table*/
 SEXP RS_SQLite_importFile(Con_Handle conHandle, SEXP s_tablename,
              SEXP s_filename, SEXP s_separator, SEXP s_obj,
              SEXP s_skip);
+
+SEXP RS_SQLite_copy_database(Con_Handle conHandle, SEXP s);
 
 /* TODO: general connection */
 char * RS_sqlite_getline(FILE *in, const char *eol);
