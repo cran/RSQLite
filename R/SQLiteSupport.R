@@ -235,9 +235,8 @@ function(con, statement, bind.data=NULL)
   statement <- as(statement, "character")
   if (!is.null(bind.data)) {
       bind.data <- as.data.frame(bind.data)
-      if (nrow(bind.data) == 0) {
-          warning("ignoring zero-row bind.data")
-          bind.data <- NULL
+      if (min(dim(bind.data)) <= 0) {
+          stop("bind.data must have non-zero dimensions")
       }
   }
   rsId <- .Call("RS_SQLite_exec",
@@ -289,12 +288,10 @@ function(res, n=0, ...)
   n <- as(n, "integer")
   rsId <- as(res, "integer")
   rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
-  if(length(rel)==0 || length(rel[[1]])==0)
-    return(data.frame(NULL))
   ## create running row index as of previous fetch (if any)
   cnt <- dbGetRowCount(res)
-  nrec <- length(rel[[1]])
-  indx <- seq(from = cnt - nrec + as.integer(1), length.out = nrec)
+  nrec <- if (length(rel) > 0L) length(rel[[1L]]) else 0L
+  indx <- seq(from = cnt - nrec + 1L, length.out = nrec)
   attr(rel, "row.names") <- as.integer(indx)
   class(rel) <- "data.frame"
   rel
@@ -693,10 +690,24 @@ function(value, file, batch, row.names = TRUE, ...,
   sql.type
 }
 
-sqliteCopyDatabase <- function(db, filename)
+sqliteCopyDatabase <- function(from, to)
 {
-    conId <- as(db, "integer")
-    .Call("RS_SQLite_copy_database", conId, filename, PACKAGE = .SQLitePkgName)
+    if (!is(from, "SQLiteConnection"))
+        stop("'from' must be a SQLiteConnection object")
+    destdb <- to
+    if (!is(to, "SQLiteConnection")) {
+        if (is.character(to) && length(to) == 1L && !is.na(to) && nzchar(to)) {
+            if (":memory:" == to)
+                stop("invalid file name for 'to'.  Use a SQLiteConnection",
+                     " object to copy to an in-memory database")
+            destdb <- dbConnect(SQLite(), dbname = path.expand(to))
+            on.exit(dbDisconnect(destdb))
+        } else {
+            stop("'to' must be SQLiteConnection object or a non-empty string")
+        }
+    }
+    .Call("RS_SQLite_copy_database", from@Id, destdb@Id, PACKAGE = .SQLitePkgName)
+    invisible(NULL)
 }
 
 ## RSQLite RUnit unit test support
