@@ -1,5 +1,5 @@
 Package: RSQLite
-Version: 0.8-1
+Version: 0.8-2
 Title: SQLite interface for R
 Author: David A. James
 Maintainer: Seth Falcon <seth@userprimary.net>
@@ -13,6 +13,6 @@ Imports: methods, DBI (>= 0.2-3)
 Suggests: RUnit (>= 0.4.22)
 License: LGPL (>= 2)
 Collate: zzz.R S4R.R dbObjectId.R SQLite.R SQLiteSupport.R
-Packaged: 2010-01-06 22:36:33 UTC; sfalcon
+Packaged: 2010-01-21 19:30:17 UTC; sfalcon
 Repository: CRAN
-Date/Publication: 2010-01-07 15:40:59
+Date/Publication: 2010-01-22 07:47:18
