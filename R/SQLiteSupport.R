@@ -234,7 +234,8 @@ function(con, statement, bind.data=NULL)
   conId <- as(con, "integer")
   statement <- as(statement, "character")
   if (!is.null(bind.data)) {
-      bind.data <- as.data.frame(bind.data)
+      if (class(bind.data)[1] != "data.frame")
+          bind.data <- as.data.frame(bind.data)
       if (min(dim(bind.data)) <= 0) {
           stop("bind.data must have non-zero dimensions")
       }
@@ -288,6 +289,7 @@ function(res, n=0, ...)
   n <- as(n, "integer")
   rsId <- as(res, "integer")
   rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
+  if (is.null(rel)) rel <- list()       # result set is completed
   ## create running row index as of previous fetch (if any)
   cnt <- dbGetRowCount(res)
   nrec <- if (length(rel) > 0L) length(rel[[1L]]) else 0L
