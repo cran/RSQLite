@@ -33,8 +33,7 @@ function(max.con = 16, fetch.default.rec = 500, force.reload=FALSE,
 "sqliteCloseDriver" <-
 function(drv, ...)
 {
-  drvId <- as(drv, "integer")
-  .Call("RS_SQLite_closeManager", drvId, PACKAGE = .SQLitePkgName)
+  .Call("RS_SQLite_closeManager", drv@Id, PACKAGE = .SQLitePkgName)
 }
 
 "sqliteDescribeDriver" <-
@@ -71,16 +70,11 @@ function(obj, what="", ...)
 {
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
-  drvId <- as(obj, "integer")[1]
+  drvId <- obj@Id
   info <- .Call("RS_SQLite_managerInfo", drvId, PACKAGE = .SQLitePkgName)
-  drvId <- info$managerId
-  ## replace drv/connection id w. actual drv/connection objects
-  conObjs <- vector("list", length = info$"num_con")
-  ids <- info$connectionIds
-  for(i in seq(along.with = ids))
-    conObjs[[i]] <- new("SQLiteConnection", Id = c(drvId, ids[i]))
-  info$connectionIds <- conObjs
-  info$managerId <- new("SQLiteDriver", Id = drvId)
+  info$managerId <- obj
+  ## connection IDs are no longer tracked by the manager.
+  info$connectionIds <- list()
   if(!missing(what))
     info[what]
   else
@@ -119,7 +113,7 @@ function(drv, dbname = "", loadable.extensions = FALSE, cache_size = NULL,
       }
   }
   flags <- if (is.null(flags)) SQLITE_RWC else flags
-  drvId <- as(drv, "integer")
+  drvId <- drv@Id
   conId <- .Call("RS_SQLite_newConnection", drvId,
                  dbname, loadable.extensions, flags, vfs, PACKAGE ="RSQLite")
   con <- new("SQLiteConnection", Id = conId)
@@ -172,8 +166,7 @@ function(con, ...)
      warning(paste("expired SQLiteConnection"))
      return(TRUE)
   }
-  conId <- as(con, "integer")
-  .Call("RS_SQLite_closeConnection", conId, PACKAGE = .SQLitePkgName)
+  .Call("RS_SQLite_closeConnection", con@Id, PACKAGE = .SQLitePkgName)
 }
 
 "sqliteConnectionInfo" <-
@@ -181,12 +174,14 @@ function(obj, what="", ...)
 {
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
-  id <- as(obj, "integer")
+  id <- obj@Id
   info <- .Call("RSQLite_connectionInfo", id, PACKAGE = .SQLitePkgName)
   if(length(info$rsId)){
     rsId <- vector("list", length = length(info$rsId))
     for(i in seq(along.with = info$rsId))
-      rsId[[i]] <- new("SQLiteResult", Id = c(id, info$rsId[i]))
+      rsId[[i]] <- new("SQLiteResult",
+                       Id = .Call("DBI_newResultHandle",
+                       id, info$rsId[i], PACKAGE = .SQLitePkgName))
     info$rsId <- rsId
   }
   if(!missing(what))
@@ -198,8 +193,7 @@ function(obj, what="", ...)
 
 "sqliteQuickColumn" <- function(con, table, column)
 {
-    conId <- as(con, "integer")
-    .Call("RS_SQLite_quick_column", conId, as.character(table),
+    .Call("RS_SQLite_quick_column", con@Id, as.character(table),
           as.character(column), PACKAGE="RSQLite")
 }
 
@@ -231,7 +225,7 @@ function(con, statement, bind.data=NULL)
 ## output, otherwise it produces a resultSet that can
 ## be used for fetching rows.
 {
-  conId <- as(con, "integer")
+  conId <- con@Id
   statement <- as(statement, "character")
   if (!is.null(bind.data)) {
       if (class(bind.data)[1] != "data.frame")
@@ -286,8 +280,8 @@ function(res, n=0, ...)
 
   if(!isIdCurrent(res))
      stop("invalid result handle")
-  n <- as(n, "integer")
-  rsId <- as(res, "integer")
+  n <- as.integer(n)
+  rsId <- res@Id
   rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
   if (is.null(rel)) rel <- list()       # result set is completed
   ## create running row index as of previous fetch (if any)
@@ -304,8 +298,8 @@ function(con, statement, n=0, ...)
 {
     rs <- dbSendQuery(con, statement)
     on.exit(dbClearResult(rs))
-    n <- as(n, "integer")
-    rsId <- as(rs, "integer")
+    n <- as.integer(n)
+    rsId <- rs@Id
     rel <- .Call("RS_SQLite_fetch", rsId, nrec = n, PACKAGE = .SQLitePkgName)
     if (length(rel) == 0 || length(rel[[1]]) == 0)
       return(NULL)
@@ -317,7 +311,7 @@ function(obj, what = "", ...)
 {
   if(!isIdCurrent(obj))
     stop(paste("expired", class(obj)))
-   id <- as(obj, "integer")
+   id <- obj@Id
    info <- .Call("RS_SQLite_resultSetInfo", id, PACKAGE = .SQLitePkgName)
    flds <- info$fieldDescription[[1]]
    if(!is.null(flds)){
@@ -346,7 +340,7 @@ function(obj, verbose = FALSE, ...)
   cat("  Statement:", dbGetStatement(obj), "\n")
   cat("  Has completed?", if(dbHasCompleted(obj)) "yes" else "no", "\n")
   cat("  Affected rows:", dbGetRowsAffected(obj), "\n")
-  hasOutput <- as(dbGetInfo(obj, "isSelect")[[1]], "logical")
+  hasOutput <- as.logical(dbGetInfo(obj, "isSelect")[[1]])
   flds <- dbColumnInfo(obj)
   if(hasOutput){
     cat("  Output fields:", nrow(flds), "\n")
@@ -365,8 +359,7 @@ function(res, ...)
      warning(paste("expired SQLiteResult"))
      return(TRUE)
   }
-  rsId <- as(res, "integer")
-  .Call("RS_SQLite_closeResultSet", rsId, PACKAGE = .SQLitePkgName)
+  .Call("RS_SQLite_closeResultSet", res@Id, PACKAGE = .SQLitePkgName)
 }
 
 "sqliteTableFields" <-
@@ -523,9 +516,9 @@ function(con, name, value, field.types = NULL, overwrite = FALSE,
   rc <-
       try({
          skip <- skip + as.integer(header)
-         conId <- as(con, "integer")
+         conId <- con@Id
          .Call("RS_SQLite_importFile", conId, name, fn, sep, eol,
-            as(skip, "integer"), PACKAGE = .SQLitePkgName)
+            as.integer(skip), PACKAGE = .SQLitePkgName)
       })
   if(inherits(rc, ErrorClass)){
     if(new.table) dbRemoveTable(new.con, name)
@@ -688,6 +681,7 @@ function(value, file, batch, row.names = TRUE, ...,
                   factor = "TEXT",	## up to 65535 characters
                   ordered = "TEXT",
                   "TEXT")
+    if (is.list(obj)) sql.type <- "BLOB"
   }
   sql.type
 }
@@ -710,36 +704,4 @@ sqliteCopyDatabase <- function(from, to)
     }
     .Call("RS_SQLite_copy_database", from@Id, destdb@Id, PACKAGE = .SQLitePkgName)
     invisible(NULL)
-}
-
-## RSQLite RUnit unit test support
-.test_RSQLite <- function(dir, verbose = FALSE) {
-    require("RUnit", quietly=TRUE) || stop("RUnit not found")
-
-    .any_errors <- function(res) any(sapply(res, function(r) r[["nErr"]] > 0))
-    .any_fail <- function(res) any(sapply(res, function(r) r[["nFail"]] > 0))
-
-    if (missing(dir)) {
-        dir <- system.file("UnitTests", package="RSQLite")
-    }
-    cwd <- getwd()
-    on.exit(setwd(cwd))
-    setwd(dir)
-
-    ro <- getOption("RUnit")
-    ro[["silent"]] <- TRUE
-    ro[["verbose"]] <- as.integer(verbose)
-    orig.options = options("RUnit"=ro)
-    on.exit(options(orig.options), add = TRUE)
-
-    suite <- defineTestSuite(name="RSQLite RUnit Tests", dirs=".",
-                             testFileRegexp=".*_test\\.R$",
-                             rngKind="default",
-                             rngNormalKind="default")
-    result <- runTestSuite(suite)
-    printTextProtocol(result, showDetails=FALSE)
-    if (.any_errors(result) || .any_fail(result)) {
-        stop("RSQLite unit tests FAILED")
-    }
-    result
 }

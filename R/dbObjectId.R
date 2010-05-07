@@ -32,31 +32,13 @@
 ## TODO: Convert the Id slot to be an external object (as per Luke Tierney's
 ## implementation), even at the expense of S-plus compatibility?
 
-setClass("dbObjectId", representation(Id = "integer", "VIRTUAL"))
-
-## coercion methods 
-setAs("dbObjectId", "integer", 
-   def = function(from) as(slot(from,"Id"), "integer")
-)
-setAs("dbObjectId", "numeric",
-   def = function(from) as(slot(from, "Id"), "integer")
-)
-setAs("dbObjectId", "character",
-   def = function(from) as(slot(from, "Id"), "character")
-)   
-
-## formating, showing, printing,...
-setMethod("format", "dbObjectId", 
-   definition = function(x, ...) {
-      paste("(", paste(as(x, "integer"), collapse=","), ")", sep="")
-   },
-   valueClass = "character"
-)
+setClass("dbObjectId", representation(Id = "externalptr", "VIRTUAL"))
 
 setMethod("show", "dbObjectId",
    definition = function(object) {
       expired <- if(isIdCurrent(object)) "" else "Expired "
-      str <- paste("<", expired, class(object), ":", format(object), ">", sep="")
+      id <- .Call("DBI_handle_to_string", object@Id, PACKAGE = .SQLitePkgName)
+      str <- paste("<", expired, class(object), ": ", id, ">", sep="")
       cat(str, "\n")
       invisible(NULL)
    }
@@ -66,6 +48,5 @@ setMethod("show", "dbObjectId",
 function(obj)
 ## verify that obj refers to a currently open/loaded database
 { 
-   obj <- as(obj, "integer")
-   .Call("RS_DBI_validHandle", obj, PACKAGE = .SQLitePkgName)
+   .Call("RS_DBI_validHandle", obj@Id, PACKAGE = .SQLitePkgName)
 }
