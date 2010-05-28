@@ -1,13 +1,13 @@
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/R/dbObjectId.R,69
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/R/dbObjectId.R,69
 sdbObjectId35,1596
 sshow,dbObjectId37,1667
 "isIdCurrent47,1995
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/R/S4R.R,14
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/R/S4R.R,14
 uusingR6,44
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/R/SQLite.R,2045
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/R/SQLite.R,2045
 SSQLITE_RWC25,900
 SSQLITE_RW26,917
 SSQLITE_RO27,933
@@ -63,7 +63,7 @@ smake.db.names,SQLiteObject,character321,9845
 sSQLKeywords,SQLiteObject329,10117
 sisSQLKeyword,SQLiteObject,character334,10242
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/R/SQLiteSupport.R,745
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/R/SQLiteSupport.R,745
 "sqliteInitDriver21,827
 "sqliteCloseDriver33,1225
 "sqliteDescribeDriver39,1340
@@ -90,19 +90,19 @@ ssqliteWriteTable530,16322
 "sqliteDataType670,20515
 ssqliteCopyDatabase688,20970
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/R/zzz.R,29
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/R/zzz.R,29
 ..onUnload1,0
 ..test5,81
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/param_binding.c,212
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/param_binding.c,212
 init_bindParams(8,104
 static int first_not_used(21,392
 void add_data_to_param_binding(33,627
-static int find_by_name(64,1521
-RS_SQLite_createParameterBinding(79,1938
-RS_SQLite_freeParameterBinding(161,4539
+static int find_by_name(64,1555
+RS_SQLite_createParameterBinding(79,1972
+RS_SQLite_freeParameterBinding(161,4573
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/param_binding.h,226
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/param_binding.h,226
 #define PARAM_BINDING_H_2,25
 typedef struct st_sqlite_bindparams 7,96
     int count;8,134
@@ -112,7 +112,7 @@ typedef struct st_sqlite_bindparams 7,96
     SEXP data;12,209
 } RS_SQLite_bindParams;13,224
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/Rhelpers.h,1365
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/Rhelpers.h,1365
 #define RHELPERS_H6,67
 #  define singl 20,317
 #  define Sint 21,340
@@ -162,7 +162,7 @@ typedef struct st_sqlite_bindparams 7,96
 #  define GET_CLASS_NAME(111,3662
 #  define SET_CLASS_NAME(112,3705
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/RS-DBI.c,1534
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/RS-DBI.c,1499
 static RS_DBI_manager *dbManager dbManager32,1229
 static int HANDLE_LENGTH(34,1271
 RS_DBI_allocManager(42,1446
@@ -176,42 +176,41 @@ RS_DBI_allocFields(325,10479
 RS_DBI_freeFields(350,11242
 RS_DBI_makeDataFrame(370,11858
 RS_DBI_allocOutput(394,12449
-RS_DBI_validHandle(450,13829
-RS_DBI_setException(478,14585
-RS_DBI_errorMessage(507,15445
-void DBI_MSG(528,16025
-RS_DBI_copyString(549,16555
-RS_DBI_nCopyString(563,16914
-RS_DBI_copyfields(596,17646
-RS_DBI_createNamedList(628,18693
-RS_DBI_SclassNames(666,19643
-RS_DBI_asMgrHandle(698,20393
-DBI_newConnectionHandle(711,20708
-static void _finalize_con_handle(721,20978
-RS_DBI_asConHandle(730,21140
-DBI_newResultHandle(746,21574
-RS_DBI_asResHandle(753,21747
-RS_DBI_getManager(776,22422
-RS_DBI_getConnection(791,22779
-RS_DBI_getResultSet(797,22902
-RS_DBI_newEntry(815,23508
-RS_DBI_lookup(828,23730
-RS_DBI_listEntries(847,24103
-RS_DBI_freeEntry(859,24289
-is_validHandle(867,24434
-RS_DBI_managerInfo(913,26089
-RS_DBI_connectionInfo(949,27220
-RS_DBI_resultSetInfo(984,28423
-RS_DBI_getFieldDescriptions(1013,29317
-RS_DBI_getTypeName(1047,30421
-#define RS_DBI_MAX_IDENTIFIER_LENGTH 1077,31691
-RS_DBI_makeSQLNames(1079,31761
-void RS_na_set(1126,33117
-int RS_is_na(1151,33512
-const struct data_types RS_dataTypeTable[RS_dataTypeTable1176,33990
-SEXP DBI_handle_to_string(1202,34773
+RS_DBI_validHandle(451,13881
+RS_DBI_setException(479,14637
+RS_DBI_errorMessage(508,15497
+void DBI_MSG(529,16077
+RS_DBI_copyString(550,16607
+RS_DBI_nCopyString(564,16966
+RS_DBI_copyfields(597,17698
+RS_DBI_createNamedList(629,18745
+RS_DBI_SclassNames(668,19747
+RS_DBI_asMgrHandle(700,20497
+static void _finalize_con_handle(716,20912
+RS_DBI_asConHandle(725,21074
+DBI_newResultHandle(741,21508
+RS_DBI_asResHandle(748,21681
+RS_DBI_getManager(771,22356
+RS_DBI_getConnection(786,22713
+RS_DBI_getResultSet(792,22836
+RS_DBI_newEntry(810,23442
+RS_DBI_lookup(824,23665
+RS_DBI_listEntries(843,24097
+RS_DBI_freeEntry(855,24283
+is_validHandle(863,24428
+RS_DBI_managerInfo(907,25958
+RS_DBI_connectionInfo(943,27089
+RS_DBI_resultSetInfo(978,28292
+RS_DBI_getFieldDescriptions(1007,29186
+RS_DBI_getTypeName(1041,30290
+#define RS_DBI_MAX_IDENTIFIER_LENGTH 1071,31560
+RS_DBI_makeSQLNames(1073,31630
+void RS_na_set(1120,32986
+int RS_is_na(1145,33381
+const struct data_types RS_dataTypeTable[RS_dataTypeTable1170,33859
+SEXP DBI_handle_to_string(1197,34669
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/RS-DBI.h,2576
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/RS-DBI.h,2576
 #define _RS_DBI_H 2,18
 # define pid_t 37,1196
 # define getpid 41,1305
@@ -292,45 +291,45 @@ struct data_types 263,10497
     char *typeName;typeName264,10517
     Sint typeId;265,10537
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/RS-SQLite.c,1254
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/RS-SQLite.c,1254
 char *compiledVarsion compiledVarsion25,925
 #define RS_NA_STRING 33,1258
 RS_SQLite_init(59,2249
-RS_SQLite_closeManager(109,3938
-RS_SQLite_cloneConnection(137,4632
-RS_SQLite_allocConParams(164,5561
-RS_SQLite_freeConParams(185,6233
-RS_SQLite_setException(197,6601
-RS_SQLite_freeException(222,7296
-RS_SQLite_newConnection(233,7510
-RS_SQLite_closeConnection(305,10189
-int SQLite_decltype_to_type(355,12006
-int RS_SQLite_get_row_count(397,13584
-SEXP RS_SQLite_quick_column(425,14402
-static void RSQLite_freeResultSet0(507,17131
-exec_error(525,17733
-select_prepared_query(549,18447
-bind_params_to_stmt(571,19207
-non_select_prepared_query(614,20609
-Res_Handle RS_SQLite_exec(660,22282
-RS_SQLite_createDataMappings(748,25405
-static void fill_one_row(826,28180
-static int do_select_step(862,29377
-SEXP RS_SQLite_fetch(912,31321
-RS_SQLite_mget(1007,34598
-RS_SQLite_getException(1182,40886
-void RSQLite_closeResultSet0(1204,41564
-RS_SQLite_closeResultSet(1213,41854
-RS_SQLite_managerInfo(1221,42057
-RSQLite_connectionInfo(1281,44155
-RS_SQLite_resultSetInfo(1321,45458
-RS_SQLite_typeNames(1352,46496
-RS_SQLite_importFile(1372,46943
-RS_sqlite_import(1439,48599
-RS_sqlite_getline(1576,53258
-SEXP RS_SQLite_copy_database(1627,54579
+RS_SQLite_closeManager(116,4264
+RS_SQLite_cloneConnection(144,4958
+RS_SQLite_allocConParams(171,5887
+RS_SQLite_freeConParams(192,6559
+RS_SQLite_setException(204,6927
+RS_SQLite_freeException(229,7622
+RS_SQLite_newConnection(240,7836
+RS_SQLite_closeConnection(312,10515
+int SQLite_decltype_to_type(362,12332
+int RS_SQLite_get_row_count(404,13910
+SEXP RS_SQLite_quick_column(432,14728
+static void RSQLite_freeResultSet0(514,17457
+exec_error(532,18059
+select_prepared_query(556,18773
+bind_params_to_stmt(578,19533
+non_select_prepared_query(628,21223
+Res_Handle RS_SQLite_exec(674,22896
+RS_SQLite_createDataMappings(762,26019
+static void fill_one_row(846,28999
+static int do_select_step(882,30196
+SEXP RS_SQLite_fetch(932,32140
+RS_SQLite_mget(1027,35417
+RS_SQLite_getException(1202,41705
+void RSQLite_closeResultSet0(1224,42383
+RS_SQLite_closeResultSet(1233,42673
+RS_SQLite_managerInfo(1248,43239
+RSQLite_connectionInfo(1308,45337
+RS_SQLite_resultSetInfo(1348,46640
+RS_SQLite_typeNames(1379,47678
+RS_SQLite_importFile(1399,48125
+RS_sqlite_import(1466,49781
+RS_sqlite_getline(1603,54440
+SEXP RS_SQLite_copy_database(1654,55761
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/RS-SQLite.h,1128
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/RS-SQLite.h,1159
 #define _RS_SQLite_H 2,21
 #define RSQLITE_RWC 37,1152
 #define RSQLITE_RW 38,1174
@@ -363,10 +362,11 @@ enum SQL92_field_types 139,5091
      SQL92_TYPE_TIMESTAMP,153,5427
      SQL92_TYPE_DATE,154,5454
      SQL92_TYPE_TIME,155,5476
-     SQL92_TYPE_DATETIME156,5498
-const struct data_types RS_SQLite_fieldTypes[RS_SQLite_fieldTypes159,5527
+     SQL92_TYPE_DATETIME,156,5498
+     SQLns_TYPE_BLOB157,5524
+const struct data_types RS_SQLite_fieldTypes[RS_SQLite_fieldTypes160,5549
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/sqlite/sqlite3.c,281509
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/sqlite/sqlite3.c,281509
 #define SQLITE_CORE 20,1243
 #define SQLITE_AMALGAMATION 21,1265
 # define SQLITE_PRIVATE 23,1318
@@ -7195,7 +7195,7 @@ static int icuNext(112358,3925574
 static const sqlite3_tokenizer_module icuTokenizerModule 112423,3927301
 SQLITE_PRIVATE void sqlite3Fts3IcuTokenizerModule(112435,3927718
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/sqlite/sqlite3.h,15002
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/sqlite/sqlite3.h,15002
 #define _SQLITE3_H_34,1511
 # define SQLITE_EXTERN 49,1760
 # define SQLITE_API53,1817
@@ -7562,7 +7562,7 @@ struct sqlite3_pcache_methods 5350,251863
 typedef struct sqlite3_backup sqlite3_backup;5375,252755
 # undef double5727,271133
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/sqlite/sqlite3ext.h,13679
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/sqlite/sqlite3ext.h,13679
 #define _SQLITE3EXT_H_19,664
 typedef struct sqlite3_api_routines sqlite3_api_routines;22,709
 struct sqlite3_api_routines 34,1141
@@ -7881,6 +7881,6 @@ struct sqlite3_api_routines 34,1141
 #define SQLITE_EXTENSION_INIT1 375,20525
 #define SQLITE_EXTENSION_INIT2(376,20605
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/sqlite.h,0
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/sqlite.h,0
 
-/Users/sfalcon/src/r-dbi-git/SQLite/RSQLite/src/sqlite-all.c,0
+/Users/seth/src/r-dbi-git/SQLite/RSQLite/src/sqlite-all.c,0
