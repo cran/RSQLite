@@ -1,4 +1,4 @@
-ad798d2736ff5e355b4439887390928f *DESCRIPTION
+610d478764668b2bfe1da003e76353a0 *DESCRIPTION
 2fd28abc15ac7134eb4269ac8d286d94 *NAMESPACE
 2ffb54fb638385792c64dabdd9933c88 *R/S4R.R
 1fb38c47c73ac2c3327b3af7cb489fa9 *R/SQLite.R
@@ -9,7 +9,7 @@ ad0676ed89cf2d9aea2c074b3568538d *configure
 64a9fb389202feace65b17f204b2f172 *configure.in
 a24e39e8cda46699597f41074351a8d3 *inst/HACKING
 59a0a1835a537e561c449dd3494c79c9 *inst/INSTALL
-1e1c5946fd742e81054c48591d0f9dc9 *inst/NEWS
+f045052879bc201c1b4033f639920a40 *inst/NEWS
 b856a4253c0456c6d449e272cfdfa0e3 *inst/ONEWS
 9d3a54f75a69393f908aaebb8981fab9 *inst/README
 fe40264cf27f19fd9c1642132fc396ab *inst/THANKS
@@ -23,7 +23,7 @@ a068d5330949c7f13f695ca5f62e1364 *inst/UnitTests/dat1.txt
 2fac31acda8ec0cf624b3d7cd3ccb500 *inst/UnitTests/dat2.txt
 d97f59133341d9a53539b8780331279b *inst/UnitTests/dat3.txt
 44dca0e99bf39dbf02f172e2c41892a4 *inst/UnitTests/dat4.txt
-b93fa0a68429ea8f2d8071566c0d3bcb *inst/UnitTests/dbConnect_test.R
+50305f40b8611555e36930f81e6d4dd9 *inst/UnitTests/dbConnect_test.R
 7288a4c1fcd1d2981671d08b634e899e *inst/UnitTests/dbDataType_test.R
 c6f0260932bede165c537ea1af806cd1 *inst/UnitTests/dbGetInfo_test.R
 ecadbeed1e3a4f25b7bd54ada0d01081 *inst/UnitTests/dbWriteTable_test.R
@@ -63,9 +63,9 @@ acb91f044b6a7d62bc00e5a92a33e9a8 *man/sqliteQuickColumn.Rd
 6c55deba7b97759eb05e8aa25f378f0c *man/summary-methods.Rd
 402dc8daa4362204bcad532beb0d1db3 *src/Makevars.in
 90edc5500cadb71688f020d62671dce7 *src/Makevars.win
-1e5f51cc3a64188199c73aced55f1d1d *src/RS-DBI.c
+b5fbbdf65c593a0365e08cc041086e37 *src/RS-DBI.c
 71f81d066a1f123bbc2082f9b3ef63a0 *src/RS-DBI.h
-7198aa284d3a586167f4450b645e7c84 *src/RS-SQLite.c
+e4bcd41e499b4ba6b26f1dd9433e723b *src/RS-SQLite.c
 1ff17caf99328e3f7e5f80dc2ac2ec65 *src/RS-SQLite.h
 8526b1e7922e0089485249debd5b106b *src/Rhelpers.h
 7c8a358e4425e173f4e4b63671deba76 *src/param_binding.c
