@@ -1,4 +1,4 @@
-704ee2902beabc2a0e93f7bd4b60ccb2 *DESCRIPTION
+ef30a6223751e106b0a5fc0d3d719eb7 *DESCRIPTION
 2fd28abc15ac7134eb4269ac8d286d94 *NAMESPACE
 2ffb54fb638385792c64dabdd9933c88 *R/S4R.R
 1fb38c47c73ac2c3327b3af7cb489fa9 *R/SQLite.R
@@ -9,7 +9,7 @@ ad0676ed89cf2d9aea2c074b3568538d *configure
 64a9fb389202feace65b17f204b2f172 *configure.in
 a24e39e8cda46699597f41074351a8d3 *inst/HACKING
 59a0a1835a537e561c449dd3494c79c9 *inst/INSTALL
-74fac48e8154f4a648265d7bedd640dc *inst/NEWS
+fcfa40a542076ba1a77df5d87b5103c3 *inst/NEWS
 b856a4253c0456c6d449e272cfdfa0e3 *inst/ONEWS
 9d3a54f75a69393f908aaebb8981fab9 *inst/README
 fe40264cf27f19fd9c1642132fc396ab *inst/THANKS
@@ -25,7 +25,7 @@ d97f59133341d9a53539b8780331279b *inst/UnitTests/dat3.txt
 44dca0e99bf39dbf02f172e2c41892a4 *inst/UnitTests/dat4.txt
 50305f40b8611555e36930f81e6d4dd9 *inst/UnitTests/dbConnect_test.R
 7288a4c1fcd1d2981671d08b634e899e *inst/UnitTests/dbDataType_test.R
-710a0ccd2b7e945ee2013ca9fd7b0c49 *inst/UnitTests/dbGetInfo_test.R
+3a3a4dea69b984680642782d9e1b3520 *inst/UnitTests/dbGetInfo_test.R
 ecadbeed1e3a4f25b7bd54ada0d01081 *inst/UnitTests/dbWriteTable_test.R
 487c14ba9f89fa06f7af7825f8fb8856 *inst/UnitTests/multiple_cons_test.R
 a33a298c7f5b26e49977639a82cb97fb *inst/UnitTests/result_set_closing_test.R
@@ -72,8 +72,8 @@ e4bcd41e499b4ba6b26f1dd9433e723b *src/RS-SQLite.c
 e3d214e4b0c3f3d970ec0f7e9c950667 *src/param_binding.h
 b9e7c6744beeee3c22b21458fed9046c *src/sqlite-all.c
 ee45c6cd7c5345bdecfe3728e6321455 *src/sqlite.h
-4979a310de8246f039df502f2604c0e1 *src/sqlite/sqlite3.c
-8f518a8a6fedf840bc8ec2d55960fb69 *src/sqlite/sqlite3.h
-41586fd97964475e0668a74198532208 *src/sqlite/sqlite3ext.h
+1c10d2edf552c259e16c7eee75cd48ca *src/sqlite/sqlite3.c
+59171fb40e72964ef4e00049f67a1ae7 *src/sqlite/sqlite3.h
+28694a2c0e42dba2a162fd5fef610096 *src/sqlite/sqlite3ext.h
 1e49d8ec611f7f514819aec12803b05b *tests/RSQLite_unit_tests.R
 73c6f6ff2086590e18527fb1704fc7cd *tests/gc-tests.R
