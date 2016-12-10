@@ -1,6 +1,6 @@
 Package: RSQLite
-Version: 1.1
-Date: 2016-11-24
+Version: 1.1-1
+Date: 2016-12-10
 Title: 'SQLite' Interface for R
 Authors@R: c(
     person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org"),
@@ -30,7 +30,7 @@ Collate: 'RcppExports.R' 'SQLiteConnection.R' 'SQLiteDriver.R'
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1.9000
 NeedsCompilation: yes
-Packaged: 2016-11-25 14:49:05 UTC; muelleki
+Packaged: 2016-12-10 13:38:36 UTC; muelleki
 Author: Kirill Müller [aut, cre],
   Hadley Wickham [aut],
   David A. James [aut],
@@ -41,4 +41,4 @@ Author: Kirill Müller [aut, cre],
   RStudio [cph]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2016-11-27 16:31:52
+Date/Publication: 2016-12-10 23:13:44
