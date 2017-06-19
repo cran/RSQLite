@@ -1,4 +1,4 @@
-#include <RSQLite.h>
+#include "pch.h"
 #include <workarounds/XPtr.h>
 #include "SqliteConnection.h"
 
@@ -27,7 +27,12 @@ XPtr<SqliteConnectionPtr> rsqlite_connect(
 
 // [[Rcpp::export]]
 void rsqlite_disconnect(XPtr<SqliteConnectionPtr>& con) {
-  int n = con->use_count();
+  if (!con.get() || !(*con)->is_valid()) {
+    warning("Already disconnected");
+    return;
+  }
+
+  long n = con->use_count();
   if (n > 1) {
     warning(
       "There are %i result in use. The connection will be released when they are closed",
@@ -35,7 +40,7 @@ void rsqlite_disconnect(XPtr<SqliteConnectionPtr>& con) {
     );
   }
 
-  con.release();
+  (*con)->disconnect();
 }
 
 // [[Rcpp::export]]
@@ -46,7 +51,7 @@ void rsqlite_copy_database(const XPtr<SqliteConnectionPtr>& from,
 
 // [[Rcpp::export]]
 bool rsqlite_connection_valid(const XPtr<SqliteConnectionPtr>& con) {
-  return con.get() != NULL;
+  return (*con)->is_valid();
 }
 
 // [[Rcpp::export]]

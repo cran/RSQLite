@@ -102,15 +102,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rsqlite_find_params
-IntegerVector rsqlite_find_params(const XPtr<SqliteResult>& res, CharacterVector param_names);
-RcppExport SEXP RSQLite_rsqlite_find_params(SEXP resSEXP, SEXP param_namesSEXP) {
+// rsqlite_get_placeholder_names
+CharacterVector rsqlite_get_placeholder_names(const XPtr<SqliteResult>& res);
+RcppExport SEXP RSQLite_rsqlite_get_placeholder_names(SEXP resSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const XPtr<SqliteResult>& >::type res(resSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type param_names(param_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rsqlite_find_params(res, param_names));
+    rcpp_result_gen = Rcpp::wrap(rsqlite_get_placeholder_names(res));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -199,4 +198,30 @@ BEGIN_RCPP
     init_logging(log_level);
     return R_NilValue;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"RSQLite_rsqlite_connect", (DL_FUNC) &RSQLite_rsqlite_connect, 4},
+    {"RSQLite_rsqlite_disconnect", (DL_FUNC) &RSQLite_rsqlite_disconnect, 1},
+    {"RSQLite_rsqlite_copy_database", (DL_FUNC) &RSQLite_rsqlite_copy_database, 2},
+    {"RSQLite_rsqlite_connection_valid", (DL_FUNC) &RSQLite_rsqlite_connection_valid, 1},
+    {"RSQLite_rsqlite_import_file", (DL_FUNC) &RSQLite_rsqlite_import_file, 6},
+    {"RSQLite_rsqlite_send_query", (DL_FUNC) &RSQLite_rsqlite_send_query, 2},
+    {"RSQLite_rsqlite_clear_result", (DL_FUNC) &RSQLite_rsqlite_clear_result, 1},
+    {"RSQLite_rsqlite_fetch", (DL_FUNC) &RSQLite_rsqlite_fetch, 2},
+    {"RSQLite_rsqlite_get_placeholder_names", (DL_FUNC) &RSQLite_rsqlite_get_placeholder_names, 1},
+    {"RSQLite_rsqlite_bind_rows", (DL_FUNC) &RSQLite_rsqlite_bind_rows, 2},
+    {"RSQLite_rsqlite_has_completed", (DL_FUNC) &RSQLite_rsqlite_has_completed, 1},
+    {"RSQLite_rsqlite_row_count", (DL_FUNC) &RSQLite_rsqlite_row_count, 1},
+    {"RSQLite_rsqlite_rows_affected", (DL_FUNC) &RSQLite_rsqlite_rows_affected, 1},
+    {"RSQLite_rsqlite_column_info", (DL_FUNC) &RSQLite_rsqlite_column_info, 1},
+    {"RSQLite_rsqlite_result_valid", (DL_FUNC) &RSQLite_rsqlite_result_valid, 1},
+    {"RSQLite_rsqliteVersion", (DL_FUNC) &RSQLite_rsqliteVersion, 0},
+    {"RSQLite_init_logging", (DL_FUNC) &RSQLite_init_logging, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_RSQLite(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

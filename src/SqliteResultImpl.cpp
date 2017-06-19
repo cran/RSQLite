@@ -1,6 +1,7 @@
-#include <RSQLite.h>
+#include "pch.h"
 #include "SqliteResultImpl.h"
 #include "SqliteDataFrame.h"
+#include "ColumnStorage.h"
 
 
 
@@ -60,8 +61,11 @@ SqliteResultImpl::~SqliteResultImpl() {
 sqlite3_stmt* SqliteResultImpl::prepare(sqlite3* conn, const std::string& sql) {
   sqlite3_stmt* stmt = NULL;
 
-  int rc = sqlite3_prepare_v2(conn, sql.c_str(), sql.size() + 1,
-                              &stmt, NULL);
+  int rc =
+    sqlite3_prepare_v2(
+      conn, sql.c_str(), (int)std::min(sql.size() + 1, (size_t)INT_MAX),
+      &stmt, NULL
+    );
   if (rc != SQLITE_OK) {
     raise_sqlite_exception(conn);
   }
@@ -72,12 +76,9 @@ sqlite3_stmt* SqliteResultImpl::prepare(sqlite3* conn, const std::string& sql) {
 // We guess the correct R type for each column from the declared column type,
 // if possible.  The type of the column can be amended as new values come in,
 // but will be fixed after the first call to fetch().
-std::vector<SEXPTYPE> SqliteResultImpl::get_initial_field_types(const int ncols) {
-  std::vector<SEXPTYPE> types;
-  for (int j = 0; j < ncols; ++j) {
-    types.push_back(NILSXP);
-  }
-
+std::vector<DATA_TYPE> SqliteResultImpl::get_initial_field_types(const size_t ncols) {
+  std::vector<DATA_TYPE> types(ncols);
+  std::fill(types.begin(), types.end(), DT_UNKNOWN);
   return types;
 }
 
@@ -106,35 +107,37 @@ int SqliteResultImpl::nrows() {
 }
 
 int SqliteResultImpl::rows_affected() {
+  if (!ready_) return NA_INTEGER;
   return rows_affected_;
 }
 
-IntegerVector SqliteResultImpl::find_params_impl(const CharacterVector& param_names) {
-  int p = param_names.length();
-  IntegerVector res(p);
+CharacterVector SqliteResultImpl::get_placeholder_names() const {
+  int n = sqlite3_bind_parameter_count(stmt);
 
-  for (int j = 0; j < p; ++j) {
-    int pos = find_parameter(CHAR(param_names[j]));
-    if (pos == 0)
-      pos = NA_INTEGER;
-    res[j] = pos;
+  CharacterVector res(n);
+
+  for (int i = 0; i < n; ++i) {
+    const char* placeholder_name = sqlite3_bind_parameter_name(stmt, i + 1);
+    if (placeholder_name == NULL)
+      placeholder_name = "";
+    else
+      ++placeholder_name;
+    res[i] = String(placeholder_name, CE_UTF8);
   }
 
   return res;
 }
 
-void SqliteResultImpl::bind_impl(const List& params) {
-  bind_rows_impl(params);
-}
-
 void SqliteResultImpl::bind_rows_impl(const List& params) {
+  if (cache.nparams_ == 0) {
+    stop("Query does not require parameters.",
+         cache.nparams_, params.size());
+  }
+
   if (params.size() != cache.nparams_) {
     stop("Query requires %i params; %i supplied.",
          cache.nparams_, params.size());
   }
-
-  if (cache.nparams_ == 0)
-    return;
 
   set_params(params);
 
@@ -169,8 +172,8 @@ List SqliteResultImpl::get_column_info_impl() {
   CharacterVector names(cache.names_.begin(), cache.names_.end());
 
   CharacterVector types(cache.ncols_);
-  for (int i = 0; i < cache.ncols_; i++) {
-    types[i] = Rf_type2char(types_[i]);
+  for (size_t i = 0; i < cache.ncols_; i++) {
+    types[i] = Rf_type2char(ColumnStorage::sexptype_from_datatype(types_[i]));
   }
 
   return List::create(names, types);
@@ -182,15 +185,6 @@ List SqliteResultImpl::get_column_info_impl() {
 
 void SqliteResultImpl::set_params(const List& params) {
   params_ = params;
-  CharacterVector names = params.names();
-
-  param_cache.names_.clear();
-  if (names.length() == 0) {
-    param_cache.names_.resize(params.length());
-  }
-  else {
-    param_cache.names_ = as<std::vector<std::string> >(names);
-  }
 }
 
 bool SqliteResultImpl::bind_row() {
@@ -202,42 +196,12 @@ bool SqliteResultImpl::bind_row() {
   sqlite3_reset(stmt);
   sqlite3_clear_bindings(stmt);
 
-  for (size_t j = 0; j < param_cache.names_.size(); ++j) {
-    bind_parameter(j, param_cache.names_[j], params_[j]);
+  for (R_xlen_t j = 0; j < params_.size(); ++j) {
+    // sqlite parameters are 1-indexed
+    bind_parameter_pos((int)j + 1, params_[j]);
   }
 
   return true;
-}
-
-void SqliteResultImpl::bind_parameter(int j0, const std::string& name, SEXP values_) {
-  if (name != "") {
-    int j = find_parameter(name);
-    if (j == 0)
-      stop("No parameter with name %s.", name);
-    bind_parameter_pos(j, values_);
-  } else {
-    // sqlite parameters are 1-indexed
-    bind_parameter_pos(j0 + 1, values_);
-  }
-}
-
-int SqliteResultImpl::find_parameter(const std::string& name) {
-  int i = 0;
-  i = sqlite3_bind_parameter_index(stmt, name.c_str());
-  if (i != 0)
-    return i;
-
-  std::string colon = ":" + name;
-  i = sqlite3_bind_parameter_index(stmt, colon.c_str());
-  if (i != 0)
-    return i;
-
-  std::string dollar = "$" + name;
-  i = sqlite3_bind_parameter_index(stmt, dollar.c_str());
-  if (i != 0)
-    return i;
-
-  return 0;
 }
 
 void SqliteResultImpl::bind_parameter_pos(int j, SEXP value_) {
@@ -273,11 +237,15 @@ void SqliteResultImpl::bind_parameter_pos(int j, SEXP value_) {
     }
   } else if (TYPEOF(value_) == VECSXP) {
     SEXP value = VECTOR_ELT(value_, group_);
-    if (TYPEOF(value) != RAWSXP) {
-      stop("Can only bind lists of raw vectors");
+    if (TYPEOF(value) == NILSXP) {
+      sqlite3_bind_null(stmt, j);
     }
-
-    sqlite3_bind_blob(stmt, j, RAW(value), Rf_length(value), SQLITE_TRANSIENT);
+    else if (TYPEOF(value) == RAWSXP) {
+      sqlite3_bind_blob(stmt, j, RAW(value), Rf_length(value), SQLITE_TRANSIENT);
+    }
+    else {
+      stop("Can only bind lists of raw vectors (or NULL)");
+    }
   } else {
     stop("Don't know how to handle parameter of type %s.",
          Rf_type2char(TYPEOF(value_)));
@@ -289,15 +257,18 @@ List SqliteResultImpl::fetch_rows(const int n_max, int& n) {
 
   SqliteDataFrame data(stmt, cache.names_, n_max, types_);
 
+  if (complete_ && data.get_ncols() == 0) {
+    warning("Don't need to call dbFetch() for statements, only for queries");
+  }
+
   while (!complete_) {
     LOG_VERBOSE << nrows_ << "/" << n;
 
-    if (!data.set_col_values())
-      break;
-
+    data.set_col_values();
     step();
-    data.advance();
     nrows_++;
+    if (!data.advance())
+      break;
   }
 
   LOG_VERBOSE << nrows_;

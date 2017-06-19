@@ -6,7 +6,8 @@
 \title{Read a database table}
 \usage{
 \S4method{dbReadTable}{SQLiteConnection,character}(conn, name, ...,
-  row.names = NA, check.names = TRUE, select.cols = "*")
+  row.names = pkgconfig::get_config("RSQLite::row.names.table", FALSE),
+  check.names = TRUE, select.cols = NULL)
 }
 \arguments{
 \item{conn}{a \code{\linkS4class{SQLiteConnection}} object, produced by
@@ -20,21 +21,19 @@ are considered equal.}
 
 \item{row.names}{Either \code{TRUE}, \code{FALSE}, \code{NA} or a string.
 
-  If \code{TRUE}, always translate row names to a column called "row_names".
-  If \code{FALSE}, never translate row names. If \code{NA}, translate
-  rownames only if they're a character vector.
+If \code{TRUE}, always translate row names to a column called "row_names".
+If \code{FALSE}, never translate row names. If \code{NA}, translate
+rownames only if they're a character vector.
 
-  A string is equivalent to \code{TRUE}, but allows you to override the
-  default name.
+A string is equivalent to \code{TRUE}, but allows you to override the
+default name.
 
-  For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
+For backward compatibility, \code{NULL} is equivalent to \code{FALSE}.}
 
 \item{check.names}{If \code{TRUE}, the default, column names will be
 converted to valid R identifiers.}
 
-\item{select.cols}{A SQL expression (in the form of a character vector of
-length 1) giving the columns to select. E.g. \code{"*"} selects all columns,
-\code{"x, y, z"} selects three columns named as listed.}
+\item{select.cols}{Deprecated, do not use.}
 }
 \value{
 A data frame.
@@ -51,8 +50,6 @@ library(DBI)
 db <- RSQLite::datasetsDb()
 dbReadTable(db, "mtcars")
 dbReadTable(db, "mtcars", row.names = FALSE)
-dbReadTable(db, "mtcars", select.cols = "cyl, gear")
-dbReadTable(db, "mtcars", select.cols = "row_names, cyl, gear")
 dbDisconnect(db)
 }
 \seealso{

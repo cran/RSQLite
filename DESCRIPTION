@@ -1,6 +1,6 @@
 Package: RSQLite
-Version: 1.1-2
-Date: 2017-01-07
+Version: 2.0
+Date: 2017-06-18
 Title: 'SQLite' Interface for R
 Authors@R: c(
     person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org"),
@@ -17,7 +17,8 @@ Description: Embeds the 'SQLite' database engine in R and
     source for the 'SQLite' engine (version 3.8.8.2) is included.
 Depends: R (>= 3.1.0)
 Suggests: DBItest, knitr, rmarkdown, testthat
-Imports: DBI (>= 0.4-9), memoise, methods, Rcpp (>= 0.12.7)
+Imports: bit64, blob (>= 1.1), DBI (>= 0.4-9), memoise, methods,
+        pkgconfig, Rcpp (>= 0.12.7)
 LinkingTo: Rcpp, BH, plogr
 Encoding: UTF-8
 License: LGPL (>= 2)
@@ -25,12 +26,12 @@ URL: https://github.com/rstats-db/RSQLite
 BugReports: https://github.com/rstats-db/RSQLite/issues
 Collate: 'RcppExports.R' 'SQLiteConnection.R' 'SQLiteDriver.R'
         'SQLiteResult.R' 'connect.R' 'copy.R' 'datasetsDb.R'
-        'deprecated.R' 'dummy.R' 'extensions.R' 'query.R' 'rownames.R'
+        'deprecated.R' 'export.R' 'extensions.R' 'query.R' 'rownames.R'
         'table.R' 'transactions.R' 'utils.R' 'zzz.R'
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1.9000
+RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-01-08 00:12:25 UTC; muelleki
+Packaged: 2017-06-18 22:12:09 UTC; muelleki
 Author: Kirill Müller [aut, cre],
   Hadley Wickham [aut],
   David A. James [aut],
@@ -41,4 +42,4 @@ Author: Kirill Müller [aut, cre],
   RStudio [cph]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2017-01-08 16:57:09
+Date/Publication: 2017-06-19 11:51:07 UTC

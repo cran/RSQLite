@@ -3,6 +3,7 @@ context("dbWriteTable")
 # Not generic enough for DBItest
 test_that("throws error if constraint violated", {
   con <- dbConnect(SQLite())
+  on.exit(dbDisconnect(con), add = TRUE)
 
   x <- data.frame(col1 = 1:10, col2 = letters[1:10])
 
@@ -47,10 +48,10 @@ test_that("can't add table when result set open", {
 
   res <- dbSendQuery(con, "SELECT * FROM t1")
   expect_warning(dbWriteTable(con, "t2", x), "pending rows")
-  expect_error(dbClearResult(res), "Expired")
+  expect_warning(dbClearResult(res), "Expired")
 })
 
-test_that("rownames preserved", {
+test_that("rownames not preserved by default", {
   con <- dbConnect(SQLite())
   on.exit(dbDisconnect(con))
 
@@ -59,6 +60,18 @@ test_that("rownames preserved", {
 
   dbWriteTable(con, "t1", df)
   t1 <- dbReadTable(con, "t1")
+  expect_identical(.row_names_info(t1), -10L)
+})
+
+test_that("rownames preserved with row.names = TRUE", {
+  con <- dbConnect(SQLite())
+  on.exit(dbDisconnect(con))
+
+  df <- data.frame(x = 1:10)
+  row.names(df) <- paste(letters[1:10], 1:10, sep="")
+
+  dbWriteTable(con, "t1", df, row.names = TRUE)
+  t1 <- dbReadTable(con, "t1", row.names = TRUE)
   expect_equal(rownames(t1), rownames(df))
 })
 
@@ -113,7 +126,7 @@ test_that("can roundtrip special field names", {
 
 test_that("comments are preserved", {
   con <- dbConnect(SQLite())
-  on.exit(dbDisconnect(con))
+  on.exit(dbDisconnect(con), add = TRUE)
 
   tmp_file <- tempfile()
   cat('A,B,C\n11,2#2,33\n', file = tmp_file)
@@ -126,7 +139,7 @@ test_that("comments are preserved", {
 
 test_that("colclasses overridden by argument", {
   con <- dbConnect(SQLite())
-  on.exit(dbDisconnect(con))
+  on.exit(dbDisconnect(con), add = TRUE)
 
   tmp_file <- tempfile()
   cat('A,B,C\n1,2,3\n4,5,6\na,7,8\n', file = tmp_file)
@@ -160,7 +173,7 @@ test_that("options work", {
 test_that("temporary works", {
   db_file <- tempfile(fileext = ".sqlite")
   con <- dbConnect(SQLite(), db_file)
-  on.exit(dbDisconnect(con))
+  on.exit(dbDisconnect(con), add = TRUE)
 
   dbWriteTable(con, "prm", "dat-n.txt", sep="|", eol="\n", overwrite = TRUE)
   dbWriteTable(con, "tmp", "dat-n.txt", sep="|", eol="\n", overwrite = TRUE, temporary = TRUE)
@@ -168,7 +181,7 @@ test_that("temporary works", {
   expect_true(dbExistsTable(con, "tmp"))
 
   con2 <- dbConnect(SQLite(), db_file)
-  on.exit(dbDisconnect(con2))
+  on.exit(dbDisconnect(con2), add = TRUE)
 
   expect_true(dbExistsTable(con2, "prm"))
   expect_false(dbExistsTable(con2, "tmp"))
@@ -182,13 +195,14 @@ test_that("appending to table ignores column order and column names", {
   on.exit(dbDisconnect(con), add = TRUE)
 
   dbWriteTable(con, "a", data.frame(a = 1, b = 2))
-  expect_warning(dbWriteTable(con, "a", data.frame(b = 1, a = 2), append = TRUE),
-                 "position")
-  expect_warning(dbWriteTable(con, "a", data.frame(c = 1, d = 2), append = TRUE),
-                 "position")
-
-  a <- dbReadTable(con, "a")
-  expect_identical(a, data.frame(a = c(1, 1, 1), b = c(2, 2, 2)))
+  expect_error(
+    dbWriteTable(con, "a", data.frame(b = 1, a = 2), append = TRUE),
+    "mismatch"
+  )
+  expect_error(
+    dbWriteTable(con, "a", data.frame(c = 1, d = 2), append = TRUE),
+    "mismatch"
+  )
 })
 
 test_that("appending to table gives error if fewer columns", {
@@ -236,7 +250,7 @@ test_that("dbWriteTable(row.names = 1)", {
   on.exit(dbDisconnect(con), add = TRUE)
 
   expect_warning(dbWriteTable(con, "mtcars", mtcars, row.names = 1))
-  res <- dbReadTable(con, "mtcars")
+  res <- dbReadTable(con, "mtcars", row.names = TRUE)
 
   expect_identical(res, mtcars)
 })
@@ -258,7 +272,7 @@ test_that("dbWriteTable(row.names = TRUE)", {
   on.exit(dbDisconnect(con), add = TRUE)
 
   dbWriteTable(con, "mtcars", mtcars, row.names = TRUE)
-  res <- dbReadTable(con, "mtcars")
+  res <- dbReadTable(con, "mtcars", row.names = TRUE)
 
   expect_identical(res, mtcars)
 })
@@ -268,7 +282,7 @@ test_that("dbWriteTable(iris, row.names = NA)", {
   on.exit(dbDisconnect(con), add = TRUE)
 
   dbWriteTable(con, "iris", iris, row.names = NA)
-  res <- dbReadTable(con, "iris")
+  res <- dbReadTable(con, "iris", row.names = NA)
 
   expect_equal(rownames(res), as.character(seq_len(nrow(iris))))
   res$Species = factor(res$Species)
@@ -280,7 +294,7 @@ test_that("dbWriteTable(mtcars, row.names = NA)", {
   on.exit(dbDisconnect(con), add = TRUE)
 
   dbWriteTable(con, "mtcars", mtcars, row.names = NA)
-  res <- dbReadTable(con, "mtcars")
+  res <- dbReadTable(con, "mtcars", row.names = NA)
 
   expect_identical(res, mtcars)
 })
@@ -295,10 +309,10 @@ test_that("dbWriteTable(iris, row.names = 'rn')", {
   expect_equal(rownames(res), as.character(seq_len(nrow(iris))))
   res$Species = factor(res$Species)
 
+  # Original row names are numeric, RSQLite returns them as character
+  # for simplicity
   attr(res, "row.names") <- attr(iris, "row.names")
   expect_identical(res, iris)
-
-  skip("Why do we need to fix row names here?")
 })
 
 test_that("dbWriteTable(mtcars, row.names = 'rn')", {
@@ -342,7 +356,7 @@ test_that("dbWriteTable with AsIs list fields", {
   res <- dbReadTable(con, "a")
 
   expected <- data.frame(a = 1:2)
-  expected$a <- list(as.raw(1:3), as.raw(4:5))
+  expected$a <- blob::blob(as.raw(1:3), as.raw(4:5))
   expect_identical(res, expected)
 })
 

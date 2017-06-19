@@ -1,3 +1,55 @@
+# RSQLite 2.0 (2017-06-18)
+
+API changes
+-----------
+
+- Updated embedded SQLite to 3.19.3.
+- 64-bit integers are returned as `integer64` vectors. The `bit64` package is imported to support this data type (#65).
+- The `row.names` argument to `dbFetch()`, `dbReadTable()`, `dbWriteTable()`, `sqliteBuildTableDefinition()`, and `sqlData()` now defaults to `FALSE`. The old default can be restored temporarily on a per-package basis by calling `pkgconfig::set_config("RSQLite::row.names.query" = NA)`. `NULL` is a valid value for the `row.names` argument, same as `FALSE` (#210).
+- The `name` argument to `dbBegin()`, `dbCommit()`, and `dbRollback()` is now declared after the ellipsis. Code that calls these methods with an unnamed second argument still works but receives a warning (#208).
+- The `select.cols` argument to `dbReadTable()` is deprecated, use `dbGetQuery()` with a `SELECT` query instead (#185).
+- The methods related to tables (`dbReadTable()`, `dbWriteTable()`, `dbExistsTable()`, and `dbRemoveTable()`) always treat the `name` argument as literal name, even if it contains backticks. This breaks the CRAN version (but not the GitHub version) of the sqldf package (#188).
+- `dbWriteTable(append = TRUE)` raises an error if column names are not the same in the data and the existing table (#165).
+- `dbFetch()` now errs for `n < -1`, and accepts `n == Inf`.
+- Removed dummy `dbGetQuery()` method introduced for compatibility with some Bioconductor packages (#187).
+- `sqlData()` now returns quoted strings, like the default implementation in DBI (#207).
+- `dbWriteTable()` returns invisibly.
+- Now returning objects of type `blob` for blobs (#189).
+- `dbGetRowsAffected()` now returns `NA` for a statement with placeholders, if `dbBind()` has not been called.
+- If a column contains incompatible values (e.g., numbers and strings), a warning is raised in `dbFetch()` (#161).
+- Failing to set `PRAGMA cache_size` or `PRAGMA synchronous` in `dbConnect()` now gives a clear warning (#197).
+- Improve warning message if named parameters are not used in `dbGetPreparedQuery()` or `dbSendPreparedQuery()` (#193).
+- SQLite collects additional histogram data during `ANALYZE`, which may lead to faster executions of queries (#124).
+
+Bug fixes
+---------
+
+- Identifiers are now escaped with backticks, to avoid ambiguous handling of double quotes in the context of strings (#123).
+- Fix `dbBind()` behavior and tests. Attempting to bind to a query without parameters throws an error (#114).
+- Fix corner case when repeatedly fetching from columns that don't have an affinity.
+- The `variance()` and `stdev()` extension functions now return `NULL` for input of length 1 (#201).
+- Fix roundtrip of `raw` columns (#116).
+
+Documentation
+-------------
+
+- Remove redundant documentation, link to `DBI` more prominently (#186).
+
+Internal
+--------
+
+- Most DBItest tests now pass. Reduced number of skips shown for tests.
+- C++ code now compiles with strict compiler settings `-Wall -Wextra -pedantic -Wconversion`.
+- Restore compatibility with older compilers/libraries by using <boost/limits.hpp> (#206).
+- Use `boost/cstdint` instead of compound data type for 64-bit values (#198).
+- Remove `Makevars.local` logic, resolve installation issues with non-GNU Make (#203).
+- All methods of DBI are reexported.
+- Registering native functions, as required by R >= 3.4.0.
+- Use UTF-8 encoded file names as required by the SQLite API, to support non-ASCII file names (#211).
+- Calling `dbFetch(n = 0)` instead of `dbFetch(n = 1)` in `dbListFields()`.
+- Exclude SQLite3 source code from coverage computation again (#204).
+
+
 # RSQLite 1.1-2 (2017-01-07)
 
 - Check reverse dependencies.

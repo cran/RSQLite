@@ -48,7 +48,7 @@ setGeneric("dbBeginTransaction", function(conn, ...) {
 #' @aliases dbBuildTableDefinition
 #' @export
 sqliteBuildTableDefinition <- function(con, name, value, field.types = NULL,
-  row.names = NA) {
+                                       row.names = pkgconfig::get_config("RSQLite::row.names.query", FALSE)) {
 
   warning_once("RSQLite::sqliteBuildTableDefinition() is deprecated, please switch to DBI::sqlCreateTable().")
   row.names <- compatRowNames(row.names)
@@ -177,7 +177,7 @@ setMethod("dbGetPreparedQuery",
 #' @keywords internal
 #' @export
 sqliteQuickColumn <- function(con, table, column) {
-  dbReadTable(con, table, select.cols = column, row.names = FALSE)[[1]]
+  dbGetQuery(con, paste("SELECT ", column, " FROM ", table), row.names = FALSE)[[1]]
 }
 
 #' Get metadata about a database object

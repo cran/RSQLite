@@ -4,6 +4,7 @@
 
 #include <boost/noncopyable.hpp>
 #include "sqlite3.h"
+#include "ColumnDataType.h"
 
 class SqliteResultImpl : public boost::noncopyable {
 private:
@@ -14,17 +15,13 @@ private:
   // Cache
   struct _cache {
     const std::vector<std::string> names_;
-    const int ncols_;
+    const size_t ncols_;
     const int nparams_;
 
     _cache(sqlite3_stmt* stmt);
 
     static std::vector<std::string> get_column_names(sqlite3_stmt* stmt);
   } cache;
-
-  struct _param_cache {
-    std::vector<std::string> names_;
-  } param_cache;
 
   // State
   bool complete_;
@@ -33,7 +30,7 @@ private:
   int rows_affected_;
   List params_;
   int group_, groups_;
-  std::vector<SEXPTYPE> types_;
+  std::vector<DATA_TYPE> types_;
 
 public:
   SqliteResultImpl(sqlite3* conn_, const std::string& sql);
@@ -41,7 +38,7 @@ public:
 
 private:
   static sqlite3_stmt* prepare(sqlite3* conn, const std::string& sql);
-  static std::vector<SEXPTYPE> get_initial_field_types(const int ncols);
+  static std::vector<DATA_TYPE> get_initial_field_types(const size_t ncols);
   void after_bind(bool params_have_rows);
   void init(bool params_have_rows);
 
@@ -49,8 +46,7 @@ public:
   bool complete();
   int nrows();
   int rows_affected();
-  IntegerVector find_params_impl(const CharacterVector& param_names);
-  void bind_impl(const List& params);
+  CharacterVector get_placeholder_names() const;
   void bind_rows_impl(const List& params);
   List fetch_impl(const int n_max);
   List get_column_info_impl();
@@ -58,8 +54,6 @@ public:
 private:
   void set_params(const List& params);
   bool bind_row();
-  void bind_parameter(int j, const std::string& name, SEXP values_);
-  int find_parameter(const std::string& name);
   void bind_parameter_pos(int j, SEXP value_);
 
   List fetch_rows(int n_max, int& n);
