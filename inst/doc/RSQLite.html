@@ -12,7 +12,6 @@
 
 <meta name="author" content="Hadley Wickham" />
 
-<meta name="date" content="2017-06-19" />
 
 <title>RSQLite</title>
 
@@ -70,7 +69,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">RSQLite</h1>
 <h4 class="author"><em>Hadley Wickham</em></h4>
-<h4 class="date"><em>2017-06-19</em></h4>
 
 
 
@@ -80,17 +78,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="creating-a-new-database" class="section level2">
 <h2>Creating a new database</h2>
 <p>To create a new SQLite database, you simply supply the filename to <code>dbConnect()</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydb &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RSQLite::<span class="kw">SQLite</span>(), <span class="st">&quot;my-db.sqlite&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydb &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RSQLite<span class="op">::</span><span class="kw">SQLite</span>(), <span class="st">&quot;my-db.sqlite&quot;</span>)
 <span class="kw">dbDisconnect</span>(mydb)
 <span class="kw">unlink</span>(<span class="st">&quot;my-db.sqlite&quot;</span>)</code></pre></div>
 <p>If you just need a temporary database, use either <code>&quot;&quot;</code> (for an on-disk database) or <code>&quot;:memory:&quot;</code> or <code>&quot;file::memory:&quot;</code> (for a in-memory database). This database will be automatically deleted when you disconnect from it.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydb &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RSQLite::<span class="kw">SQLite</span>(), <span class="st">&quot;&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydb &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RSQLite<span class="op">::</span><span class="kw">SQLite</span>(), <span class="st">&quot;&quot;</span>)
 <span class="kw">dbDisconnect</span>(mydb)</code></pre></div>
 </div>
 <div id="loading-data" class="section level2">
 <h2>Loading data</h2>
 <p>You can easily copy an R data frame into a SQLite database with <code>dbWriteTable()</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydb &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RSQLite::<span class="kw">SQLite</span>(), <span class="st">&quot;&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mydb &lt;-<span class="st"> </span><span class="kw">dbConnect</span>(RSQLite<span class="op">::</span><span class="kw">SQLite</span>(), <span class="st">&quot;&quot;</span>)
 <span class="kw">dbWriteTable</span>(mydb, <span class="st">&quot;mtcars&quot;</span>, mtcars)
 <span class="kw">dbWriteTable</span>(mydb, <span class="st">&quot;iris&quot;</span>, iris)
 <span class="kw">dbListTables</span>(mydb)
@@ -129,7 +127,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Batched queries</h2>
 <p>If you run a query and the results don’t fit in memory, you can use <code>dbSendQuery()</code>, <code>dbFetch()</code> and <code>dbClearResults()</code> to retrieve the results in batches. By default <code>dbFetch()</code> will retrieve all available rows: use <code>n</code> to set the maximum number of rows to return.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rs &lt;-<span class="st"> </span><span class="kw">dbSendQuery</span>(mydb, <span class="st">'SELECT * FROM mtcars'</span>)
-while (!<span class="kw">dbHasCompleted</span>(rs)) {
+<span class="cf">while</span> (<span class="op">!</span><span class="kw">dbHasCompleted</span>(rs)) {
   df &lt;-<span class="st"> </span><span class="kw">dbFetch</span>(rs, <span class="dt">n =</span> <span class="dv">10</span>)
   <span class="kw">print</span>(<span class="kw">nrow</span>(df))
 }

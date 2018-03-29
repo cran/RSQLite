@@ -1,3 +1,26 @@
+# RSQLite 2.1.0 (2018-03-29)
+
+## Bug fixes
+
+- Fix rchk warnings on CRAN (#250).
+- `dbRowsAffected()` and `dbExecute()` return zero after a `DROP TABLE` statement, and not the number of rows affected by the last `INSERT`, `UPDATE`, or `DELETE` (#238).
+- `dbIsValid()` returns `FALSE` instead of throwing an error for an invalid connection object (#217).
+- Names in the `x` argument to `dbQuoteIdentifier()` are preserved in the output (r-lib/DBI#173).
+- Ignore invalid UTF-8 strings in `dbQuoteIdentifier()` (r-dbi/DBItest#156).
+
+## Features
+
+- Update bundled sqlite3 library to 3.22 (#252).
+- Values of class `"integer64"` are now supported for `dbWriteTable()` and `dbBind()` (#243).
+- New connections now automatically load default RSQLite extensions (#236).
+- Implement `dbUnquoteIdentifier()`.
+
+## Internal
+
+- Now raising error if `dbBind()` is called with too many named arguments, according to spec.
+- Refactor connection and result handling to be more similar to other backends.
+
+
 # RSQLite 2.0 (2017-06-18)
 
 API changes
@@ -5,7 +28,7 @@ API changes
 
 - Updated embedded SQLite to 3.19.3.
 - 64-bit integers are returned as `integer64` vectors. The `bit64` package is imported to support this data type (#65).
-- The `row.names` argument to `dbFetch()`, `dbReadTable()`, `dbWriteTable()`, `sqliteBuildTableDefinition()`, and `sqlData()` now defaults to `FALSE`. The old default can be restored temporarily on a per-package basis by calling `pkgconfig::set_config("RSQLite::row.names.query" = NA)`. `NULL` is a valid value for the `row.names` argument, same as `FALSE` (#210).
+- The `row.names` argument to `dbFetch()`, `dbReadTable()`, `dbWriteTable()`, `sqliteBuildTableDefinition()`, and `sqlData()` now defaults to `FALSE`. (This also affects `dbGetQuery()`.) The old default can be restored temporarily on a per-package basis by calling `pkgconfig::set_config("RSQLite::row.names.query" = NA)`. `NULL` is a valid value for the `row.names` argument, same as `FALSE` (#210).
 - The `name` argument to `dbBegin()`, `dbCommit()`, and `dbRollback()` is now declared after the ellipsis. Code that calls these methods with an unnamed second argument still works but receives a warning (#208).
 - The `select.cols` argument to `dbReadTable()` is deprecated, use `dbGetQuery()` with a `SELECT` query instead (#185).
 - The methods related to tables (`dbReadTable()`, `dbWriteTable()`, `dbExistsTable()`, and `dbRemoveTable()`) always treat the `name` argument as literal name, even if it contains backticks. This breaks the CRAN version (but not the GitHub version) of the sqldf package (#188).

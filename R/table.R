@@ -119,7 +119,7 @@ setMethod("dbWriteTable", c("SQLiteConnection", "character", "data.frame"),
 
       names(value) <- rep("", length(value))
       tryCatch(
-        rsqlite_bind_rows(rs@ptr, value),
+        result_bind(rs@ptr, value),
         finally = dbClearResult(rs)
       )
     }
@@ -241,7 +241,7 @@ setMethod("dbWriteTable", c("SQLiteConnection", "character", "character"),
     }
 
     skip <- skip + as.integer(header)
-    rsqlite_import_file(conn@ptr, name, value, sep, eol, skip)
+    connection_import_file(conn@ptr, name, value, sep, eol, skip)
 
     dbCommit(conn)
     on.exit(NULL)
@@ -259,48 +259,6 @@ setMethod("sqlData", "SQLiteConnection", function(con, value,
 
   value
 })
-
-sql_data <- function(value, row.names) {
-  row.names <- compatRowNames(row.names)
-  value <- sqlRownamesToColumn(value, row.names)
-
-  value <- factor_to_string(value)
-  value <- raw_to_string(value)
-  value <- string_to_utf8(value)
-  value
-}
-
-factor_to_string <- function(value, warn = FALSE) {
-  is_factor <- vlapply(value, is.factor)
-  if (warn && any(is_factor)) {
-    warning("Factors converted to character", call. = FALSE)
-  }
-  value[is_factor] <- lapply(value[is_factor], as.character)
-  value
-}
-
-raw_to_string <- function(value) {
-  is_raw <- vlapply(value, is.raw)
-
-  if (any(is_raw)) {
-    warning("Creating a TEXT column from raw, use lists of raw to create BLOB columns", call. = FALSE)
-    value[is_raw] <- lapply(value[is_raw], as.character)
-  }
-
-  value
-}
-
-quote_string <- function(value, conn) {
-  is_character <- vlapply(value, is.character)
-  value[is_character] <- lapply(value[is_character], dbQuoteString, conn = conn)
-  value
-}
-
-string_to_utf8 <- function(value) {
-  is_char <- vlapply(value, is.character)
-  value[is_char] <- lapply(value[is_char], enc2utf8)
-  value
-}
 
 check_quoted_identifier <- function(name) {
   name
@@ -424,13 +382,13 @@ sqliteListTablesWithName <- function(conn, name) {
 }
 
 sqliteListTablesQuery <- function(conn, name = NULL) {
-  SQL(paste(
-    "SELECT name FROM",
+  SQL(paste("SELECT name FROM",
     "(SELECT * FROM sqlite_master UNION ALL SELECT * FROM sqlite_temp_master)",
     "WHERE (type = 'table' OR type = 'view')",
     if (!is.null(name)) paste0("AND (lower(name) = ", dbQuoteString(conn, name), ")"),
     "ORDER BY name",
-    sep = "\n"))
+    sep = "\n"
+  ))
 }
 
 #' @rdname SQLiteConnection-class
