@@ -3,6 +3,7 @@
 \docType{class}
 \name{SQLiteConnection-class}
 \alias{SQLiteConnection-class}
+\alias{format.SQLiteConnection}
 \alias{show,SQLiteConnection-method}
 \alias{dbIsValid,SQLiteConnection-method}
 \alias{dbQuoteIdentifier,SQLiteConnection,character-method}
@@ -18,6 +19,8 @@
 \alias{dbDataType,SQLiteConnection-method}
 \title{Class SQLiteConnection (and methods)}
 \usage{
+\method{format}{SQLiteConnection}(x, ...)
+
 \S4method{show}{SQLiteConnection}(object)
 
 \S4method{dbIsValid}{SQLiteConnection}(dbObj, ...)
@@ -36,7 +39,8 @@
 \S4method{sqlData}{SQLiteConnection}(con, value,
   row.names = pkgconfig::get_config("RSQLite::row.names.query", FALSE), ...)
 
-\S4method{dbRemoveTable}{SQLiteConnection,character}(conn, name, ...)
+\S4method{dbRemoveTable}{SQLiteConnection,character}(conn, name, ...,
+  temporary = FALSE, fail_if_missing = TRUE)
 
 \S4method{dbExistsTable}{SQLiteConnection,character}(conn, name, ...)
 
@@ -45,6 +49,12 @@
 \S4method{dbListFields}{SQLiteConnection,character}(conn, name, ...)
 
 \S4method{dbDataType}{SQLiteConnection}(dbObj, obj, ...)
+}
+\arguments{
+\item{temporary}{If \code{TRUE}, only temporary tables are considered.}
+
+\item{fail_if_missing}{If \code{FALSE}, \code{dbRemoveTable()} succeeds if the
+table doesn't exist.}
 }
 \description{
 SQLiteConnection objects are created by passing \code{\link[=SQLite]{SQLite()}} as first

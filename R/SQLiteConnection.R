@@ -22,9 +22,29 @@ setClass("SQLiteConnection",
     loadable.extensions = "logical",
     flags = "integer",
     vfs = "character",
-    ref = "environment"
+    ref = "environment",
+    bigint = "character"
   )
 )
+
+# format()
+#' @export
+#' @rdname SQLiteConnection-class
+format.SQLiteConnection <- function(x, ...) {
+  if (dbIsValid(x)) {
+    details <- paste(
+      c(
+        if (x@dbname != "") x@dbname else "(temporary)",
+        if (x@loadable.extensions) "(with extensions)"
+      ),
+      collapse = " "
+    )
+  } else {
+    details <- "DISCONNECTED"
+  }
+
+  paste0("<SQLiteConnection> ", details)
+}
 
 # show()
 #' @export
