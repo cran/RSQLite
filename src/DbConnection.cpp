@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "DbConnection.h"
-#include "utils.h"
 
 
 DbConnection::DbConnection(const std::string& path, const bool allow_ext, const int flags, const std::string& vfs)
@@ -18,7 +17,6 @@ DbConnection::DbConnection(const std::string& path, const bool allow_ext, const 
 
 DbConnection::~DbConnection() {
   if (is_valid()) {
-    warning_once("call dbDisconnect() when finished working with a connection");
     disconnect();
   }
 }
@@ -30,6 +28,16 @@ sqlite3* DbConnection::conn() const {
 
 bool DbConnection::is_valid() const {
   return (pConn_ != NULL);
+}
+
+void DbConnection::set_current_result(const DbResult*) const {
+}
+
+void DbConnection::reset_current_result(const DbResult*) const {
+}
+
+bool DbConnection::is_current_result(const DbResult*) const {
+  return true;
 }
 
 void DbConnection::check_connection() const {

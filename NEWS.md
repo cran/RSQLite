@@ -1,3 +1,54 @@
+# RSQLite 2.1.2
+
+## Bundled library
+
+- Upgrade bundled sqlite version to 3.29.0.
+
+
+## Compatibility fixes
+
+- Compatibility with new releases of blob and hms.
+
+- `dbUnquoteIdentifier()` also handles unquoted identifiers of the form `table` or `schema.table`, for compatibility with dbplyr.
+
+
+## Bug fixes
+
+- Fix query for listing tables in schema (#279).
+
+- Coercing `NULL` values to `integer64` and `numeric` now works in corner cases (#291).
+
+- `dbExistsTable()` works in corner cases where the table name contains backticks (#275).
+
+- Error messages are encoded in UTF-8.
+
+- Column names are marked as UTF-8 on return, to fix encoding problems on Windows (#276, @shrektan).
+
+- Fix segmentation fault when an open connection is garbage-collected with `options(warn = 2)` (#245).
+
+
+## New features
+
+- Add regular expression operator (#296, @rfhb).
+
+
+## Internal
+
+- Load extensions through API call, to support repeated loading.
+
+- Align `DbResult` and other classes with RPostgres and RMariaDB.
+
+- Tested with R >= 3.2 only (but not declared).
+
+- Use `default_skip`.
+
+- Improve warning when `dbGetQuery()` is called with a statement (#226).
+
+- Add test for correct use of non-UTF8-encoded column names (#277, @wush978).
+
+- Avoid including the call in errors.
+
+
 # RSQLite 2.1.1 (2018-05-05)
 
 - Breaking change: The `field.types` argument to `dbWriteTable()` no longer takes precedence when defining the order of the columns in the new table.

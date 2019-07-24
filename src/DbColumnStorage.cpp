@@ -40,7 +40,7 @@ SEXP DbColumnStorage::allocate(const R_xlen_t length, DATA_TYPE dt) {
 
   SEXP ret = PROTECT(Rf_allocVector(type, length));
   if (!Rf_isNull(class_)) Rf_setAttrib(ret, R_ClassSymbol, class_);
-  set_attribs_from_datatype(ret, dt);
+  ret = set_attribs_from_datatype(ret, dt);
   UNPROTECT(1);
   return ret;
 }
@@ -107,6 +107,10 @@ DbColumnStorage* DbColumnStorage::append_data_to_new(DATA_TYPE new_dt) {
 
 void DbColumnStorage::fetch_value() {
   switch (dt) {
+  case DT_BOOL:
+    LOGICAL(data)[i] = source.fetch_bool();
+    break;
+
   case DT_INT:
     INTEGER(data)[i] = source.fetch_int();
     break;
@@ -125,6 +129,22 @@ void DbColumnStorage::fetch_value() {
 
   case DT_BLOB:
     SET_VECTOR_ELT(data, i, source.fetch_blob());
+    break;
+
+  case DT_DATE:
+    REAL(data)[i] = source.fetch_date();
+    break;
+
+  case DT_DATETIME:
+    REAL(data)[i] = source.fetch_datetime_local();
+    break;
+
+  case DT_DATETIMETZ:
+    REAL(data)[i] = source.fetch_datetime();
+    break;
+
+  case DT_TIME:
+    REAL(data)[i] = source.fetch_time();
     break;
 
   default:
@@ -169,9 +189,6 @@ Rcpp::RObject DbColumnStorage::class_from_datatype(DATA_TYPE dt) {
   case DT_INT64:
     return CharacterVector::create("integer64");
 
-  case DT_BLOB:
-    return CharacterVector::create("blob");
-
   case DT_DATE:
     return CharacterVector::create("Date");
 
@@ -179,24 +196,32 @@ Rcpp::RObject DbColumnStorage::class_from_datatype(DATA_TYPE dt) {
   case DT_DATETIMETZ:
     return CharacterVector::create("POSIXct", "POSIXt");
 
-  case DT_TIME:
-    return CharacterVector::create("hms", "difftime");
-
   default:
     return R_NilValue;
   }
 }
 
-void DbColumnStorage::set_attribs_from_datatype(SEXP x, DATA_TYPE dt) {
+SEXP DbColumnStorage::set_attribs_from_datatype(SEXP x, DATA_TYPE dt) {
   switch (dt) {
+  case DT_BLOB:
+    return new_blob(x);
+
   case DT_TIME:
-    Rf_setAttrib(x, PROTECT(CharacterVector::create("units")), PROTECT(CharacterVector::create("secs")));
-    UNPROTECT(2);
-    break;
+    return new_hms(x);
 
   default:
-    ;
+    return x;
   }
+}
+
+SEXP DbColumnStorage::new_blob(SEXP x) {
+  static Function new_blob = Function("new_blob", Rcpp::Environment::namespace_env("blob"));
+  return new_blob(x);
+}
+
+SEXP DbColumnStorage::new_hms(SEXP x) {
+  static Function new_hms = Function("new_hms", Rcpp::Environment::namespace_env("hms"));
+  return new_hms(x);
 }
 
 void DbColumnStorage::fill_default_value(SEXP data, DATA_TYPE dt, R_xlen_t i) {
@@ -251,11 +276,21 @@ void DbColumnStorage::copy_value(SEXP x, DATA_TYPE dt, const int tgt, const int 
     case DT_INT64:
       switch (TYPEOF(data)) {
       case INTSXP:
-        INTEGER64(x)[tgt] = INTEGER(data)[src];
+        if (INTEGER(data)[src] == NA_INTEGER) {
+          INTEGER64(x)[tgt] = NA_INTEGER64;
+        }
+        else {
+          INTEGER64(x)[tgt] = INTEGER(data)[src];
+        }
         break;
 
       case REALSXP:
-        INTEGER64(x)[tgt] = INTEGER64(data)[src];
+        if (R_IsNA(INTEGER64(data)[src])) {
+          INTEGER64(x)[tgt] = NA_INTEGER64;
+        }
+        else {
+          INTEGER64(x)[tgt] = INTEGER64(data)[src];
+        }
         break;
       }
       break;
@@ -263,7 +298,12 @@ void DbColumnStorage::copy_value(SEXP x, DATA_TYPE dt, const int tgt, const int 
     case DT_REAL:
       switch (TYPEOF(data)) {
       case INTSXP:
-        REAL(x)[tgt] = INTEGER(data)[src];
+        if (INTEGER(data)[src] == NA_INTEGER) {
+          REAL(x)[tgt] = NA_REAL;
+        }
+        else {
+          REAL(x)[tgt] = INTEGER(data)[src];
+        }
         break;
 
       case REALSXP:

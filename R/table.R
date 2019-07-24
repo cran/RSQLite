@@ -193,8 +193,8 @@ setMethod("dbWriteTable", c("SQLiteConnection", "character", "character"),
 
     row.names <- compatRowNames(row.names)
 
-    dbBegin(conn)
-    on.exit(dbRollback(conn))
+    dbBegin(conn, name = "dbWriteTable")
+    on.exit(dbRollback(conn, name = "dbWriteTable"))
 
     found <- dbExistsTable(conn, name)
     if (found && !overwrite && !append) {
@@ -223,7 +223,7 @@ setMethod("dbWriteTable", c("SQLiteConnection", "character", "character"),
     skip <- skip + as.integer(header)
     connection_import_file(conn@ptr, name, value, sep, eol, skip)
 
-    dbCommit(conn)
+    dbCommit(conn, name = "dbWriteTable")
     on.exit(NULL)
     invisible(TRUE)
   }
@@ -365,20 +365,27 @@ sqliteListTables <- function(conn) {
 
 sqliteListTablesWithName <- function(conn, name) {
   # Also accept quoted identifiers
-  name <- as.character(dbQuoteIdentifier(conn, name))
-  name <- gsub("^`(.*)`$", "\\1", name)
+  id <- as.list(dbUnquoteIdentifier(conn, dbQuoteIdentifier(conn, name))[[1]]@name)
+  schema <- id[["schema"]]
+  table <- id[["table"]]
 
-  sql <- sqliteListTablesQuery(conn, SQL("$name"))
+  sql <- sqliteListTablesQuery(conn, schema, SQL("$name"))
   rs <- dbSendQuery(conn, sql)
-  dbBind(rs, list(name = tolower(name)))
+  dbBind(rs, list(name = tolower(table)))
   rs
 }
 
-sqliteListTablesQuery <- function(conn, name = NULL) {
-  SQL(paste("SELECT name FROM",
-    "(SELECT * FROM sqlite_master UNION ALL SELECT * FROM sqlite_temp_master)",
-    "WHERE (type = 'table' OR type = 'view')",
-    if (!is.null(name)) paste0("AND (lower(name) = ", dbQuoteString(conn, name), ")"),
+sqliteListTablesQuery <- function(conn, schema = NULL, name = NULL) {
+  if (is.null(schema)) {
+    info_sql <- "(SELECT * FROM sqlite_master UNION ALL SELECT * FROM sqlite_temp_master)"
+  } else {
+    info_sql <- paste0("(SELECT * FROM ", dbQuoteIdentifier(conn, schema), ".sqlite_master)")
+  }
+
+  SQL(paste0("SELECT name ",
+    "FROM ", info_sql, " ",
+    "WHERE (type = 'table' OR type = 'view') ",
+    if (!is.null(name)) paste0("AND (lower(name) = ", dbQuoteString(conn, name), ") "),
     "ORDER BY name",
     sep = "\n"
   ))
