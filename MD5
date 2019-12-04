@@ -1,6 +1,6 @@
-bddc6f54c719a6aad34da79dcbddb580 *DESCRIPTION
+252576554947ff8d213338786a0e812d *DESCRIPTION
 6cfb1aa1262125d80478ddd12ecd09d2 *NAMESPACE
-bc5e65330c97605cf44457d0c7220c7e *NEWS.md
+7f9241092f84e03b15446314f1d40397 *NEWS.md
 e743bc2f2e9a9034b02b653e778b2732 *R/RcppExports.R
 1e71e7d5426a0d75236bf3baf9359546 *R/SQLiteConnection.R
 489300cf1e1ea10900c260acea8dcc0d *R/SQLiteDriver.R
@@ -21,11 +21,11 @@ de3b506a53a25573f051b785f0ba81c3 *R/rownames.R
 8e18ed45b87b48ebdc5553023fc58db2 *R/utils.R
 06ccf235324c8726543cf103c0660e36 *R/zzz.R
 e377c7f7dc2681705ad47897fc400ccb *README.md
-19e8ae0596d388d9b4cb369bc4ac73fb *build/vignette.rds
+afbb83a07accb184c1098b0b48fb4eaf *build/vignette.rds
 6a6016ed370b49203dbc6e2c3f9160d3 *inst/db/datasets.sqlite
-64c49c15bffe33bd5d1c1dcc17bb7ef3 *inst/doc/RSQLite.R
+4fe72c99d527ea661e7d64540341e380 *inst/doc/RSQLite.R
 f1666d58879526c680bf4b632da1e445 *inst/doc/RSQLite.Rmd
-841d6ae7b242d9644ee28ca5bf3a0a25 *inst/doc/RSQLite.html
+1cb5e2e96bba49678c2481a5f9027ba8 *inst/doc/RSQLite.html
 90c2670bfa4217594f266b4c6ba0bde0 *man/SQLite.Rd
 88310d4cdac737249f7dfb74efb266fc *man/SQLiteConnection-class.Rd
 e965d50bf45f850c24a4e70e2d0a7ffa *man/SQLiteDriver-class.Rd
@@ -59,7 +59,7 @@ bdb2b7ed1a0c451b46b90f5ba0cae405 *src/DbColumnDataSourceFactory.h
 e24e7165514d9c6d82259d8c0ed4dfe6 *src/DbColumnStorage.h
 ddaf3fbfb2e09536fd36f71f5566babb *src/DbConnection.cpp
 7842a6bd91de417a6453952207462d62 *src/DbConnection.h
-f2f1c6a02d4a6c774ce7fbc03ea74868 *src/DbDataFrame.cpp
+e089124da5acaa0c87cc7a22c69c2e52 *src/DbDataFrame.cpp
 aa6b004a18a443064e92833378f109c6 *src/DbDataFrame.h
 20cbb613c26d6e2125e550ece6803cfc *src/DbResult.cpp
 df6ee010b5f5637ba69f417d9d3ac656 *src/DbResult.h
