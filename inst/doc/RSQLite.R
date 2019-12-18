@@ -39,22 +39,22 @@ dbClearResult(rs)
 
 ## -----------------------------------------------------------------------------
 rs <- dbSendQuery(mydb, 'SELECT * FROM iris WHERE "Sepal.Length" < :x')
-dbBind(rs, param = list(x = 4.5))
+dbBind(rs, params = list(x = 4.5))
 nrow(dbFetch(rs))
-dbBind(rs, param = list(x = 4))
+dbBind(rs, params = list(x = 4))
 nrow(dbFetch(rs))
 dbClearResult(rs)
 
 ## -----------------------------------------------------------------------------
 rs <- dbSendQuery(mydb, 'SELECT * FROM iris WHERE "Sepal.Length" = :x')
-dbBind(rs, param = list(x = seq(4, 4.4, by = 0.1)))
+dbBind(rs, params = list(x = seq(4, 4.4, by = 0.1)))
 nrow(dbFetch(rs))
 dbClearResult(rs)
 
 ## -----------------------------------------------------------------------------
 dbExecute(mydb, 'DELETE FROM iris WHERE "Sepal.Length" < 4')
 rs <- dbSendStatement(mydb, 'DELETE FROM iris WHERE "Sepal.Length" < :x')
-dbBind(rs, param = list(x = 4.5))
+dbBind(rs, params = list(x = 4.5))
 dbGetRowsAffected(rs)
 dbClearResult(rs)
 
