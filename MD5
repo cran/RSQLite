@@ -1,6 +1,6 @@
-c16303573d4c4c2e6f4913ba031c6746 *DESCRIPTION
+630fb25b8437e07f932c25c64b04d787 *DESCRIPTION
 6cfb1aa1262125d80478ddd12ecd09d2 *NAMESPACE
-e43547426b1f4fa77d36cc01b6789d5e *NEWS.md
+85de9514881c87922124ea630e687610 *NEWS.md
 e743bc2f2e9a9034b02b653e778b2732 *R/RcppExports.R
 9bb3fd1e9908fbce1bf81f75afecd428 *R/SQLiteConnection.R
 50a329e37572853284d32b303fd37fd2 *R/SQLiteDriver.R
@@ -12,7 +12,8 @@ ccff71cf2a0ccd7e9263d7bade983655 *R/connect.R
 2f5c143ba3f8ad1a4cfe5991932ca787 *R/deprecated.R
 568aecb1066757bc112c6798174ba377 *R/export.R
 2bb80201d4e7a3235c01bb4cd4e32516 *R/extensions.R
-55d0f1da7f7a73971d0a58339fb99b6c *R/names.R
+05bef0daacc435d16a11b7b5e885e5df *R/names.R
+ce13e251108c6bf16c0282f6de0a4d31 *R/pkgconfig.R
 eabc7a0c416d5413be6a3de69a8935e5 *R/query.R
 16b2132df8c7c2f8d36029da0d963fce *R/regularExpressions.R
 de3b506a53a25573f051b785f0ba81c3 *R/rownames.R
@@ -21,7 +22,7 @@ de3b506a53a25573f051b785f0ba81c3 *R/rownames.R
 8e18ed45b87b48ebdc5553023fc58db2 *R/utils.R
 06ccf235324c8726543cf103c0660e36 *R/zzz.R
 f98c3bde0b13ece700724c4bd5bd0516 *README.md
-afbb83a07accb184c1098b0b48fb4eaf *build/vignette.rds
+32ca7d2d5aff64210f6a7cd1ec143810 *build/vignette.rds
 6a6016ed370b49203dbc6e2c3f9160d3 *inst/db/datasets.sqlite
 0e13e8b174d92d5ce54fbb9543499fc6 *inst/doc/RSQLite.R
 d3801c9c7adb178f24c5dceb5d5452d6 *inst/doc/RSQLite.Rmd
@@ -99,7 +100,7 @@ a9f6581105458f9b9a9bcc0b7bf4971f *src/workarounds/XPtr.h
 0789cfb7c20ebde1c14973df737b8f85 *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
-2a7e26625561a7ef805668b5c9796e95 *tests/testthat/helper-DBItest.R
+1dba9e0d5e7721997c9c1f8fcb4e32d0 *tests/testthat/helper-DBItest.R
 60e9b2574eb76a3da502315b6630c2a5 *tests/testthat/helper-astyle.R
 2324d1bfcd40c7c0616ee1a2f3f54d9e *tests/testthat/helper-memdb.R
 7b903bfdad0af87d9254d0c967e7e69a *tests/testthat/helper-tibble.R
