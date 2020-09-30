@@ -1,7 +1,7 @@
 Package: RSQLite
 Title: 'SQLite' Interface for R
-Version: 2.2.0
-Date: 2020-01-07
+Version: 2.2.1
+Date: 2020-09-28
 Authors@R: 
     c(person(given = "Kirill",
              family = "M\u00fcller",
@@ -41,14 +41,14 @@ Suggests: DBItest (>= 1.7.0), knitr, rmarkdown, testthat
 LinkingTo: BH, plogr (>= 0.2.0), Rcpp
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Collate: 'RcppExports.R' 'SQLiteConnection.R' 'SQLiteDriver.R'
         'SQLiteResult.R' 'coerce.R' 'connect.R' 'copy.R' 'datasetsDb.R'
         'deprecated.R' 'export.R' 'extensions.R' 'names.R'
         'pkgconfig.R' 'query.R' 'regularExpressions.R' 'rownames.R'
         'table.R' 'transactions.R' 'utils.R' 'zzz.R'
 NeedsCompilation: yes
-Packaged: 2020-01-07 08:18:18 UTC; kirill
+Packaged: 2020-09-30 05:17:24 UTC; kirill
 Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   David A. James [aut],
@@ -59,4 +59,4 @@ Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   RStudio [cph]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2020-01-07 14:30:02 UTC
+Date/Publication: 2020-09-30 07:20:06 UTC

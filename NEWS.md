@@ -1,3 +1,11 @@
+# RSQLite 2.2.1 (2020-09-28)
+
+- Upgrade to SQLite 3.33.0 (#321).
+- Use transaction for faster processing in `dbAppendTable()` (#306).
+- Strings and blobs now can have a size of up to 2 GB (#314, @shutinet).
+- Multipart queries now give a warning (#313).
+
+
 # RSQLite 2.2.0
 
 - Avoid mangling column names (#259).
@@ -471,15 +479,15 @@ Internal
 
 - Fix incorrect handling of NA's for character data in the code that
   binds parameters to a SQL query.  The string "NA" was incorrectly
-  interpretted as a missing value.
+  interpreted as a missing value.
 
 # Version 0.9-3
 
-- Upgrade SQLite to 3.7.3.  See http://www.sqlite.org/changes.html
+- Upgrade SQLite to 3.7.3.  See https://www.sqlite.org/changes.html
   for release notes for SQLite.
 
 - Enable the sounder(X) function via the SQLITE_SOUNDEX compile time
-  flag.  See http://www.sqlite.org/lang_corefunc.html#soundex for
+  flag.  See https://www.sqlite.org/lang_corefunc.html#soundex for
   details.
 
 # Version 0.9-2
@@ -517,7 +525,7 @@ Internal
 
 - Upgrade to SQLite 3.6.23.1.
 
-- The memory mangement code for keeping track of database connections
+- The memory management code for keeping track of database connections
   was significantly refactored.  Instead of tracking connections in a
   pre-allocated array attached to the driver manager, connections are
   now managed dynamically using R's external pointers and finalizers.
@@ -581,7 +589,7 @@ Internal
 - Add name space unload hook to unload RSQLite.so.
 
 - Enable full-text search module by default.  See
-  http://www.sqlite.org/fts3.html for details on this SQLite
+  https://www.sqlite.org/fts3.html for details on this SQLite
   module.
 
 - Add support for prepared queries that involve a SELECT.  This was
@@ -668,7 +676,7 @@ Internal
       NULL, lets SQLite select the appropriate vfs for the system.
       You can specify one of "unix-posix", "unix-afp", "unix-flock",
       "unix-dotfile", or "unix-none".  For details, see
-      http://www.sqlite.org/compile.html.  This functionality is only
+      https://www.sqlite.org/compile.html.  This functionality is only
       fully available on OSX.  On non-OSX Unix, you can use
       unix-dotfile and unix-none.  None of these modules are available
       on Windows where a non-NULL values of the vfs argument will be
@@ -715,7 +723,7 @@ Internal
   cached in memory as was previously done.
 
 * Added generic methods dbSendPreparedQuery() and dbGetPreparedQuery()
-  which are similiar to dbSendQuery() and dbGetQuery(), but take an
+  which are similar to dbSendQuery() and dbGetQuery(), but take an
   extra "bind.data" parameter, which is a data frame. The statement
   is assumed to contain bind variables. Bind variables are either
   for a column name (":name" or "@name") or for a column index ("?")
@@ -738,7 +746,7 @@ Internal
 * The SQLite driver has a new logical parameter "shared.cache" to
   enable the shared-cache mode, which allows multiple connections
   to share a single data and schema cache. See
-  http://www.sqlite.org/sharedcache.html
+  https://www.sqlite.org/sharedcache.html
 
 # Version 0.4-9
 
@@ -750,7 +758,7 @@ Internal
 * dbConnect() now has a logical parameter "loadable.extensions"
   which will allow loading of extensions. See the Loadable
   Extensions documentation:
-  http://www.sqlite.org/cvstrac/wiki?p=LoadableExtensions
+  https://www.sqlite.org/cvstrac/wiki?p=LoadableExtensions
 
 # Version 0.4-4
 
@@ -766,13 +774,13 @@ Internal
 * Added a method for dbWriteTable to write table from a text file, e.g.,
   dbWriteTable(con, "tablename", "filename")
 
-* Fixed problems exporting/importing NA's (thanks to Ronngui Huang for
+* Fixed problems exporting/importing NA's (thanks to Ronggui Huang for
   a very clear bug report).
 
 * Fixed double free() in the C code, a tiny memory leak, and configure now
   builds sqlite properly on 64-bit linux (thanks to Seth Falcon for these).
 
-* dbConnect() now accepts values for the "cache_size" and "sychnronous"
+* dbConnect() now accepts values for the "cache_size" and "synchronous"
   PRAGMAs ("synchronous" defaults to 0 or "off") to improve
   performance (thanks to Charles Loboz for pointing these out, see the
   file "rsqlitePerf.txt").
@@ -812,7 +820,7 @@ Internal
 
 # Version 0.3-3
 
-* Minor fixes to accommadate R 1.8.0 changes to data.frame subsetting.
+* Minor fixes to accommodate R 1.8.0 changes to data.frame subsetting.
 
 * Updated the documentation to use 1.8.0 new S4-style method documentation.
 
@@ -850,7 +858,7 @@ Internal
 
 * Updated to sqlite version 2.7.1 (note that if you have an sqlite
   database file from a version prior to 2.6 you'll need to update
-  it -- for details see http://www.hwaic.com/sw/sqlite).
+  it -- for details see https://www.hwaic.com/sw/sqlite).
 
 # Version 0.2-1
 
