@@ -1,12 +1,12 @@
-9a01e7846735fcffb03ea617c7ae2307 *DESCRIPTION
+4e615cb867d8646a181878ffa464cab8 *DESCRIPTION
 6496bf12bc10211780a9e3f47547405e *NAMESPACE
-1d63ad3fc5fd39994e78d3df35db42d8 *NEWS.md
+f798c64b7863b4ff4a127911b6afa84c *NEWS.md
 264a425491f269383518fd167e6ad0f5 *R/RcppExports.R
 30c6e8b7b41833fb249475c8169d835f *R/SQLiteConnection.R
 cdaa78a1c89d7fb9d42c9fb0332d3026 *R/SQLiteDriver.R
 924df9442e00a9abc931c6624bdaeafc *R/SQLiteResult.R
 29fbaa4a6a255c5a819e8d728598f06b *R/coerce.R
-025013400515c819b6e91b7da6996a3f *R/connect.R
+42aecd0352aefbbb8847e11e6200194b *R/connect.R
 c4b46dfe037e6c0f2ab4ff167fdc3769 *R/copy.R
 a8dea1d2d2abf5eb37c8c0b4f86c9c2a *R/datasetsDb.R
 8362dcd016b643bbd76f2d324233d7c2 *R/deprecated.R
@@ -17,8 +17,7 @@ ce13e251108c6bf16c0282f6de0a4d31 *R/pkgconfig.R
 0790482101e75482b37847f4aa639512 *R/query.R
 bf573204c752326e292d780aca1070c0 *R/regularExpressions.R
 de3b506a53a25573f051b785f0ba81c3 *R/rownames.R
-184163005cb2c1d30845f3070b7ed6bd *R/rstudioConnections.R
-ee41ab01a1944422e4a64d9d7166a5e3 *R/table.R
+2455983037ffb4384bf5d7520a079e35 *R/table.R
 25fbc86c052f4bb2dd698a63fd58725a *R/transactions.R
 8e18ed45b87b48ebdc5553023fc58db2 *R/utils.R
 06ccf235324c8726543cf103c0660e36 *R/zzz.R
@@ -29,9 +28,6 @@ c470634bc78cce9052e7465dbfb646b2 *build/vignette.rds
 0e13e8b174d92d5ce54fbb9543499fc6 *inst/doc/RSQLite.R
 8a44ddfe17b93bd316b5862f7a1164a7 *inst/doc/RSQLite.Rmd
 815bc7285ac9bfe74660c7020c13b987 *inst/doc/RSQLite.html
-7f8b34ed3afeab243f8b6d74b6647191 *inst/icons/sqlite.png
-fe29d2da3b2cda2f569c6a41aeb15cfd *inst/rstudio/connections.dcf
-f0998fac4fc3ea7a5085ced681626664 *inst/rstudio/connections/SQLite.R
 1b88c20020cf91eae9f8ed0d6d8c5fd8 *man/SQLite.Rd
 ab051e0495b7c5a55916c36b952316a9 *man/SQLiteConnection-class.Rd
 3b8a628021d300fbd6f6c8b5c72b761a *man/SQLiteDriver-class.Rd
@@ -64,7 +60,7 @@ bdb2b7ed1a0c451b46b90f5ba0cae405 *src/DbColumnDataSourceFactory.h
 a767727e50cd53b612b09375d2fbb15f *src/DbColumnStorage.cpp
 e24e7165514d9c6d82259d8c0ed4dfe6 *src/DbColumnStorage.h
 272acb21804787b00924d8df2141a8e4 *src/DbConnection.cpp
-15878784e4c7fb9f98fd718a5a615ee8 *src/DbConnection.h
+96bfef6fc752e1aee3c2438edd27244b *src/DbConnection.h
 e089124da5acaa0c87cc7a22c69c2e52 *src/DbDataFrame.cpp
 aa6b004a18a443064e92833378f109c6 *src/DbDataFrame.h
 20cbb613c26d6e2125e550ece6803cfc *src/DbResult.cpp
@@ -1684,8 +1680,8 @@ c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 5dfe9bd35d5896780a84f01e4794ef8d *src/vendor/boost/winapi/time.hpp
 ec9e72b5b81886e0fb76b25601a31d67 *src/vendor/sqlite3/extension-functions.c
 28717b9befae9e1c2598728e79e658a6 *src/vendor/sqlite3/regexp.c
-486937c11da3fbe88e49f1e728cee170 *src/vendor/sqlite3/sqlite3.c
-b56e855dbc4dccecea1226108d82c3cf *src/vendor/sqlite3/sqlite3.h
+d2c7e340b16481c1d6968e8121ca7996 *src/vendor/sqlite3/sqlite3.c
+c749f22aab3f6a408760332f451480b4 *src/vendor/sqlite3/sqlite3.h
 4a40b7715f7408b0c5e5d5649525c5b7 *src/vendor/sqlite3/sqlite3ext.h
 0789cfb7c20ebde1c14973df737b8f85 *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt

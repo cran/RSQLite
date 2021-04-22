@@ -1,7 +1,7 @@
 Package: RSQLite
 Title: 'SQLite' Interface for R
-Version: 2.2.6
-Date: 2021-04-11
+Version: 2.2.7
+Date: 2021-04-22
 Authors@R: 
     c(person(given = "Kirill",
              family = "M\u00fcller",
@@ -47,10 +47,9 @@ Collate: 'RcppExports.R' 'SQLiteConnection.R' 'SQLiteDriver.R'
         'SQLiteResult.R' 'coerce.R' 'connect.R' 'copy.R' 'datasetsDb.R'
         'deprecated.R' 'export.R' 'extensions.R' 'names.R'
         'pkgconfig.R' 'query.R' 'regularExpressions.R' 'rownames.R'
-        'rstudioConnections.R' 'table.R' 'transactions.R' 'utils.R'
-        'zzz.R'
+        'table.R' 'transactions.R' 'utils.R' 'zzz.R'
 NeedsCompilation: yes
-Packaged: 2021-04-11 16:17:03 UTC; kirill
+Packaged: 2021-04-22 14:27:21 UTC; kirill
 Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   David A. James [aut],
@@ -61,4 +60,4 @@ Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   RStudio [cph]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2021-04-11 17:00:02 UTC
+Date/Publication: 2021-04-22 15:30:06 UTC
