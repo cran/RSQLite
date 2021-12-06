@@ -1,5 +1,22 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# RSQLite 2.2.9 (2021-12-06)
+
+## Features
+
+- Upgrade bundled SQLite to version 3.37.0 (#392).
+- `dbConnect()` now supports URIs that start with `file://` for the `dbname` argument. The SQLite code is now built with the `SQLITE_USE_URI` (#390, @tschoonj).
+
+## Bug fixes
+
+- `dbBegin()`, `dbCommit()` and `dbRollback()` support keywords in savepoint names (#386).
+
+## Internal
+
+- Adapt to DBItest 1.7.2 (#385).
+- Enable all DBItest tests, passing now.
+
+
 # RSQLite 2.2.8 (2021-08-21)
 
 - Upgrade bundled SQLite to version 3.36.0 (#374).
@@ -72,12 +89,12 @@
 - Multipart queries now give a warning (#313).
 
 
-# RSQLite 2.2.0
+# RSQLite 2.2.0 (2020-01-07)
 
 - Avoid mangling column names (#259).
 
 
-# RSQLite 2.1.5
+# RSQLite 2.1.5 (2019-12-18)
 
 - Upgrade bundled sqlite version to 3.30.1.
 - Implement `dbGetInfo()` for driver and connection objects (#117).
@@ -86,17 +103,17 @@
 - Fulfill requirements for CII badge (#300, @TSchiefer).
 
 
-# RSQLite 2.1.4
+# RSQLite 2.1.4 (2019-12-04)
 
 - Replace `std::mem_fn()` by `boost::mem_fn()` which works for older compilers.
 
 
-# RSQLite 2.1.3
+# RSQLite 2.1.3 (2019-12-03)
 
 - Replace `std::mem_fun_ref()` by `std::mem_fn()`.
 
 
-# RSQLite 2.1.2
+# RSQLite 2.1.2 (2019-07-24)
 
 ## Bundled library
 
@@ -399,7 +416,7 @@ Internal
 - Added upgrade script for sqlite3 sources and creation script for the datasets database to the `data-raw` directory.
 
 
-# Version 1.0.0
+# RSQLite 1.0.0 (2014-10-25)
 
 ## New features
 
