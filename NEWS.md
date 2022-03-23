@@ -1,5 +1,18 @@
 <!-- NEWS.md is maintained by https://cynkra.github.io/fledge, do not edit -->
 
+# RSQLite 2.2.11 (2022-03-07)
+
+## Features
+
+- `initExtension()` gains `extension` argument (#407, #408) with options
+  `"math"`, `"regexp"`, `"series"` and `"csv"` (#274, #389, @mgirlich).
+- Upgrade bundled SQLite to version 3.38.0 (#405).
+
+## Bug fixes
+
+- Skip failing test on CRAN.
+
+
 # RSQLite 2.2.10 (2022-02-16)
 
 ## Features

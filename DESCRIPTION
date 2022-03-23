@@ -1,7 +1,7 @@
 Package: RSQLite
 Title: SQLite Interface for R
-Version: 2.2.10
-Date: 2022-02-16
+Version: 2.2.11
+Date: 2022-03-07
 Authors@R: 
     c(person(given = "Kirill",
              family = "M\u00fcller",
@@ -100,7 +100,7 @@ Collate: 'RcppExports.R' 'SQLiteConnection.R'
 Config/autostyle/scope: line_breaks
 Config/autostyle/strict: false
 NeedsCompilation: yes
-Packaged: 2022-02-16 18:06:54 UTC; kirill
+Packaged: 2022-03-23 00:11:39 UTC; kirill
 Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   David A. James [aut],
@@ -114,4 +114,4 @@ Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   RStudio [cph]
 Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
 Repository: CRAN
-Date/Publication: 2022-02-17 00:50:17 UTC
+Date/Publication: 2022-03-23 07:50:36 UTC
