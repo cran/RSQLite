@@ -1,6 +1,6 @@
-5f79c3727f996209aaac7af6275b8be5 *DESCRIPTION
+7d0ce91bc1d64bb57c48cb4c037732b1 *DESCRIPTION
 e27e4f41afd4c8568fb6260afa0b2149 *NAMESPACE
-b85b06b17ff83db272a39f3359d1b2f6 *NEWS.md
+e5594d5907ae5718b9554fe8d7d2f58a *NEWS.md
 264a425491f269383518fd167e6ad0f5 *R/RcppExports.R
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 354990fc164c9491491a345bd430e6b7 *R/SQLite.R
@@ -1725,8 +1725,8 @@ ec9e72b5b81886e0fb76b25601a31d67 *src/vendor/extensions/extension-functions.c
 49cf03079e3f676f8649b00eb6790cbc *src/vendor/extensions/regexp.c
 85675117dc5d4e734d36072a67ac86c1 *src/vendor/extensions/series.c
 137134eefaf2ede48835d58ca9fbe374 *src/vendor/extensions/sqlite3ext.h
-602426b735bef20db23cd8011ba4ce98 *src/vendor/sqlite3/sqlite3.c
-03ef414a9742eda56f43b80f86ee3bdd *src/vendor/sqlite3/sqlite3.h
+e1e141b4d91595eb94e550ec1e7e83e3 *src/vendor/sqlite3/sqlite3.c
+19f5c021b25133220efbd7963f16ac0a *src/vendor/sqlite3/sqlite3.h
 0789cfb7c20ebde1c14973df737b8f85 *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
