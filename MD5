@@ -1,6 +1,6 @@
-7d0ce91bc1d64bb57c48cb4c037732b1 *DESCRIPTION
+dab523c07d2599c2b08b529c8cc577a8 *DESCRIPTION
 e27e4f41afd4c8568fb6260afa0b2149 *NAMESPACE
-e5594d5907ae5718b9554fe8d7d2f58a *NEWS.md
+b62fbb60527b98171f1f8828682ff887 *NEWS.md
 264a425491f269383518fd167e6ad0f5 *R/RcppExports.R
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 354990fc164c9491491a345bd430e6b7 *R/SQLite.R
@@ -95,7 +95,7 @@ c769dcfaa3c4a9ee2ab7e9aaa74ada97 *man/sqlite-transaction.Rd
 dacaafb38bbe41553523b2ccbab1df0d *man/sqliteBuildTableDefinition.Rd
 ae55cd4375ded4eae7328c95d292c6c5 *man/sqliteCopyDatabase.Rd
 75138bc2798470d2747e5b704aedea0b *man/sqliteQuickColumn.Rd
-72b33bb44499a731a5a532c1ccd67c1a *man/sqliteSetBusyHandler.Rd
+c4f54d83e3660cf0b6bf7b11e4a4685b *man/sqliteSetBusyHandler.Rd
 ddad75d97b9dc71b6710e3cde34cc16a *src/DbColumn.cpp
 0d0f6283e1aee5ba374ac6c30ce35a57 *src/DbColumn.h
 146bd8c14b6eb654bf6ef8c4014453b1 *src/DbColumnDataSource.cpp
@@ -1722,11 +1722,11 @@ c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 5dfe9bd35d5896780a84f01e4794ef8d *src/vendor/boost/winapi/time.hpp
 d1463f0a0939a0e93a6ca661f0e3dfe0 *src/vendor/extensions/csv.c
 ec9e72b5b81886e0fb76b25601a31d67 *src/vendor/extensions/extension-functions.c
-49cf03079e3f676f8649b00eb6790cbc *src/vendor/extensions/regexp.c
+362b71ae1faa8987c292cd86bffcf979 *src/vendor/extensions/regexp.c
 85675117dc5d4e734d36072a67ac86c1 *src/vendor/extensions/series.c
-137134eefaf2ede48835d58ca9fbe374 *src/vendor/extensions/sqlite3ext.h
-e1e141b4d91595eb94e550ec1e7e83e3 *src/vendor/sqlite3/sqlite3.c
-19f5c021b25133220efbd7963f16ac0a *src/vendor/sqlite3/sqlite3.h
+f24ca63ce331bcd2fde20e5f40cfc7ae *src/vendor/extensions/sqlite3ext.h
+e46ad26dc7a46108a06c43714b38d020 *src/vendor/sqlite3/sqlite3.c
+bbfce7ba4675c80bb057638c53d39a33 *src/vendor/sqlite3/sqlite3.h
 0789cfb7c20ebde1c14973df737b8f85 *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
@@ -1742,7 +1742,7 @@ b0fe240202730cff80dde6ab7cabb2e8 *tests/testthat/test-astyle.R
 9758547f6a8c73fa71f106a1e34146a3 *tests/testthat/test-column-info.R
 72cb9ae6482831487a60c5f1bb15fdab *tests/testthat/test-data-type.R
 8a1e7c7ba26efb69dba0bee93b935d13 *tests/testthat/test-dbClearResult.R
-c91837963a16ebd03a2fd820cc760e33 *tests/testthat/test-dbConnect.R
+b351e045917f5e84f81b65d9a8f1ba82 *tests/testthat/test-dbConnect.R
 081718f7f6797aab62b6905463532038 *tests/testthat/test-dbSendQuery.R
 82eacc6c2516a8366ce5d8eae3cfa5cc *tests/testthat/test-dbWriteTable.R
 a4d3605d0e43ab52fa3cf73abbba2bd4 *tests/testthat/test-dbWriteTableAutoincrement.R
