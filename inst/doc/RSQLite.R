@@ -28,7 +28,7 @@ dbGetQuery(mydb, 'SELECT * FROM mtcars LIMIT 5')
 dbGetQuery(mydb, 'SELECT * FROM iris WHERE "Sepal.Length" < 4.6')
 
 ## -----------------------------------------------------------------------------
-dbGetQuery(mydb, 'SELECT * FROM iris WHERE "Sepal.Length" < :x', 
+dbGetQuery(mydb, 'SELECT * FROM iris WHERE "Sepal.Length" < :x',
   params = list(x = 4.6))
 
 ## -----------------------------------------------------------------------------

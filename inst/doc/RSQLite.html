@@ -389,7 +389,7 @@ need to escape them with <code>&quot;</code>:</p>
 <code>paste()</code>! That makes it easy for a malicious attacker to
 insert SQL that might damage your database or reveal sensitive
 information. Instead, use a parameterised query:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbGetQuery</span>(mydb, <span class="st">&#39;SELECT * FROM iris WHERE &quot;Sepal.Length&quot; &lt; :x&#39;</span>, </span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbGetQuery</span>(mydb, <span class="st">&#39;SELECT * FROM iris WHERE &quot;Sepal.Length&quot; &lt; :x&#39;</span>,</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">params =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fl">4.6</span>))</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          4.4         2.9          1.4         0.2  setosa</span></span>
