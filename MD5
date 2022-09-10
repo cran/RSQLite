@@ -1,6 +1,6 @@
-3a68f4b341794ef067e6cc2cdcefc7c0 *DESCRIPTION
+bc1c0907411ef17c2bd1cb9ca72b721f *DESCRIPTION
 e27e4f41afd4c8568fb6260afa0b2149 *NAMESPACE
-15465a29f37796e1f1f4cab255d608a2 *NEWS.md
+acf527aafd2c9ac153cf50ee4231a0ea *NEWS.md
 264a425491f269383518fd167e6ad0f5 *R/RcppExports.R
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 354990fc164c9491491a345bd430e6b7 *R/SQLite.R
@@ -73,7 +73,7 @@ f153023504578da151ec6f425591621e *build/vignette.rds
 6a6016ed370b49203dbc6e2c3f9160d3 *inst/db/datasets.sqlite
 51d5d9058a9fa621edf0780ddd151857 *inst/doc/RSQLite.R
 ad170872cfecaa741a4ca11d2251e1a8 *inst/doc/RSQLite.Rmd
-657db94b0f42a21ac11fc8b67401afd5 *inst/doc/RSQLite.html
+8ff7d9182e5f4d39edb6483a5fb5ec6e *inst/doc/RSQLite.html
 3c4f5e24d09dfaf00ec42ef02c76b45c *man/SQLite.Rd
 ce7557a9cca49e52d2f2e1e8e4481797 *man/SQLiteConnection-class.Rd
 ce03f0820b60aa7df96d72e58e8459bf *man/SQLiteDriver-class.Rd
@@ -1725,8 +1725,8 @@ ec9e72b5b81886e0fb76b25601a31d67 *src/vendor/extensions/extension-functions.c
 362b71ae1faa8987c292cd86bffcf979 *src/vendor/extensions/regexp.c
 85675117dc5d4e734d36072a67ac86c1 *src/vendor/extensions/series.c
 f24ca63ce331bcd2fde20e5f40cfc7ae *src/vendor/extensions/sqlite3ext.h
-86ed5da8b9d586252181f07c3619d377 *src/vendor/sqlite3/sqlite3.c
-d4c76f83bc0efb24c0732daab86c913b *src/vendor/sqlite3/sqlite3.h
+4039d3d3d015d3092dda140c0bb27f7d *src/vendor/sqlite3/sqlite3.c
+aabb2c1907fe94985a9f521b17c24ae4 *src/vendor/sqlite3/sqlite3.h
 0789cfb7c20ebde1c14973df737b8f85 *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
