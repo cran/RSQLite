@@ -1,6 +1,6 @@
-7aacd24350223e882d3d11ea54252a36 *DESCRIPTION
+31f7612fa633998ca076c44df60a356e *DESCRIPTION
 e27e4f41afd4c8568fb6260afa0b2149 *NAMESPACE
-3d695a6a8c599252d2481952a3011bea *NEWS.md
+b676a9b53acd01eae8cc295770a885f9 *NEWS.md
 264a425491f269383518fd167e6ad0f5 *R/RcppExports.R
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 354990fc164c9491491a345bd430e6b7 *R/SQLite.R
@@ -1726,13 +1726,13 @@ a9ce6ec037e46210f479e19c3836af94 *src/vendor/boost/winapi/config.hpp
 75ab775568cd5b905802cf8cbed37a59 *src/vendor/boost/winapi/detail/footer.hpp
 c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 5dfe9bd35d5896780a84f01e4794ef8d *src/vendor/boost/winapi/time.hpp
-d1463f0a0939a0e93a6ca661f0e3dfe0 *src/vendor/extensions/csv.c
+79611e83f675fee02a4d71fb0ffb7af5 *src/vendor/extensions/csv.c
 ec9e72b5b81886e0fb76b25601a31d67 *src/vendor/extensions/extension-functions.c
-362b71ae1faa8987c292cd86bffcf979 *src/vendor/extensions/regexp.c
+6eccd185b0298ee6944e388ecf5a93b8 *src/vendor/extensions/regexp.c
 85675117dc5d4e734d36072a67ac86c1 *src/vendor/extensions/series.c
-f24ca63ce331bcd2fde20e5f40cfc7ae *src/vendor/extensions/sqlite3ext.h
-fe4729a7cffea444729c6b4eb4f8d995 *src/vendor/sqlite3/sqlite3.c
-7dd814c0bac7b5a024e697e93032be82 *src/vendor/sqlite3/sqlite3.h
+7e33de490cf98fdbc13c9e1c796ecf19 *src/vendor/extensions/sqlite3ext.h
+23e7b606a86286ce0fea0ed0a01ca645 *src/vendor/sqlite3/sqlite3.c
+174540ee5cc023fe16f099a5cc869c0d *src/vendor/sqlite3/sqlite3.h
 1e9664ef80213e1e5024128c5f8f69aa *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
@@ -1752,7 +1752,7 @@ bed16bb5ffc93c54694f4c02964c1b3e *tests/testthat/test-dbConnect.R
 50108f76b2dddc1c69f873db6aac9d71 *tests/testthat/test-dbSendQuery.R
 37029bed0f39eccb02ddc2970ab854d5 *tests/testthat/test-dbWriteTable.R
 4b62acb40cb1e3c2fe5ef10092cf86eb *tests/testthat/test-dbWriteTableAutoincrement.R
-04a2b43d27fc250bae1ac4bc2250eec9 *tests/testthat/test-encoding.R
+8ea2e407ef601e0355091f4cabcf3918 *tests/testthat/test-encoding.R
 7237f76ee01fb5eeb46c2eccb17392cf *tests/testthat/test-error.R
 d96474ca76c171c1f0a362c201873f2a *tests/testthat/test-exception.R
 e5465d90e6df21904aa43a816b133f6f *tests/testthat/test-extendedTypes.R
