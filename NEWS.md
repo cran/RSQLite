@@ -1,5 +1,16 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.1 (2023-04-03)
+
+## Features
+
+- Upgrade bundled SQLite to 3.41.2 (#455).
+
+## Chore
+
+- Require cpp11 \>= 0.4.0 in `DESCRIPTION` (#456).
+
+
 # RSQLite 2.3.0 (2023-02-13)
 
 ## Features
