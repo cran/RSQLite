@@ -1,7 +1,7 @@
 Package: RSQLite
 Title: SQLite Interface for R
-Version: 2.3.2
-Date: 2023-10-27
+Version: 2.3.3
+Date: 2023-11-01
 Authors@R: c(
     person("Kirill", "Müller", , "kirill@cynkra.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1416-3412")),
@@ -34,7 +34,8 @@ Depends: R (>= 3.1.0)
 Imports: bit64, blob (>= 1.2.0), DBI (>= 1.1.0), memoise, methods,
         pkgconfig
 Suggests: callr, DBItest (>= 1.7.2.9001), gert, gh, hms, knitr,
-        magrittr, rmarkdown, rvest, testthat (>= 3.0.0), withr, xml2
+        magrittr, rlang, rmarkdown, rvest, testthat (>= 3.0.0), withr,
+        xml2
 LinkingTo: plogr (>= 0.2.0), cpp11 (>= 0.4.0)
 VignetteBuilder: knitr
 Config/autostyle/scope: line_breaks
@@ -81,7 +82,7 @@ Collate: 'SQLiteConnection.R' 'SQLKeywords_SQLiteConnection.R'
         'sqlData_SQLiteConnection.R' 'table.R' 'transactions.R'
         'utils.R' 'version.R' 'zzz.R'
 NeedsCompilation: yes
-Packaged: 2023-10-28 08:25:55 UTC; kirill
+Packaged: 2023-11-04 17:00:52 UTC; kirill
 Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   David A. James [aut],
@@ -95,4 +96,4 @@ Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   RStudio [cph]
 Maintainer: Kirill Müller <kirill@cynkra.com>
 Repository: CRAN
-Date/Publication: 2023-10-28 21:00:02 UTC
+Date/Publication: 2023-11-04 18:20:09 UTC

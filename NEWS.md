@@ -1,5 +1,17 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.3 (2023-11-04)
+
+## Features
+
+- Upgrade bundled SQLite to 3.43.2 (#473).
+- New `sqliteIsTransacting()` that returns if a transaction is active on the current connection (@bpvgoncalves, #462, #464).
+
+## Testing
+
+- Skip DBItest tests if not installed.
+
+
 # RSQLite 2.3.2 (2023-10-27)
 
 ## Features

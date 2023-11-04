@@ -111,3 +111,13 @@ int DbConnection::busy_callback_helper(void *data, int num)
   int ret = cpp11::as_integers(rfun(num))[0];
   return ret;
 }
+
+bool DbConnection::in_transaction() const {
+  int status = sqlite3_get_autocommit(pConn_);
+
+  if (status == 0) {
+    return true;
+  } else {
+    return false;
+  }
+}

@@ -7,7 +7,6 @@ dbBegin_SQLiteConnection <- function(conn, .name = NULL, ..., name = NULL) {
   } else {
     dbExecute(conn, paste0("SAVEPOINT ", dbQuoteIdentifier(conn, name)))
   }
-
   invisible(TRUE)
 }
 #' @rdname sqlite-transaction
