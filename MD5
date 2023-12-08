@@ -1,6 +1,6 @@
-7dabbac28fa6927cf089dcfd029d8152 *DESCRIPTION
-beb141b0a63219062b39cdbcefb08750 *NAMESPACE
-2704645374bded0208025d08070289d6 *NEWS.md
+9ff6bdd24acf909cc948faaa7228ef40 *DESCRIPTION
+f7734225d7bdccc12f573cd9bf26d522 *NAMESPACE
+3a30cda3fe43b802841896e21e3ef86a *NEWS.md
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 354990fc164c9491491a345bd430e6b7 *R/SQLite.R
 c54134e66615dbb412da8d95f7a8e62a *R/SQLiteConnection.R
@@ -19,7 +19,7 @@ df282dbbc85029b7d1f5ca4baceb8fa1 *R/dbBegin_SQLiteConnection.R
 4f2539bc3fe261c34c5b3a67883b6ce8 *R/dbColumnInfo_SQLiteResult.R
 00700c5d3bb95d0c38e83a57bcc24112 *R/dbCommit_SQLiteConnection.R
 cdaa262bb845bddb7acf3ae8c1a7f57a *R/dbConnect_SQLiteConnection.R
-9600e29894d29e244596d2c4f7c84ce4 *R/dbConnect_SQLiteDriver.R
+c98554ab1215a8843c045d597f88d64a *R/dbConnect_SQLiteDriver.R
 f8097c4f4a9d64d1086ee0c57a850d36 *R/dbDataType_SQLiteConnection.R
 967dccddc5c29c4fc6bdc84b76b722ed *R/dbDataType_SQLiteDriver.R
 ded40bc23fab2176bb965f36b6e7897f *R/dbDisconnect_SQLiteConnection.R
@@ -55,6 +55,8 @@ cb1aab12e43222c75cacea29c6177cd3 *R/dbSendQuery_SQLiteConnection_character.R
 b9d56d90343c40abca1129fe65b38d5c *R/deprecated.R
 70348a8eb3bb14756baa78a59a442100 *R/export.R
 f875ad899fb39a789770b3ef49911137 *R/fetch_SQLiteResult.R
+a87f9af4c2741cb49f48d0611ff83fa9 *R/import-standalone-check_suggested.R
+8537edd77063dcce3ae1e05b1594b745 *R/import-standalone-purrr.R
 68870c89bb53d56250232a6a0de229b4 *R/initExtension.R
 27b368015fe0d129b8d2864e5a5645a3 *R/initRegExp.R
 4dc3cc398e741059318c1cb5673a5825 *R/isSQLKeyword_SQLiteConnection_character.R
@@ -69,7 +71,7 @@ c1c01db49c4eb185dd17d3c8b43f593e *R/table.R
 ada001706c948b2be14fba68d19e242b *R/version.R
 328597596f6a31a440a140e318502fc5 *R/zzz.R
 e3b8e8c92c27a60593395ae4694de4ad *README.md
-6e6a1d72a10711acf8bb500667ce2133 *build/vignette.rds
+a367c2473f2e4d92b263ad3f98f22513 *build/vignette.rds
 4a739b607662d3731c58f8220488df06 *inst/WORDLIST
 6a6016ed370b49203dbc6e2c3f9160d3 *inst/db/datasets.sqlite
 8c3e02869b417b1fa5cf7a28dafe56cd *inst/doc/RSQLite.R
@@ -129,7 +131,7 @@ ee43443f76571aa95ecf1245783d687c *src/SqliteResultImpl.cpp
 19ef3e3abb2828d7cf0ef276abb84c48 *src/SqliteResultImpl.h
 372582e5c08c980749c23206cb5cd98c *src/affinity.c
 aa3401067da4a30372e39d5be29abf93 *src/affinity.h
-c30f9ce85971845a4253e2c27dbaeb22 *src/connection.cpp
+e7344537972a339aef02c82475eacd67 *src/connection.cpp
 df05e903e36267b708198af2e46cd864 *src/cpp11.cpp
 3347dc2fe3f44ad28d51cc8c847a68c1 *src/ext-csv.c
 2e0f3afa5187e72aff203bdfaf26cabe *src/ext-math.c
@@ -1696,13 +1698,13 @@ f2cbade697d911cd8aa668b19cf86669 *src/vendor/boost/version.hpp
 75ab775568cd5b905802cf8cbed37a59 *src/vendor/boost/winapi/detail/footer.hpp
 c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 5dfe9bd35d5896780a84f01e4794ef8d *src/vendor/boost/winapi/time.hpp
-79611e83f675fee02a4d71fb0ffb7af5 *src/vendor/extensions/csv.c
+370aea3f8c3edfa1c1460af270b95c7d *src/vendor/extensions/csv.c
 ec9e72b5b81886e0fb76b25601a31d67 *src/vendor/extensions/extension-functions.c
 0e2c346023f4d3d137defc29e23ff363 *src/vendor/extensions/regexp.c
-d08b8619303b400981f24c0343cdc4fe *src/vendor/extensions/series.c
-565b7d3e21216850c4e643e4711f298a *src/vendor/extensions/sqlite3ext.h
-80fee98e6de25fc6df5f76efa43843ae *src/vendor/sqlite3/sqlite3.c
-855b6b175cabc45afb983a26deb54981 *src/vendor/sqlite3/sqlite3.h
+f13030223f7992c9d7f73d80457ad5f6 *src/vendor/extensions/series.c
+f2686f8ac55c3975ac6b39238a2f3e8e *src/vendor/extensions/sqlite3ext.h
+eadd1755a683635d80113bc22fdcc7f1 *src/vendor/sqlite3/sqlite3.c
+2eb5d5c86016d5f92db9b1327c35638d *src/vendor/sqlite3/sqlite3.h
 1e9664ef80213e1e5024128c5f8f69aa *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt

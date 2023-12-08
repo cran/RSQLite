@@ -1,5 +1,18 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.4 (2023-12-07)
+
+## Bug fixes
+
+- Fix compiler warning regarding formatting specifier used in `Rf_warning()` (#482).
+
+- Upgrade bundled SQLite to 3.44.2 (#479).
+
+## Chore
+
+- Use `check_suggested()` standalone for hms package (#477).
+
+
 # RSQLite 2.3.3 (2023-11-04)
 
 ## Features
