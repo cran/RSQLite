@@ -1,5 +1,17 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.5 (2024-01-20)
+
+## Features
+
+- Upgrade bundled SQLite to 3.45.0 (#491).
+
+## Chore
+
+- Update to upcoming DBItest 1.8.1 (#488, #492).
+- Remove compiler warning about unused variable (#486).
+
+
 # RSQLite 2.3.4 (2023-12-07)
 
 ## Bug fixes
