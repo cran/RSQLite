@@ -1,5 +1,16 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.6 (2024-03-31)
+
+## Features
+
+- Upgrade bundled SQLite to 3.45.2 (#500).
+
+## Documentation
+
+- Use dbitemplate (@maelle, #496).
+
+
 # RSQLite 2.3.5 (2024-01-20)
 
 ## Features
