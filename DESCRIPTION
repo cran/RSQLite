@@ -1,7 +1,7 @@
 Package: RSQLite
 Title: SQLite Interface for R
-Version: 2.3.6
-Date: 2024-03-14
+Version: 2.3.7
+Date: 2024-05-26
 Authors@R: c(
     person("Kirill", "Müller", , "kirill@cynkra.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1416-3412")),
@@ -52,6 +52,7 @@ Collate: 'SQLiteConnection.R' 'SQLKeywords_SQLiteConnection.R'
         'dbCommit_SQLiteConnection.R' 'dbConnect_SQLiteConnection.R'
         'dbConnect_SQLiteDriver.R' 'dbDataType_SQLiteConnection.R'
         'dbDataType_SQLiteDriver.R' 'dbDisconnect_SQLiteConnection.R'
+        'dbExistsTable_SQLiteConnection_Id.R'
         'dbExistsTable_SQLiteConnection_character.R'
         'dbFetch_SQLiteResult.R' 'dbGetException_SQLiteConnection.R'
         'dbGetInfo_SQLiteConnection.R' 'dbGetInfo_SQLiteDriver.R'
@@ -78,12 +79,11 @@ Collate: 'SQLiteConnection.R' 'SQLKeywords_SQLiteConnection.R'
         'import-standalone-check_suggested.R'
         'import-standalone-purrr.R' 'initExtension.R' 'initRegExp.R'
         'isSQLKeyword_SQLiteConnection_character.R'
-        'make.db.names_SQLiteConnection_character.R' 'names.R'
-        'pkgconfig.R' 'show_SQLiteConnection.R'
-        'sqlData_SQLiteConnection.R' 'table.R' 'transactions.R'
-        'utils.R' 'version.R' 'zzz.R'
+        'make.db.names_SQLiteConnection_character.R' 'pkgconfig.R'
+        'show_SQLiteConnection.R' 'sqlData_SQLiteConnection.R'
+        'table.R' 'transactions.R' 'utils.R' 'version.R' 'zzz.R'
 NeedsCompilation: yes
-Packaged: 2024-03-31 09:13:28 UTC; kirill
+Packaged: 2024-05-26 19:25:39 UTC; kirill
 Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
   David A. James [aut],
@@ -97,4 +97,4 @@ Author: Kirill Müller [aut, cre] (<https://orcid.org/0000-0002-1416-3412>),
   RStudio [cph]
 Maintainer: Kirill Müller <kirill@cynkra.com>
 Repository: CRAN
-Date/Publication: 2024-03-31 22:20:02 UTC
+Date/Publication: 2024-05-27 10:10:07 UTC

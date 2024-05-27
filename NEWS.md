@@ -1,5 +1,26 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.7 (2024-05-26)
+
+## Breaking changes
+
+- Breaking change: Avoid appending a numeric suffix to duplicate column names (#503).
+
+## Features
+
+- Upgrade bundled SQLite to 3.46.0 (#510).
+- Add `Id` method to `dbExistsTable()` (@kjellpk, #498, #499).
+- Breaking change: Avoid appending a numeric suffix to duplicate column names (#503).
+
+## Documentation
+
+- Set BS version explicitly for now (@maelle, #506).
+
+## Testing
+
+- Fix test on FreeBSD (@nunotexbsd, #502, #504).
+
+
 # RSQLite 2.3.6 (2024-03-31)
 
 ## Features
