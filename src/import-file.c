@@ -83,15 +83,20 @@ RS_sqlite_import(
   }
   in = fopen(zFile, "rb");
   if (in == 0) {
-    Rf_error("RS_sqlite_import: cannot open file %s", zFile);
+    fclose(in);
     sqlite3_finalize(pStmt);
+    Rf_error("RS_sqlite_import: cannot open file %s", zFile);
   }
   azCol = malloc(sizeof(azCol[0]) * (nCol + 1));
   if (azCol == 0) return 0;
 
   while ((zLine = RS_sqlite_getline(in, eol)) != NULL) {
     lineno++;
-    if (lineno <= skip) continue;
+    if (lineno <= skip) {
+      free(zLine);
+      zLine = NULL;
+      continue;
+    }
     i = 0;
     azCol[0] = zLine;
     for (i = 0, z = zLine; *z && *z != '\n' && *z != '\r'; z++) {
@@ -105,6 +110,10 @@ RS_sqlite_import(
       }
     }
     if (i + 1 != nCol) {
+      free(zLine);
+      free(azCol);
+      fclose(in);
+      sqlite3_finalize(pStmt);
       Rf_error("RS_sqlite_import: %s line %d expected %d columns of data but found %d",
           zFile, lineno, nCol, i + 1);
     }
@@ -120,6 +129,9 @@ RS_sqlite_import(
 
     rc = sqlite3_step(pStmt);
     if (rc != SQLITE_DONE && rc != SQLITE_SCHEMA) {
+      free(zLine);
+      free(azCol);
+      fclose(in);
       sqlite3_finalize(pStmt);
       Rf_error("RS_sqlite_import: %s", sqlite3_errmsg(db));
     }
@@ -127,6 +139,8 @@ RS_sqlite_import(
     free(zLine);
     zLine = NULL;
     if (rc != SQLITE_OK) {
+      free(azCol);
+      fclose(in);
       sqlite3_finalize(pStmt);
       Rf_error("RS_sqlite_import: %s", sqlite3_errmsg(db));
     }

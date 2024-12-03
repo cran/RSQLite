@@ -1,5 +1,18 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.9 (2024-12-03)
+
+## Features
+
+- Upgrade bundled SQLite to 3.47.1 (#550).
+
+## Bug fixes
+
+- Avoid memory leak (#553).
+
+- Fix valgrind error (#552).
+
+
 # RSQLite 2.3.8 (2024-11-17)
 
 ## Bug fixes
