@@ -1,5 +1,24 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.10 (2025-05-02)
+
+## Bug fixes
+
+- Avoid unnecessary `-I` switches (#512, #587).
+
+## Features
+
+- Upgrade bundled SQLite to 3.49.1 (#571).
+
+## Chore
+
+- Track dependencies between sources and headers (#586).
+
+## Testing
+
+- Bump DBItest version.
+
+
 # RSQLite 2.3.9 (2024-12-03)
 
 ## Features
