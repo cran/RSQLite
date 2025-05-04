@@ -1,6 +1,6 @@
-71515d11f7506a589bb6168eee675537 *DESCRIPTION
+617911e778b45b41c79e0183539e0cb9 *DESCRIPTION
 5eaa2f26ed34b86d1e7872cf95104e6e *NAMESPACE
-5a689f8524a3ed9fec91ed054b5d852e *NEWS.md
+649b29a65fffc4a04359270e5bb3dc06 *NEWS.md
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 5edb5743a96659169d34c1e9029ebbef *R/SQLite.R
 c54134e66615dbb412da8d95f7a8e62a *R/SQLiteConnection.R
@@ -1699,7 +1699,7 @@ f2cbade697d911cd8aa668b19cf86669 *src/vendor/boost/version.hpp
 75ab775568cd5b905802cf8cbed37a59 *src/vendor/boost/winapi/detail/footer.hpp
 c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 5dfe9bd35d5896780a84f01e4794ef8d *src/vendor/boost/winapi/time.hpp
-370aea3f8c3edfa1c1460af270b95c7d *src/vendor/extensions/csv.c
+406e2c7a7e412eabe10bbf69262ddbfb *src/vendor/extensions/csv.c
 557d510d16f0c93d2d47b51f1c584a6a *src/vendor/extensions/extension-functions.c
 63b96034711a4bcf12956488b2e1aa8b *src/vendor/extensions/regexp.c
 dc794943fb3ce5b8cae454ec683282e2 *src/vendor/extensions/series.c

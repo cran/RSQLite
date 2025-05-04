@@ -1,5 +1,12 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.3.11 (2025-05-04)
+
+## Bug fixes
+
+- Compilation with `gcc` works again (#592, #594).
+
+
 # RSQLite 2.3.10 (2025-05-02)
 
 ## Bug fixes
