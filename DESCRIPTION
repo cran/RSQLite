@@ -1,7 +1,7 @@
 Package: RSQLite
 Title: SQLite Interface for R
-Version: 2.3.11
-Date: 2025-05-04
+Version: 2.4.0
+Date: 2025-05-31
 Authors@R: c(
     person("Kirill", "Müller", , "kirill@cynkra.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1416-3412")),
@@ -83,7 +83,7 @@ Collate: 'SQLiteConnection.R' 'SQLKeywords_SQLiteConnection.R'
         'show_SQLiteConnection.R' 'sqlData_SQLiteConnection.R'
         'table.R' 'transactions.R' 'utils.R' 'version.R' 'zzz.R'
 NeedsCompilation: yes
-Packaged: 2025-05-04 05:57:30 UTC; kirill
+Packaged: 2025-05-31 18:01:44 UTC; kirill
 Author: Kirill Müller [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-1416-3412>),
   Hadley Wickham [aut],
@@ -98,4 +98,4 @@ Author: Kirill Müller [aut, cre] (ORCID:
   RStudio [cph]
 Maintainer: Kirill Müller <kirill@cynkra.com>
 Repository: CRAN
-Date/Publication: 2025-05-04 09:40:02 UTC
+Date/Publication: 2025-05-31 21:10:06 UTC
