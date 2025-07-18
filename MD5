@@ -1,6 +1,6 @@
-e6e56082d9e43c079d3a009337d136bb *DESCRIPTION
+37a13b769a836be1b6ed77e0f2326904 *DESCRIPTION
 5eaa2f26ed34b86d1e7872cf95104e6e *NAMESPACE
-76c87c1519e7f6a5eed8e5aae734b138 *NEWS.md
+f013f9f627937d6810f8191322c3261a *NEWS.md
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 5edb5743a96659169d34c1e9029ebbef *R/SQLite.R
 c54134e66615dbb412da8d95f7a8e62a *R/SQLiteConnection.R
@@ -71,7 +71,7 @@ c1c01db49c4eb185dd17d3c8b43f593e *R/table.R
 ada001706c948b2be14fba68d19e242b *R/version.R
 328597596f6a31a440a140e318502fc5 *R/zzz.R
 5deb62d212bb6614eb00af62a9f759c9 *README.md
-effba80692ca60b69a2d3969c341f2ab *build/vignette.rds
+9461e5524334172b8af2c6d50aa9ae84 *build/vignette.rds
 4a739b607662d3731c58f8220488df06 *inst/WORDLIST
 6a6016ed370b49203dbc6e2c3f9160d3 *inst/db/datasets.sqlite
 8c3e02869b417b1fa5cf7a28dafe56cd *inst/doc/RSQLite.R
@@ -1705,8 +1705,8 @@ c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 d9ead15bab4be684baaeab8a88cd0781 *src/vendor/extensions/series.c
 af1855cf5cd34d8d41a37c218a87aacf *src/vendor/extensions/sqlite3ext.h
 5f183bf540888220e3337f5926253be9 *src/vendor/extensions/uuid.c
-e577b364db2ffc66e15a4364cb08c814 *src/vendor/sqlite3/sqlite3.c
-73a6375dd02baf7e0118124bdb41bf44 *src/vendor/sqlite3/sqlite3.h
+24570ee373abb3db126ed76bd9f34994 *src/vendor/sqlite3/sqlite3.c
+37826211ad4ed05f6d05cd1c3271f49a *src/vendor/sqlite3/sqlite3.h
 1e9664ef80213e1e5024128c5f8f69aa *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
