@@ -1,6 +1,6 @@
-6a93151573f699df1ac4ac091655278c *DESCRIPTION
+78f20f77cd057aaad2aafa8b92880b6d *DESCRIPTION
 5eaa2f26ed34b86d1e7872cf95104e6e *NAMESPACE
-9538718e291f9fda26c52f1170410864 *NEWS.md
+bd0025864c48c7ef6e7ec7053a67777d *NEWS.md
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 5edb5743a96659169d34c1e9029ebbef *R/SQLite.R
 c54134e66615dbb412da8d95f7a8e62a *R/SQLiteConnection.R
@@ -128,7 +128,7 @@ b15e7b2af695e35aa99f50d4dab00de6 *src/SqliteColumnDataSourceFactory.cpp
 76a6941e04b1b837fa93030ba6f6d751 *src/SqliteResult.cpp
 00602209ef6daac8a67e630784cbdd36 *src/SqliteResult.h
 d5abe117b7b3cf361ff75fcc01ae3c88 *src/SqliteResultImpl.cpp
-19ef3e3abb2828d7cf0ef276abb84c48 *src/SqliteResultImpl.h
+c54542ac6c0a429b6606723db21858d3 *src/SqliteResultImpl.h
 372582e5c08c980749c23206cb5cd98c *src/affinity.c
 aa3401067da4a30372e39d5be29abf93 *src/affinity.h
 e7344537972a339aef02c82475eacd67 *src/connection.cpp
@@ -1701,12 +1701,12 @@ c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 5dfe9bd35d5896780a84f01e4794ef8d *src/vendor/boost/winapi/time.hpp
 46ac27137f795c9439e86b6e65724e46 *src/vendor/extensions/csv.c
 557d510d16f0c93d2d47b51f1c584a6a *src/vendor/extensions/extension-functions.c
-63b96034711a4bcf12956488b2e1aa8b *src/vendor/extensions/regexp.c
-d9ead15bab4be684baaeab8a88cd0781 *src/vendor/extensions/series.c
-af1855cf5cd34d8d41a37c218a87aacf *src/vendor/extensions/sqlite3ext.h
+62e9bdd3cd4e6c6659d1257e6130f69c *src/vendor/extensions/regexp.c
+08d8f887391ab74df406a402702d7ad3 *src/vendor/extensions/series.c
+faeae888770f250ea548cdb44ddd4b7e *src/vendor/extensions/sqlite3ext.h
 5f183bf540888220e3337f5926253be9 *src/vendor/extensions/uuid.c
-707813fc481edfe0e5b9578b5f7965fb *src/vendor/sqlite3/sqlite3.c
-c4411c6ec5c500cc6a3084b90e576d7c *src/vendor/sqlite3/sqlite3.h
+f2e2382a6e3d1456064d12af13572bee *src/vendor/sqlite3/sqlite3.c
+190b1f9913897f8c8978253f341dd8e8 *src/vendor/sqlite3/sqlite3.h
 1e9664ef80213e1e5024128c5f8f69aa *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
@@ -1724,7 +1724,7 @@ d7cfbaca51743a777d538d19c6391652 *tests/testthat/test-DBItest.R
 cda94973f1a51716292b920debecdeee *tests/testthat/test-column-info.R
 d3b813f1b83605516011b05a35ed1ca0 *tests/testthat/test-data-type.R
 30f9ef6d0055395ed0ef7812e1891df6 *tests/testthat/test-dbClearResult.R
-b21e09d80f778cef3ef974dd187f53f1 *tests/testthat/test-dbConnect.R
+a32f330da4d07148e17f56978585fde3 *tests/testthat/test-dbConnect.R
 7b3c3cf565aba0a486bb01f24d685712 *tests/testthat/test-dbSendQuery.R
 37029bed0f39eccb02ddc2970ab854d5 *tests/testthat/test-dbWriteTable.R
 4b62acb40cb1e3c2fe5ef10092cf86eb *tests/testthat/test-dbWriteTableAutoincrement.R

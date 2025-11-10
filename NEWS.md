@@ -1,5 +1,18 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.4.4 (2025-11-05)
+
+## Features
+
+- Upgrade bundled SQLite to 3.51.0 (#648).
+
+## Continuous integration
+
+- Loosen timeout on macOS.
+
+- Avoid accessing Fossil for upgrade.
+
+
 # RSQLite 2.4.3 (2025-08-01)
 
 ## Features
