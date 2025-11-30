@@ -1,6 +1,6 @@
-78f20f77cd057aaad2aafa8b92880b6d *DESCRIPTION
+49a61fe2bcd46ded1764e717ab6b3129 *DESCRIPTION
 5eaa2f26ed34b86d1e7872cf95104e6e *NAMESPACE
-bd0025864c48c7ef6e7ec7053a67777d *NEWS.md
+e63379616a3e780be38bb5bf356add41 *NEWS.md
 5fdb689e7a7dda14c79c050ff6363711 *R/SQLKeywords_SQLiteConnection.R
 5edb5743a96659169d34c1e9029ebbef *R/SQLite.R
 c54134e66615dbb412da8d95f7a8e62a *R/SQLiteConnection.R
@@ -1705,8 +1705,8 @@ c5a69cb41c3e95b5c2afec9f8dc227dd *src/vendor/boost/winapi/detail/header.hpp
 08d8f887391ab74df406a402702d7ad3 *src/vendor/extensions/series.c
 faeae888770f250ea548cdb44ddd4b7e *src/vendor/extensions/sqlite3ext.h
 5f183bf540888220e3337f5926253be9 *src/vendor/extensions/uuid.c
-f2e2382a6e3d1456064d12af13572bee *src/vendor/sqlite3/sqlite3.c
-190b1f9913897f8c8978253f341dd8e8 *src/vendor/sqlite3/sqlite3.h
+f450592e4a35a2d094a231a16d343cae *src/vendor/sqlite3/sqlite3.c
+2ed824ac81a8af229e9698f7bfd48baa *src/vendor/sqlite3/sqlite3.h
 1e9664ef80213e1e5024128c5f8f69aa *tests/testthat.R
 a068d5330949c7f13f695ca5f62e1364 *tests/testthat/dat-n.txt
 d97f59133341d9a53539b8780331279b *tests/testthat/dat-rn.txt
