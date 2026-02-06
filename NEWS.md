@@ -1,5 +1,18 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 2.4.6 (2026-02-05)
+
+## Features
+
+- Upgrade bundled SQLite to 3.51.2, upgrade extensions (#673).
+
+## Chore
+
+- Remove plogr (#683).
+
+- Format C++ code with clang-format.
+
+
 # RSQLite 2.4.5 (2025-11-30)
 
 ## Features
