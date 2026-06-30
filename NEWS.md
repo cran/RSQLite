@@ -1,5 +1,16 @@
 <!-- NEWS.md is maintained by https://fledge.cynkra.com, contributors should not edit this file -->
 
+# RSQLite 3.53.3 (2026-06-28)
+
+## Features
+
+- Upgrade bundled SQLite to 3.53.3 (#761).
+
+## Bug fixes
+
+- Restore C90 and C17 compatibility of the bundled HTTP VFS sources (`http.c`), fixing builds with stricter system compilers (@davidrsch, #750).
+
+
 # RSQLite 3.53.2 (2026-06-14)
 
 
